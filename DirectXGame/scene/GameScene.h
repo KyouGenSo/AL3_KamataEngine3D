@@ -7,6 +7,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "DebugCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -47,4 +48,22 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	uint32_t textureHandle_ = 0;
+	uint32_t soundHandle_ = 0;
+	uint32_t voiceHandle_ = 0;
+
+	Sprite* sprite_ = nullptr;
+	Vector2 spriteSize_;
+
+	Model* model_ = nullptr;
+	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
+
+	/// <summary>
+	/// DeBug用
+	/// </summary>
+	float inPutFloat3[3] = {0.0f, 0.0f, 0.0f};
+
+	DebugCamera* debugCamera_ = nullptr;
+
 };
