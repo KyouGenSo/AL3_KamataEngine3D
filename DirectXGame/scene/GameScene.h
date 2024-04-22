@@ -8,6 +8,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 
+#include "player.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -47,4 +49,14 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	// プレイヤー
+	player* player_ = nullptr;
+
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0;
+	// モデルハンドル
+	Model* model_ = nullptr;
+	// ビュー射影行列
+	ViewProjection viewProjection_;
 };
