@@ -15,17 +15,18 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	// プレイヤーの生成
-	player_ = new player();
-	// プレイヤーの初期化
-	player_->Initialize();
-
 	// テクスチャの読み込み
-	textureHandle_ = TextureManager::Load("./Resources/Textures/uvChecker.png");
+	textureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
 	// モデルの生成
 	model_ = Model::Create();
 	// ビュー射影行列の初期化
 	viewProjection_.Initialize();
+
+	// プレイヤーの生成
+	player_ = new player();
+	// プレイヤーの初期化
+	player_->Initialize(model_, textureHandle_);
+
 }
 
 void GameScene::Update() {
@@ -62,7 +63,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	// プレイヤーの描画
-	player_->Draw();
+	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

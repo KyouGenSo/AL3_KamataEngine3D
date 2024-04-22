@@ -17,7 +17,7 @@ public: // メンバ関数
 	// 毎フレーム処理
 	void Update();
 	// 描画
-	void Draw();
+	void Draw(ViewProjection& viewProjection);
 
 private: // メンバ変数
 
