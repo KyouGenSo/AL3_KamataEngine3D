@@ -2,7 +2,12 @@
 
 player::player() {}
 
-player::~player() {}
+player::~player() {
+	// プレイヤーの弾の解放
+	for (playerBullet* bullet : bullets_) {
+		delete bullet;
+	}
+}
 
 void player::Initialize(Model* model, uint32_t textureHandle) {
 
@@ -15,13 +20,13 @@ void player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.Initialize();
 }
 
-void player::Update() { 
+void player::Update() {
 
 	// 旋回
 	Rotate();
 
 	// 移動
-	Vector3 move = { 0.0f, 0.0f, 0.0f };
+	Vector3 move = {0.0f, 0.0f, 0.0f};
 	const float kCharacterSpeed = 0.2f;
 
 	if (input_->PushKey(DIK_LEFT)) {
@@ -46,7 +51,6 @@ void player::Update() {
 	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kMoveLimitX, kMoveLimitX);
 	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
 
-
 	// アフィン変換行列の作成
 	worldTransform_.UpdateMatrix();
 
@@ -54,10 +58,9 @@ void player::Update() {
 	Attack();
 
 	// プレイヤーの弾の更新
-	if (bullet_) {
-		bullet_->Update();
+	for (playerBullet* bullet : bullets_) {
+		bullet->Update();
 	}
-
 
 	// ImGui
 	ImGui::Begin("Player Pos");
@@ -68,17 +71,15 @@ void player::Update() {
 	worldTransform_.translation_.z = playerPos[2];
 	ImGui::Text("playerPosition: (%f, %f, %f)", playerPos[0], playerPos[1], playerPos[2]);
 	ImGui::End();
-
 }
 
 void player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	// プレイヤーの弾の描画
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (playerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
-
 }
 
 void player::Rotate() {
@@ -96,7 +97,6 @@ void player::Attack() {
 		playerBullet* newBullet_ = new playerBullet();
 		newBullet_->Initialize(model_, worldTransform_.translation_);
 
-		bullet_ = newBullet_;
-
+		bullets_.push_back(newBullet_);
 	}
 }

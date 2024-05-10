@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Input.h"
@@ -41,6 +42,6 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 
 	// プレイヤーの弾
-	playerBullet* bullet_ = nullptr;
+	std::list<playerBullet*> bullets_;
 
 };
