@@ -110,6 +110,8 @@
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix4x4Function.cpp" />
+    <ClCompile Include="myFunction.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
   </ItemGroup>
@@ -142,8 +144,11 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="Matrix4x4Function.h" />
+    <ClInclude Include="myFunction.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="scene\GameScene.h" />
+    <ClInclude Include="Vector3Function.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">

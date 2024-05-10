@@ -1,12 +1,14 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -14,6 +16,15 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
+	#ifdef _DEBUG
+	// 軸方向表示の初期化
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	#endif
 
 	// テクスチャの読み込み
 	textureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
@@ -26,13 +37,30 @@ void GameScene::Initialize() {
 	player_ = new player();
 	// プレイヤーの初期化
 	player_->Initialize(model_, textureHandle_);
-
 }
 
 void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+#ifdef _DEBUG
+	// デバッグカメラのアクティブ切り替え
+	if (input_->TriggerKey(DIK_F1)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+#endif
+
+	if (isDebugCameraActive_) {
+		// デバッグカメラの更新
+		debugCamera_->Update();
+		// ビュー射影行列の更新
+		viewProjection_.matView = debugCamera_->GetViewMatrix();
+		viewProjection_.matProjection = debugCamera_->GetProjectionMatrix();
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
 }
 
 void GameScene::Draw() {

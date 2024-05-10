@@ -1,7 +1,12 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Input.h"
+#include "Matrix4x4Function.h"
 #include <cassert>
+#include "ImGuiManager.h"
+#include "myFunction.h"
+#include <algorithm>
 
 // 自キャラクラス
 class player {
@@ -27,4 +32,6 @@ private: // メンバ変数
 	WorldTransform worldTransform_;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
+	//キーボード入力
+	Input* input_ = nullptr;
 };

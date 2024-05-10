@@ -58,6 +58,9 @@
     <Filter Include="ソース ファイル\object">
       <UniqueIdentifier>{cfd7686e-e159-4cd5-8d8a-12087e55dcd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Function">
+      <UniqueIdentifier>{6553302e-b0f3-4f6f-a7d1-3e36f0cd68af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,6 +80,12 @@
     </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\object</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4x4Function.cpp">
+      <Filter>ヘッダー ファイル\Function</Filter>
+    </ClCompile>
+    <ClCompile Include="myFunction.cpp">
+      <Filter>ヘッダー ファイル\Function</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +178,15 @@
     </ClInclude>
     <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル\object</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4Function.h">
+      <Filter>ヘッダー ファイル\Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3Function.h">
+      <Filter>ヘッダー ファイル\Function</Filter>
+    </ClInclude>
+    <ClInclude Include="myFunction.h">
+      <Filter>ヘッダー ファイル\Function</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
