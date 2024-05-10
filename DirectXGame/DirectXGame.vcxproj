@@ -113,7 +113,9 @@
     <ClCompile Include="Matrix4x4Function.cpp" />
     <ClCompile Include="myFunction.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
+    <ClCompile Include="WorldTrasformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2d\ImGuiManager.h" />
@@ -147,6 +149,7 @@
     <ClInclude Include="Matrix4x4Function.h" />
     <ClInclude Include="myFunction.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Vector3Function.h" />
   </ItemGroup>

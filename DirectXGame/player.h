@@ -7,6 +7,7 @@
 #include "ImGuiManager.h"
 #include "myFunction.h"
 #include <algorithm>
+#include "PlayerBullet.h"
 
 // 自キャラクラス
 class player {
@@ -23,6 +24,10 @@ public: // メンバ関数
 	void Update();
 	// 描画
 	void Draw(ViewProjection& viewProjection);
+	// 旋回
+	void Rotate();
+	// 攻撃
+	void Attack();
 
 private: // メンバ変数
 
@@ -34,4 +39,8 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 	//キーボード入力
 	Input* input_ = nullptr;
+
+	// プレイヤーの弾
+	playerBullet* bullet_ = nullptr;
+
 };
