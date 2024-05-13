@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include <algorithm>
+#include "Input.h"
 
 class Enemy {
 
@@ -14,11 +15,22 @@ public:
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
+	void Aproach();
+	void Leave();
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;
+	Input* input_ = nullptr;
 
 	Vector3 velocity_;
 	Vector3 position_;
+
+	enum class Phase {
+		Aproach,
+		Leave,
+	};
+
+	Phase phase_ = Phase::Aproach;
 };
