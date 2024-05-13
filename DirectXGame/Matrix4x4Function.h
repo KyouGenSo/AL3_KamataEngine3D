@@ -3,7 +3,9 @@
 
 #include "Matrix4x4.h"
 #include "Vector3.h"
+#include "cassert"
 #include"math.h"
+#include "cmath"
 #include"cassert"
 
 
@@ -36,4 +38,6 @@ Matrix4x4 MakeRotateMatrixXYZ(Vector3 angle);
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
 Vector3 TransForm(const Matrix4x4& m, const Vector3& v);
+
+Vector3 TransFormNormal(const Vector3& v, const Matrix4x4& m);
 

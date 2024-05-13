@@ -22,6 +22,14 @@ void player::Initialize(Model* model, uint32_t textureHandle) {
 
 void player::Update() {
 
+	bullets_.remove_if([](playerBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	// 旋回
 	Rotate();
 
@@ -94,8 +102,13 @@ void player::Rotate() {
 
 void player::Attack() {
 	if (input_->TriggerKey(DIK_SPACE)) {
+		const float kBulletSpeed = 1.0f;
+		Vector3 bulletVelocity = {0.0f, 0.0f, kBulletSpeed};
+
+		bulletVelocity = TransFormNormal(bulletVelocity, worldTransform_.matWorld_);
+
 		playerBullet* newBullet_ = new playerBullet();
-		newBullet_->Initialize(model_, worldTransform_.translation_);
+		newBullet_->Initialize(model_, worldTransform_.translation_, bulletVelocity);
 
 		bullets_.push_back(newBullet_);
 	}

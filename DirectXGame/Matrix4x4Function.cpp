@@ -1,11 +1,8 @@
 #pragma once
 #define _USE_MATH_DEFINES
 
-#include "Matrix4x4.h"
-#include "Vector3.h"
-#include "cassert"
-#include "cmath"
-#include "math.h"
+#include "Matrix4x4Function.h"
+
 
 
 Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -242,6 +239,16 @@ Vector3 TransForm(const Matrix4x4& m, const Vector3& v) {
 	result.x /= w;
 	result.y /= w;
 	result.z /= w;
+
+	return result;
+}
+
+Vector3 TransFormNormal(const Vector3& v, const Matrix4x4& m) {
+	Vector3 result;
+
+	result.x = m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z;
+	result.y = m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z;
+	result.z = m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z;
 
 	return result;
 }
