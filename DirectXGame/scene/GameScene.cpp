@@ -8,6 +8,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	delete enemy_;
 	delete debugCamera_;
 }
 
@@ -27,7 +28,8 @@ void GameScene::Initialize() {
 	#endif
 
 	// テクスチャの読み込み
-	textureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
+	playerTextureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
+	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy.png");
 	// モデルの生成
 	model_ = Model::Create();
 	// ビュー射影行列の初期化
@@ -36,13 +38,21 @@ void GameScene::Initialize() {
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(model_, playerTextureHandle_);
+
+	// 敵の生成
+	enemy_ = new Enemy();
+	// 敵の初期化
+	enemy_->Initialize(model_, enemyTextureHandle_);
 }
 
 void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	// 敵の更新
+	enemy_->Update();
 
 #ifdef _DEBUG
 	// デバッグカメラのアクティブ切り替え
@@ -92,6 +102,9 @@ void GameScene::Draw() {
 
 	// プレイヤーの描画
 	player_->Draw(viewProjection_);
+
+	// 敵の描画
+	enemy_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
