@@ -19,6 +19,10 @@ public:
 	void Leave();
 
 private:
+
+	// 関数ポインター配列
+	static void(Enemy::* const pPhaseFunctionTable_[])();
+
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;

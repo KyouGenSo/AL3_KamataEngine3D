@@ -20,14 +20,17 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Enemy::Update() {
-	switch (phase_) {
-	case Phase::Aproach:
-		Aproach();
-		break;
-	case Phase::Leave:
-		Leave();
-		break;
-	}
+
+	//switch (phase_) {
+	//case Phase::Aproach:
+	//	Aproach();
+	//	break;
+	//case Phase::Leave:
+	//	Leave();
+	//	break;
+	//}
+
+	(this->*pPhaseFunctionTable_[static_cast<size_t>(phase_)])();
 
 	worldTransform_.UpdateMatrix();
 }
@@ -46,4 +49,13 @@ void Enemy::Aproach() {
 void Enemy::Leave() {
 	velocity_ = {0.5f, 0.5f, 0.0f};
 	worldTransform_.translation_ += velocity_;
+
+	if (worldTransform_.translation_.x >= 10.0f) {
+		phase_ = Phase::Aproach;
+	}
 }
+
+void(Enemy::* const Enemy::pPhaseFunctionTable_[])() = {
+	&Enemy::Aproach, // 要素番号0
+	&Enemy::Leave,	// 要素番号1
+};
