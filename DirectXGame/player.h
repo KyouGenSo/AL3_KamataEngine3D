@@ -9,6 +9,7 @@
 #include "myFunction.h"
 #include <algorithm>
 #include "PlayerBullet.h"
+#include "Vector3.h"
 
 // 自キャラクラス
 class player {
@@ -29,6 +30,9 @@ public: // メンバ関数
 	void Rotate();
 	// 攻撃
 	void Attack();
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
 
 private: // メンバ変数
 

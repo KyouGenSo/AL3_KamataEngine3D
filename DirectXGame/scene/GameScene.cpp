@@ -44,6 +44,8 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	// 敵の初期化
 	enemy_->Initialize(model_, enemyTextureHandle_);
+	// Playerを借りてくる
+	enemy_->SetPlayer(player_);
 }
 
 void GameScene::Update() {

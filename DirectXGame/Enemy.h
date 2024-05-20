@@ -6,8 +6,12 @@
 #include "WorldTransform.h"
 #include <algorithm>
 #include <list>
+#include <Vector3.h>
+#include <Vector3Function.h>
 
 class Enemy;
+
+class player;
 
 static const int kFireInterval = 60;
 
@@ -59,13 +63,15 @@ public:
 	//------------------------------------------------------------------------------------------------
 	void SetTranlation(const Vector3& velocity) { worldTransform_.translation_ += velocity; }
 
-	float GetTranslationX() const { return worldTransform_.translation_.x; }
-	float GetTranslationY() const { return worldTransform_.translation_.y; }
-	float GetTranslationZ() const { return worldTransform_.translation_.z; }
+	void SetPlayer(player* player) { player_ = player; }
+
+	Vector3 GetWorldPosition();
 
 private:
 	// 関数ポインター配列
 	static void (Enemy::*const pPhaseFunctionTable_[])();
+
+	player* player_ = nullptr;
 
 	BaseEnemyPhase* enemyPhase_;
 

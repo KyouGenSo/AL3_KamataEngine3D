@@ -102,6 +102,9 @@
     <ClCompile Include="EnemyBullet.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
+    <ClCompile Include="Vector3Function.cpp">
+      <Filter>ヘッダー ファイル\Function</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">

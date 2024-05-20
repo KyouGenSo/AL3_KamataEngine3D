@@ -117,6 +117,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
+    <ClCompile Include="Vector3Function.cpp" />
     <ClCompile Include="WorldTrasformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
