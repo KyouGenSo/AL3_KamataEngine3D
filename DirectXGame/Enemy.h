@@ -1,30 +1,40 @@
 #pragma once
+#include "EnemyBullet.h"
 #include "Input.h"
 #include "Matrix4x4Function.h"
 #include "Model.h"
 #include "WorldTransform.h"
 #include <algorithm>
+#include <list>
 
 class Enemy;
+
+static const int kFireInterval = 60;
 
 class BaseEnemyPhase {
 
 public:
 	virtual ~BaseEnemyPhase() = default;
+	virtual void Init() = 0;
 	virtual void Update(Enemy* enemy) = 0;
-
 };
 
 class EnemyPhaseAproach : public BaseEnemyPhase {
 public:
+	void Init() override;
 	void Update(Enemy* enemy) override;
 
+private:
+	uint32_t fireTimer_;
 };
 
 class EnemyPhaseLeave : public BaseEnemyPhase {
 public:
+	void Init() override;
 	void Update(Enemy* enemy) override;
 
+private:
+	uint32_t fireTimer_;
 };
 
 class Enemy {
@@ -39,7 +49,9 @@ public:
 
 	void ChangePhase(BaseEnemyPhase* phase);
 
-	void Draw(const ViewProjection& viewProjection);
+	void Draw(ViewProjection& viewProjection);
+
+	void Fire();
 
 	void Aproach();
 	void Leave();
@@ -65,10 +77,14 @@ private:
 	Vector3 velocity_;
 	Vector3 position_;
 
-	enum class Phase {
-		Aproach,
-		Leave,
-	};
+	std::list<EnemyBullet*> bullets_;
 
-	Phase phase_ = Phase::Aproach;
+	int32_t fireTimer_ = 0;
+
+	// enum class Phase {
+	//	Aproach,
+	//	Leave,
+	// };
+
+	// Phase phase_ = Phase::Aproach;
 };

@@ -2,7 +2,13 @@
 
 Enemy::Enemy() {}
 
-Enemy::~Enemy() { delete enemyPhase_; }
+Enemy::~Enemy() {
+	delete enemyPhase_;
+
+	for (EnemyBullet* bullet : bullets_) {
+		delete bullet;
+	}
+}
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
@@ -19,6 +25,8 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	velocity_ = {0.0f, 0.0f, -0.5f};
 
 	enemyPhase_ = new EnemyPhaseAproach();
+
+	enemyPhase_->Init();
 }
 
 void Enemy::Update() {
@@ -36,10 +44,20 @@ void Enemy::Update() {
 
 	enemyPhase_->Update(this);
 
+	for (EnemyBullet* bullet : bullets_) {
+		bullet->Update();
+	}
+
 	worldTransform_.UpdateMatrix();
 }
 
-void Enemy::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, textureHandle_); }
+void Enemy::Draw(ViewProjection& viewProjection) {
+	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	for (EnemyBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
+}
 
 // void Enemy::Aproach() {
 //	velocity_ = {0.0f, 0.0f, -0.5f};
@@ -59,21 +77,45 @@ void Enemy::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTrans
 //	}
 // }
 
-//void (Enemy::*const Enemy::pPhaseFunctionTable_[])() = {
-//    &Enemy::Aproach, // 要素番号0
-//    &Enemy::Leave,   // 要素番号1
-//};
+// void (Enemy::*const Enemy::pPhaseFunctionTable_[])() = {
+//     &Enemy::Aproach, // 要素番号0
+//     &Enemy::Leave,   // 要素番号1
+// };
+
+void Enemy::Fire() {
+	const float kBulletSpeed = -1.0f;
+	Vector3 bulletVelocity = {0.0f, 0.0f, kBulletSpeed};
+
+	bulletVelocity = TransFormNormal(bulletVelocity, worldTransform_.matWorld_);
+
+	EnemyBullet* newBullet_ = new EnemyBullet();
+	newBullet_->Initialize(model_, worldTransform_.translation_, bulletVelocity);
+
+	bullets_.push_back(newBullet_);
+}
 
 void Enemy::ChangePhase(BaseEnemyPhase* phase) {
 	delete enemyPhase_;
 	enemyPhase_ = phase;
 }
 
+void EnemyPhaseAproach::Init() { fireTimer_ = kFireInterval; }
+
+void EnemyPhaseLeave::Init() { fireTimer_ = kFireInterval; }
+
 void EnemyPhaseAproach::Update(Enemy* enemy) {
-	Vector3 velocity_ = {0.0f, 0.0f, -0.5f};
+
+	fireTimer_--;
+
+	if (fireTimer_ <= 0) {
+		enemy->Fire();
+		fireTimer_ = kFireInterval;
+	}
+
+	Vector3 velocity_ = {0.0f, 0.0f, -0.1f};
 	enemy->SetTranlation(velocity_);
 
-	if (enemy->GetTranslationZ() <= 0.0f) {
+	if (enemy->GetTranslationZ() <= -5.0f) {
 		enemy->ChangePhase(new EnemyPhaseLeave());
 	}
 }
