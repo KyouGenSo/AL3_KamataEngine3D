@@ -20,7 +20,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
-	position_ = {0.0f, 5.0f, 30.0f};
+	position_ = {0.0f, 5.0f, 60.0f};
 	worldTransform_.translation_ = position_;
 
 	velocity_ = {0.0f, 0.0f, -0.5f};
@@ -31,6 +31,14 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Enemy::Update() {
+
+	bullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
 	enemyPhase_->Update(this);
 
@@ -105,7 +113,7 @@ void EnemyPhaseAproach::Update(Enemy* enemy) {
 
 	Vector3 enemyPos = enemy->GetWorldPosition();
 
-	if (enemyPos.z <= -5.0f) {
+	if (enemyPos.z <= 40.0f) {
 		enemy->ChangePhase(new EnemyPhaseLeave());
 	}
 }
@@ -139,3 +147,5 @@ Vector3 Enemy::GetWorldPosition() {
 
 	return worldPos;
 }
+
+void Enemy::OnCollision() {}

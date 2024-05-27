@@ -56,6 +56,9 @@ void GameScene::Update() {
 	// 敵の更新
 	enemy_->Update();
 
+	// 衝突判定
+	CheckAllCollision();
+
 #ifdef _DEBUG
 	// デバッグカメラのアクティブ切り替え
 	if (input_->TriggerKey(DIK_F1)) {
@@ -124,4 +127,48 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllCollision() {
+	Vector3 posA, posB;
+
+	const std::list<EnemyBullet*>& bullets = enemy_->GetBullets();
+	const std::list<playerBullet*>& playerBullets = player_->GetBullets();
+
+	#pragma region プレイヤーと敵弾の衝突判定
+	posA = player_->GetWorldPosition();
+
+	for (EnemyBullet* bullet : bullets) {
+		posB = bullet->GetWorldPosition();
+		if (Distance(posA, posB) <= player_->GetRadius() + enemy_->GetBulletRadius()) {
+			player_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+	#pragma endregion
+
+	#pragma region 敵とプレイヤー弾の衝突判定
+	posA = enemy_->GetWorldPosition();
+
+	for (playerBullet* bullet : playerBullets) {
+		posB = bullet->GetWorldPosition();
+		if (Distance(posA, posB) <= enemy_->GetRadius() + player_->GetBulletRadius()) {
+			enemy_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+	#pragma endregion
+
+	#pragma region プレイヤー弾と敵弾の衝突判定
+	for (playerBullet* playerBullet : playerBullets) {
+		posA = playerBullet->GetWorldPosition();
+		for (EnemyBullet* enemyBullet : bullets) {
+			posB = enemyBullet->GetWorldPosition();
+			if (Distance(posA, posB) <= playerBullet->GetRadius() + enemyBullet->GetRadius()) {
+				playerBullet->OnCollision();
+				enemyBullet->OnCollision();
+			}
+		}
+	}
+	#pragma endregion
 }

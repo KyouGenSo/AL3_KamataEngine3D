@@ -57,6 +57,8 @@ public:
 
 	void Fire();
 
+	void OnCollision();
+
 	void Aproach();
 	void Leave();
 
@@ -66,6 +68,12 @@ public:
 	void SetPlayer(player* player) { player_ = player; }
 
 	Vector3 GetWorldPosition();
+
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
+	float GetBulletRadius() const { return bullets_.front()->GetRadius(); }
+
+	float GetRadius() const { return radius_; }
 
 private:
 	// 関数ポインター配列
@@ -82,6 +90,7 @@ private:
 
 	Vector3 velocity_;
 	Vector3 position_;
+	float radius_ = 1.0f;
 
 	std::list<EnemyBullet*> bullets_;
 

@@ -22,6 +22,14 @@ public:
 	void Update();
 
 	void Draw(ViewProjection& viewProjection);
+
+	bool IsDead() const { return isDead_; }
+
+	void OnCollision();
+
+	Vector3 GetWorldPosition() const { return worldTransform_.translation_; }
+
+	float GetRadius() const { return radius_; }
 	
 private:
 	Model* model_;
@@ -29,6 +37,8 @@ private:
 	Vector3 velocity_;
 	uint32_t textureHandle_;
 
+	// 半径
+	float radius_ = 1.0f;
 	
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;

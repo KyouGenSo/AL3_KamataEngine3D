@@ -31,8 +31,17 @@ public: // メンバ関数
 	// 攻撃
 	void Attack();
 
+	void OnCollision();
+
+	const std::list<playerBullet*>& GetBullets() const { return bullets_; }
+
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	// 半径を取得
+	float GetRadius() const { return radius_; }
+
+	float GetBulletRadius() const { return bullets_.front()->GetRadius(); }
 
 private: // メンバ変数
 
@@ -44,6 +53,9 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 	//キーボード入力
 	Input* input_ = nullptr;
+
+	// 半径
+	float radius_ = 1.0f;
 
 	// プレイヤーの弾
 	std::list<playerBullet*> bullets_;

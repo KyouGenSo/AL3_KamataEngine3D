@@ -20,12 +20,20 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
+	void OnCollision();
+
+	Vector3 GetWorldPosition() const { return worldTransform_.translation_; }
+
+	float GetRadius() const { return radius_; }
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;
 
 	Vector3 velocity_;
+
+	float radius_ = 1.0f;
 
 	static const int32_t kLifeTime = 60 * 5;
 	int32_t deathTimer_ = kLifeTime;
