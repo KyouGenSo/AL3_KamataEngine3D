@@ -7,6 +7,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete skydomeModel_;
 	delete player_;
 	delete enemy_;
 	delete debugCamera_;
@@ -32,6 +33,7 @@ void GameScene::Initialize() {
 	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy.png");
 	// モデルの生成
 	model_ = Model::Create();
+	skydomeModel_ = Model::CreateFromOBJ("skydome", true);
 	// ビュー射影行列の初期化
 	viewProjection_.Initialize();
 
@@ -46,6 +48,11 @@ void GameScene::Initialize() {
 	enemy_->Initialize(model_, enemyTextureHandle_);
 	// Playerを借りてくる
 	enemy_->SetPlayer(player_);
+
+	// スカイドームの生成
+	skydome_ = new Skydome();
+	// スカイドームの初期化
+	skydome_->Initialize(skydomeModel_);
 }
 
 void GameScene::Update() {
@@ -55,6 +62,9 @@ void GameScene::Update() {
 
 	// 敵の更新
 	enemy_->Update();
+
+	// 天球の更新
+	skydome_->Update();
 
 	// 衝突判定
 	CheckAllCollision();
@@ -104,6 +114,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	// スカイドームの描画
+	skydome_->Draw(viewProjection_);
 
 	// プレイヤーの描画
 	player_->Draw(viewProjection_);

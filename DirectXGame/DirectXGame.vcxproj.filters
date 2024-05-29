@@ -105,6 +105,9 @@
     <ClCompile Include="Vector3Function.cpp">
       <Filter>ヘッダー ファイル\Function</Filter>
     </ClCompile>
+    <ClCompile Include="Skydome.cpp">
+      <Filter>ソース ファイル\object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">
@@ -213,6 +216,9 @@
       <Filter>ヘッダー ファイル\object</Filter>
     </ClInclude>
     <ClInclude Include="EnemyBullet.h">
+      <Filter>ヘッダー ファイル\object</Filter>
+    </ClInclude>
+    <ClInclude Include="Skydome.h">
       <Filter>ヘッダー ファイル\object</Filter>
     </ClInclude>
   </ItemGroup>

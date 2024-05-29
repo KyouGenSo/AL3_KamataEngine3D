@@ -10,6 +10,7 @@
 #include "DebugCamera.h"
 #include "player.h"
 #include "Enemy.h"
+#include "Skydome.h"
 #include "myFunction.h"
 
 /// <summary>
@@ -66,11 +67,15 @@ private: // メンバ変数
 	// 敵
 	Enemy* enemy_ = nullptr;
 
+	// スカイドーム
+	Skydome* skydome_ = nullptr;
+
 	// テクスチャハンドル
 	uint32_t playerTextureHandle_ = 0;
 	uint32_t enemyTextureHandle_ = 0;
 	// モデルハンドル
 	Model* model_ = nullptr;
+	Model* skydomeModel_ = nullptr;
 	// ビュー射影行列
 	ViewProjection viewProjection_;
 };
