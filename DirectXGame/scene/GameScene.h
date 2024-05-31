@@ -5,12 +5,14 @@
 #include "Input.h"
 #include "Model.h"
 #include "Sprite.h"
+#include "ImGuiManager.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "player.h"
 #include "Enemy.h"
 #include "Skydome.h"
+#include "RailCamera.h"
 #include "myFunction.h"
 
 /// <summary>
@@ -69,6 +71,9 @@ private: // メンバ変数
 
 	// スカイドーム
 	Skydome* skydome_ = nullptr;
+
+	// レールカメラ
+	RailCamera* railCamera_ = nullptr;
 
 	// テクスチャハンドル
 	uint32_t playerTextureHandle_ = 0;

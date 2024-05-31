@@ -21,7 +21,7 @@ public: // メンバ関数
 	// デストラクタ
 	~player();
 	// 初期化
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 pos);
 	// 毎フレーム処理
 	void Update();
 	// 描画
@@ -33,10 +33,17 @@ public: // メンバ関数
 
 	void OnCollision();
 
+	// 親子関係を設定
+	void SetParent(const WorldTransform* parent);
+
 	const std::list<playerBullet*>& GetBullets() const { return bullets_; }
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	Vector3 GetWorldRotation();
+
+	WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	// 半径を取得
 	float GetRadius() const { return radius_; }

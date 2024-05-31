@@ -11,6 +11,8 @@ GameScene::~GameScene() {
 	delete player_;
 	delete enemy_;
 	delete debugCamera_;
+	delete skydome_;
+	delete railCamera_;
 }
 
 void GameScene::Initialize() {
@@ -31,16 +33,27 @@ void GameScene::Initialize() {
 	// テクスチャの読み込み
 	playerTextureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
 	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy.png");
+
 	// モデルの生成
 	model_ = Model::Create();
 	skydomeModel_ = Model::CreateFromOBJ("skydome", true);
+
 	// ビュー射影行列の初期化
 	viewProjection_.Initialize();
+
+	// レールカメラの初期化
+	railCamera_ = new RailCamera();
+	Vector3 railCameraPos = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
+	railCamera_->Initialize(railCameraPos, railCameraRot);
 
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
-	player_->Initialize(model_, playerTextureHandle_);
+	Vector3 playerPos = Vector3(0.0f, 0.0f, 35.0f);
+	player_->Initialize(model_, playerTextureHandle_, playerPos);
+	// レールカメラにプレイヤーを設定
+	player_->SetParent(&railCamera_->GetWorldTransform());
 
 	// 敵の生成
 	enemy_ = new Enemy();
@@ -57,19 +70,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	// プレイヤーの更新
-	player_->Update();
-
-	// 敵の更新
-	enemy_->Update();
-
-	// 天球の更新
-	skydome_->Update();
-
-	// 衝突判定
-	CheckAllCollision();
-
-#ifdef _DEBUG
+	#ifdef _DEBUG
 	// デバッグカメラのアクティブ切り替え
 	if (input_->TriggerKey(DIK_F1)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
@@ -84,8 +85,31 @@ void GameScene::Update() {
 		viewProjection_.matProjection = debugCamera_->GetProjectionMatrix();
 		viewProjection_.TransferMatrix();
 	} else {
-		viewProjection_.UpdateMatrix();
+		viewProjection_.matView = railCamera_->GetViewMatrix();
+		viewProjection_.matProjection = railCamera_->GetProjectionMatrix();
+
+		ImGui::Begin("viewproj");
+		ImGui::DragFloat3("translation", &viewProjection_.translation_.x, -100.0f, 100.0f);
+		ImGui::DragFloat3("rotation", &viewProjection_.rotation_.x, -3.14f, 3.14f);
+		ImGui::End();
+		viewProjection_.TransferMatrix();
 	}
+
+	// レールカメラの更新
+	railCamera_->Update();
+
+	// プレイヤーの更新
+	player_->Update();
+
+	// 敵の更新
+	enemy_->Update();
+
+	// 天球の更新
+	skydome_->Update();
+
+	// 衝突判定
+	CheckAllCollision();
+
 }
 
 void GameScene::Draw() {

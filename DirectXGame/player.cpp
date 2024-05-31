@@ -9,7 +9,7 @@ player::~player() {
 	}
 }
 
-void player::Initialize(Model* model, uint32_t textureHandle) {
+void player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos) {
 
 	assert(model);
 	model_ = model;
@@ -18,6 +18,10 @@ void player::Initialize(Model* model, uint32_t textureHandle) {
 	input_ = Input::GetInstance();
 
 	worldTransform_.Initialize();
+
+	worldTransform_.translation_ = pos;
+
+	worldTransform_.UpdateMatrix();
 }
 
 void player::Update() {
@@ -59,9 +63,6 @@ void player::Update() {
 	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kMoveLimitX, kMoveLimitX);
 	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
 
-	// アフィン変換行列の作成
-	worldTransform_.UpdateMatrix();
-
 	// 攻撃
 	Attack();
 
@@ -70,14 +71,13 @@ void player::Update() {
 		bullet->Update();
 	}
 
+	// アフィン変換行列の作成
+	worldTransform_.UpdateMatrix();
+
 	// ImGui
 	ImGui::Begin("Player Pos");
-	float playerPos[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z};
-	ImGui::SliderFloat3("playerPosition", playerPos, -35.0f, 35.0f);
-	worldTransform_.translation_.x = playerPos[0];
-	worldTransform_.translation_.y = playerPos[1];
-	worldTransform_.translation_.z = playerPos[2];
-	ImGui::Text("playerPosition: (%f, %f, %f)", playerPos[0], playerPos[1], playerPos[2]);
+	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, -1.0f, 1.0f);
+	ImGui::Text("x: %f, y: %f, z: %f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]);
 	ImGui::End();
 }
 
@@ -107,8 +107,10 @@ void player::Attack() {
 
 		bulletVelocity = TransFormNormal(bulletVelocity, worldTransform_.matWorld_);
 
+		Vector3 playerPos = GetWorldPosition();
+
 		playerBullet* newBullet_ = new playerBullet();
-		newBullet_->Initialize(model_, worldTransform_.translation_, bulletVelocity);
+		newBullet_->Initialize(model_, playerPos, bulletVelocity);
 
 		bullets_.push_back(newBullet_);
 	}
@@ -116,11 +118,25 @@ void player::Attack() {
 
 Vector3 player::GetWorldPosition() { 
 	Vector3 worldPos;
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
 }
 
+Vector3 player::GetWorldRotation() {
+	Vector3 worldRot;
+	worldRot.x = worldTransform_.rotation_.x;
+	worldRot.y = worldTransform_.rotation_.y;
+	worldRot.z = worldTransform_.rotation_.z;
+
+	return worldRot;
+}
+
+
 void player::OnCollision() {}
+
+void player::SetParent(const WorldTransform* parent) {
+	worldTransform_.parent_ = parent;
+}
