@@ -148,6 +148,9 @@ void GameScene::Draw() {
 	// 敵の描画
 	enemy_->Draw(viewProjection_);
 
+	// レールカメラの描画
+	railCamera_->Draw();
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -208,4 +211,8 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 	#pragma endregion
+}
+
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+	enemyBullets_.push_back(enemyBullet);
 }

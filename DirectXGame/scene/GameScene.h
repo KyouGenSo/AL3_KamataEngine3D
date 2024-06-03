@@ -51,6 +51,8 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollision();
 
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -58,6 +60,12 @@ private: // メンバ変数
 
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCameraActive_ = false;
+
+	// レールカメラ
+	RailCamera* railCamera_ = nullptr;
+
+	// スカイドーム
+	Skydome* skydome_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
@@ -68,19 +76,16 @@ private: // メンバ変数
 
 	// 敵
 	Enemy* enemy_ = nullptr;
-
-	// スカイドーム
-	Skydome* skydome_ = nullptr;
-
-	// レールカメラ
-	RailCamera* railCamera_ = nullptr;
+	std::list<EnemyBullet*> enemyBullets_;
 
 	// テクスチャハンドル
 	uint32_t playerTextureHandle_ = 0;
 	uint32_t enemyTextureHandle_ = 0;
+
 	// モデルハンドル
 	Model* model_ = nullptr;
 	Model* skydomeModel_ = nullptr;
+
 	// ビュー射影行列
 	ViewProjection viewProjection_;
 };
