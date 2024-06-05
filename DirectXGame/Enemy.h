@@ -13,6 +13,8 @@ class Enemy;
 
 class player;
 
+class GameScene;
+
 static const int kFireInterval = 60;
 
 class BaseEnemyPhase {
@@ -47,7 +49,7 @@ public:
 	Enemy();
 	~Enemy();
 
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 position);
 
 	void Update();
 
@@ -67,21 +69,29 @@ public:
 
 	void SetPlayer(player* player) { player_ = player; }
 
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
 	Vector3 GetWorldPosition();
 
-	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
-
-	float GetBulletRadius() const { return bullets_.front()->GetRadius(); }
-
 	float GetRadius() const { return radius_; }
+
+	bool IsDead() const { return isDead_; }
 
 private:
 	// 関数ポインター配列
 	static void (Enemy::*const pPhaseFunctionTable_[])();
 
+	// ゲームシーン
+	GameScene* gameScene_ = nullptr;
+
+	// プレイヤー
 	player* player_ = nullptr;
 
+	// 敵の状態
 	BaseEnemyPhase* enemyPhase_;
+
+	// 死亡フラグ
+	bool isDead_ = false;
 
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -91,8 +101,6 @@ private:
 	Vector3 velocity_;
 	Vector3 position_;
 	float radius_ = 1.0f;
-
-	std::list<EnemyBullet*> bullets_;
 
 	int32_t fireTimer_ = 0;
 

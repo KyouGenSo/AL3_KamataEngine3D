@@ -1,7 +1,7 @@
 #include "GameScene.h"
+#include "AxisIndicator.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -9,10 +9,17 @@ GameScene::~GameScene() {
 	delete model_;
 	delete skydomeModel_;
 	delete player_;
-	delete enemy_;
 	delete debugCamera_;
 	delete skydome_;
 	delete railCamera_;
+
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
+
+	for (EnemyBullet* bullet : enemyBullets_) {
+		delete bullet;
+	}
 }
 
 void GameScene::Initialize() {
@@ -24,11 +31,11 @@ void GameScene::Initialize() {
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	// 軸方向表示の初期化
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
-	#endif
+#endif
 
 	// テクスチャの読み込み
 	playerTextureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
@@ -56,11 +63,7 @@ void GameScene::Initialize() {
 	player_->SetParent(&railCamera_->GetWorldTransform());
 
 	// 敵の生成
-	enemy_ = new Enemy();
-	// 敵の初期化
-	enemy_->Initialize(model_, enemyTextureHandle_);
-	// Playerを借りてくる
-	enemy_->SetPlayer(player_);
+	CreateEnemy(Vector3(0.0f, 0.0f, 150.0f));
 
 	// スカイドームの生成
 	skydome_ = new Skydome();
@@ -70,7 +73,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	// デバッグカメラのアクティブ切り替え
 	if (input_->TriggerKey(DIK_F1)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
@@ -102,14 +105,28 @@ void GameScene::Update() {
 	player_->Update();
 
 	// 敵の更新
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+	// 死亡した敵を削除
+	enemies_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+
+	// 敵弾の更新
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Update();
+	}
 
 	// 天球の更新
 	skydome_->Update();
 
 	// 衝突判定
 	CheckAllCollision();
-
 }
 
 void GameScene::Draw() {
@@ -146,7 +163,14 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 
 	// 敵の描画
-	enemy_->Draw(viewProjection_);
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw(viewProjection_);
+	}
+
+	// 敵弾の描画
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Draw(viewProjection_);
+	}
 
 	// レールカメラの描画
 	railCamera_->Draw();
@@ -169,40 +193,48 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
+void GameScene::CreateEnemy(Vector3 Position) {
+	Enemy* enemy = new Enemy();
+	enemy->Initialize(model_, enemyTextureHandle_, Position);
+	enemy->SetPlayer(player_);
+	enemy->SetGameScene(this);
+	enemies_.push_back(enemy);
+}
+
 void GameScene::CheckAllCollision() {
 	Vector3 posA, posB;
 
-	const std::list<EnemyBullet*>& bullets = enemy_->GetBullets();
 	const std::list<playerBullet*>& playerBullets = player_->GetBullets();
 
-	#pragma region プレイヤーと敵弾の衝突判定
+#pragma region プレイヤーと敵弾の衝突判定
 	posA = player_->GetWorldPosition();
 
-	for (EnemyBullet* bullet : bullets) {
-		posB = bullet->GetWorldPosition();
-		if (Distance(posA, posB) <= player_->GetRadius() + enemy_->GetBulletRadius()) {
+	for (EnemyBullet* enemyBullet : enemyBullets_) {
+		posB = enemyBullet->GetWorldPosition();
+		if (Distance(posA, posB) <= player_->GetRadius() + enemyBullet->GetRadius()) {
 			player_->OnCollision();
-			bullet->OnCollision();
+			enemyBullet->OnCollision();
 		}
 	}
-	#pragma endregion
+#pragma endregion
 
-	#pragma region 敵とプレイヤー弾の衝突判定
-	posA = enemy_->GetWorldPosition();
-
-	for (playerBullet* bullet : playerBullets) {
-		posB = bullet->GetWorldPosition();
-		if (Distance(posA, posB) <= enemy_->GetRadius() + player_->GetBulletRadius()) {
-			enemy_->OnCollision();
-			bullet->OnCollision();
-		}
-	}
-	#pragma endregion
-
-	#pragma region プレイヤー弾と敵弾の衝突判定
+#pragma region 敵とプレイヤー弾の衝突判定
 	for (playerBullet* playerBullet : playerBullets) {
 		posA = playerBullet->GetWorldPosition();
-		for (EnemyBullet* enemyBullet : bullets) {
+		for (Enemy* enemy : enemies_) {
+			posB = enemy->GetWorldPosition();
+			if (Distance(posA, posB) <= playerBullet->GetRadius() + enemy->GetRadius()) {
+				playerBullet->OnCollision();
+				enemy->OnCollision();
+			}
+		}
+	}
+#pragma endregion
+
+#pragma region プレイヤー弾と敵弾の衝突判定
+	for (playerBullet* playerBullet : playerBullets) {
+		posA = playerBullet->GetWorldPosition();
+		for (EnemyBullet* enemyBullet : enemyBullets_) {
 			posB = enemyBullet->GetWorldPosition();
 			if (Distance(posA, posB) <= playerBullet->GetRadius() + enemyBullet->GetRadius()) {
 				playerBullet->OnCollision();
@@ -210,9 +242,7 @@ void GameScene::CheckAllCollision() {
 			}
 		}
 	}
-	#pragma endregion
+#pragma endregion
 }
 
-void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
-	enemyBullets_.push_back(enemyBullet);
-}
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) { enemyBullets_.push_back(enemyBullet); }

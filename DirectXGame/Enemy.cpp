@@ -1,17 +1,14 @@
 #include "Enemy.h"
 #include "player.h"
+#include "GameScene.h"
 
 Enemy::Enemy() {}
 
 Enemy::~Enemy() {
 	delete enemyPhase_;
-
-	for (EnemyBullet* bullet : bullets_) {
-		delete bullet;
-	}
 }
 
-void Enemy::Initialize(Model* model, uint32_t textureHandle) {
+void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 position) {
 
 	assert(model);
 
@@ -20,8 +17,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
-	position_ = {0.0f, 5.0f, 60.0f};
-	worldTransform_.translation_ = position_;
+	worldTransform_.translation_ = position;
 
 	velocity_ = {0.0f, 0.0f, -0.5f};
 
@@ -31,31 +27,13 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Enemy::Update() {
-
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
-
 	enemyPhase_->Update(this);
-
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Update();
-	}
 
 	worldTransform_.UpdateMatrix();
 }
 
 void Enemy::Draw(ViewProjection& viewProjection) {
-
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
 }
 
 void Enemy::Fire() {
@@ -86,7 +64,22 @@ void Enemy::Fire() {
 	EnemyBullet* newBullet_ = new EnemyBullet();
 	newBullet_->Initialize(model_, worldTransform_.translation_, bulletVelocity);
 
-	bullets_.push_back(newBullet_);
+	gameScene_->AddEnemyBullet(newBullet_);
+}
+
+Vector3 Enemy::GetWorldPosition() {
+
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
+void Enemy::OnCollision() {
+	isDead_ = true; 
 }
 
 void Enemy::ChangePhase(BaseEnemyPhase* phase) {
@@ -137,15 +130,3 @@ void EnemyPhaseLeave::Update(Enemy* enemy) {
 	// }
 }
 
-Vector3 Enemy::GetWorldPosition() {
-
-	Vector3 worldPos;
-
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
-
-	return worldPos;
-}
-
-void Enemy::OnCollision() {}

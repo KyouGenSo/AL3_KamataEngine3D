@@ -9,11 +9,13 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "RailCamera.h"
+#include "Skydome.h"
+#include "myFunction.h"
+
 #include "player.h"
 #include "Enemy.h"
-#include "Skydome.h"
-#include "RailCamera.h"
-#include "myFunction.h"
+#include "EnemyBullet.h"
 
 /// <summary>
 /// ゲームシーン
@@ -51,6 +53,11 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollision();
 
+	/// <summary>
+	/// 敵の生成
+	/// </summary>
+	void CreateEnemy(Vector3 Position);
+
 	void AddEnemyBullet(EnemyBullet* enemyBullet);
 
 private: // メンバ変数
@@ -75,7 +82,7 @@ private: // メンバ変数
 	player* player_ = nullptr;
 
 	// 敵
-	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
 	std::list<EnemyBullet*> enemyBullets_;
 
 	// テクスチャハンドル
