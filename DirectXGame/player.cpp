@@ -86,21 +86,8 @@ void player::Update(ViewProjection& viewProjection) {
 	// アフィン変換行列の作成
 	worldTransform_.UpdateMatrix();
 
-	// 3Dレティクルのワールド座標変換
-	const float kReticleDistance = 20.0f;
-	Vector3 offset = {0.0f, 0.0f, 1.0f};
-
-	offset = TransFormNormal(offset, worldTransform_.matWorld_);
-	offset = Multiply(Normalize(offset), kReticleDistance);
-	worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
-	worldTransform3DReticle_.UpdateMatrix();
-
-	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
-	Vector3 reticlePos = GetWorldPosition3DReticle();
-	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
-	Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
-	reticlePos = TransForm(matViewProjectionViewPort, reticlePos);
-	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+	// 3Dレティクルの更新
+	Update3DReticle(viewProjection);
 
 	// ImGui
 	ImGui::Begin("Player Pos");
@@ -179,5 +166,23 @@ Vector3 player::GetWorldRotation() {
 }
 
 void player::OnCollision() {}
+
+void player::Update3DReticle(ViewProjection& viewProjection) {
+	// 3Dレティクルのワールド座標変換
+	const float kReticleDistance = 20.0f;
+	Vector3 offset = {0.0f, 0.0f, 1.0f};
+
+	offset = TransFormNormal(offset, worldTransform_.matWorld_);
+	offset = Multiply(Normalize(offset), kReticleDistance);
+	worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
+	worldTransform3DReticle_.UpdateMatrix();
+
+	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
+	Vector3 reticlePos = GetWorldPosition3DReticle();
+	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+	reticlePos = TransForm(matViewProjectionViewPort, reticlePos);
+	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+}
 
 void player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }

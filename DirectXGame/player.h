@@ -35,8 +35,11 @@ public: // メンバ関数
 	void Rotate();
 	// 攻撃
 	void Attack();
-
+	// 衝突判定
 	void OnCollision();
+
+	// 3Dレティクルの座標計算
+	void Update3DReticle(ViewProjection& viewProjection);
 
 	// 親子関係を設定
 	void SetParent(const WorldTransform* parent);
