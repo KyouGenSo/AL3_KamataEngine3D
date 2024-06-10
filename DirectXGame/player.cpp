@@ -185,4 +185,16 @@ void player::Update3DReticle(ViewProjection& viewProjection) {
 	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
 }
 
+void player::Update2DReticle(ViewProjection& viewProjection) {
+	// マウス座標（スクリーン座標）を取得
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	HWND hWnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hWnd, &mousePos);
+
+	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	Matrix4x4 matVPV = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+	Matrix4x4 inverseMatVPV = Inverse(matVPV);
+}
+
 void player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }

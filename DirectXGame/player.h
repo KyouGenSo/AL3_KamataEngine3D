@@ -40,6 +40,8 @@ public: // メンバ関数
 
 	// 3Dレティクルの座標計算
 	void Update3DReticle(ViewProjection& viewProjection);
+	// 2Dレティクルの座標計算
+	void Update2DReticle(ViewProjection& viewProjection);
 
 	// 親子関係を設定
 	void SetParent(const WorldTransform* parent);
