@@ -1,8 +1,8 @@
 #include "GameScene.h"
 #include "AxisIndicator.h"
 #include "TextureManager.h"
-#include <cassert>
 #include "fstream"
+#include <cassert>
 
 GameScene::GameScene() {}
 
@@ -55,6 +55,9 @@ void GameScene::Initialize() {
 	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
 	railCamera_->Initialize(railCameraPos, railCameraRot);
 
+	// レティクルのテクスチャ
+	/*uint32_t reticleTextureHandle = */TextureManager::Load("./Resources/reticle.png");
+
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
@@ -65,7 +68,7 @@ void GameScene::Initialize() {
 
 	// 敵の生成スクリプトの読み込み
 	LoadEnemyPopData();
-	//CreateEnemy(Vector3(0.0f, 0.0f, 150.0f));
+	// CreateEnemy(Vector3(0.0f, 0.0f, 150.0f));
 
 	// スカイドームの生成
 	skydome_ = new Skydome();
@@ -104,7 +107,7 @@ void GameScene::Update() {
 	railCamera_->Update();
 
 	// プレイヤーの更新
-	player_->Update();
+	player_->Update(viewProjection_);
 
 	// 敵発生コマンドの更新
 	UpdateEnemyPopCommands();
@@ -165,7 +168,7 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_);
 
 	// プレイヤーの描画
-	player_->Draw(viewProjection_);
+	player_->Draw3D(viewProjection_);
 
 	// 敵の描画
 	for (Enemy* enemy : enemies_) {
@@ -191,6 +194,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -298,9 +303,8 @@ void GameScene::UpdateEnemyPopCommands() {
 			pos.z = (float)std::stof(word.c_str());
 
 			CreateEnemy(pos);
-		} 
-		else if (word.find("WAIT") == 0) {
-			getline(line_stream, word, ','); 
+		} else if (word.find("WAIT") == 0) {
+			getline(line_stream, word, ',');
 
 			int32_t waitTime = atoi(word.c_str());
 
