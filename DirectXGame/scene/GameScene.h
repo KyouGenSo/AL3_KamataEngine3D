@@ -12,6 +12,7 @@
 #include "RailCamera.h"
 #include "Skydome.h"
 #include "myFunction.h"
+#include "sstream"
 
 #include "player.h"
 #include "Enemy.h"
@@ -60,6 +61,10 @@ public: // メンバ関数
 
 	void AddEnemyBullet(EnemyBullet* enemyBullet);
 
+	void LoadEnemyPopData();
+
+	void UpdateEnemyPopCommands();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -84,6 +89,8 @@ private: // メンバ変数
 	// 敵
 	std::list<Enemy*> enemies_;
 	std::list<EnemyBullet*> enemyBullets_;
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
 
 	// テクスチャハンドル
 	uint32_t playerTextureHandle_ = 0;
@@ -95,4 +102,7 @@ private: // メンバ変数
 
 	// ビュー射影行列
 	ViewProjection viewProjection_;
+
+	bool isWaiting_ = false;
+	int waitTimer_ = 0;
 };

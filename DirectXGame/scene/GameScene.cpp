@@ -2,6 +2,7 @@
 #include "AxisIndicator.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "fstream"
 
 GameScene::GameScene() {}
 
@@ -62,8 +63,9 @@ void GameScene::Initialize() {
 	// レールカメラにプレイヤーを設定
 	player_->SetParent(&railCamera_->GetWorldTransform());
 
-	// 敵の生成
-	CreateEnemy(Vector3(0.0f, 0.0f, 150.0f));
+	// 敵の生成スクリプトの読み込み
+	LoadEnemyPopData();
+	//CreateEnemy(Vector3(0.0f, 0.0f, 150.0f));
 
 	// スカイドームの生成
 	skydome_ = new Skydome();
@@ -103,6 +105,9 @@ void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	// 敵発生コマンドの更新
+	UpdateEnemyPopCommands();
 
 	// 敵の更新
 	for (Enemy* enemy : enemies_) {
@@ -193,9 +198,9 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
-void GameScene::CreateEnemy(Vector3 Position) {
+void GameScene::CreateEnemy(Vector3 position) {
 	Enemy* enemy = new Enemy();
-	enemy->Initialize(model_, enemyTextureHandle_, Position);
+	enemy->Initialize(model_, enemyTextureHandle_, position);
 	enemy->SetPlayer(player_);
 	enemy->SetGameScene(this);
 	enemies_.push_back(enemy);
@@ -246,3 +251,63 @@ void GameScene::CheckAllCollision() {
 }
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) { enemyBullets_.push_back(enemyBullet); }
+
+void GameScene::LoadEnemyPopData() {
+	std::ifstream file;
+	file.open("./Resources/enemyPop.csv");
+	assert(file.is_open());
+
+	enemyPopCommands << file.rdbuf();
+
+	file.close();
+}
+
+void GameScene::UpdateEnemyPopCommands() {
+
+	// 待機処理
+	if (isWaiting_) {
+		waitTimer_--;
+		if (waitTimer_ <= 0) {
+			isWaiting_ = false;
+		}
+		return;
+	}
+
+	std::string command;
+
+	while (getline(enemyPopCommands, command)) {
+		std::istringstream line_stream(command);
+
+		std::string word;
+		getline(line_stream, word, ',');
+
+		if (word.find("//") == 0) {
+			continue;
+		}
+
+		if (word.find("POP") == 0) {
+			Vector3 pos;
+
+			getline(line_stream, word, ',');
+			pos.x = (float)std::stof(word.c_str());
+
+			getline(line_stream, word, ',');
+			pos.y = (float)std::stof(word.c_str());
+
+			getline(line_stream, word, ',');
+			pos.z = (float)std::stof(word.c_str());
+
+			CreateEnemy(pos);
+		} 
+		else if (word.find("WAIT") == 0) {
+			getline(line_stream, word, ','); 
+
+			int32_t waitTime = atoi(word.c_str());
+
+			isWaiting_ = true;
+			waitTimer_ = waitTime;
+
+			break;
+		}
+	}
+}
