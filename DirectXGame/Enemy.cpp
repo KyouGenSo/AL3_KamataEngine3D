@@ -106,7 +106,7 @@ void EnemyPhaseAproach::Update(Enemy* enemy) {
 
 	Vector3 enemyPos = enemy->GetWorldPosition();
 
-	if (enemyPos.z <= 40.0f) {
+	if (enemyPos.z <= 80.0f) {
 		enemy->ChangePhase(new EnemyPhaseLeave());
 	}
 }

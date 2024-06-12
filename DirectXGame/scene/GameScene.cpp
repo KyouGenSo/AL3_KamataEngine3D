@@ -61,7 +61,7 @@ void GameScene::Initialize() {
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
-	Vector3 playerPos = Vector3(0.0f, 0.0f, 35.0f);
+	Vector3 playerPos = Vector3(0.0f, 0.0f, 30.0f);
 	player_->Initialize(model_, playerTextureHandle_, playerPos);
 	// レールカメラにプレイヤーを設定
 	player_->SetParent(&railCamera_->GetWorldTransform());
@@ -129,6 +129,15 @@ void GameScene::Update() {
 	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Update();
 	}
+
+	// 死亡した敵弾を削除
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
 	// 天球の更新
 	skydome_->Update();

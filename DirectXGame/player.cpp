@@ -83,11 +83,29 @@ void player::Update(ViewProjection& viewProjection) {
 		bullet->Update();
 	}
 
+	// ゲームパッド操作
+	XINPUT_STATE joyState;
+	Vector2 spritePos = sprite2DReticle_->GetPosition();
+
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		// プレイヤーの移動
+		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		move.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+		// レティクルの移動
+		spritePos.x += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * 5.0f;
+		spritePos.y += (float)joyState.Gamepad.sThumbRY / SHRT_MAX * 5.0f;
+		sprite2DReticle_->SetPosition(spritePos);
+	}
+
+	// ゲームパッドレティクル操作
+
+
+
 	// アフィン変換行列の作成
 	worldTransform_.UpdateMatrix();
 
 	// 3Dレティクルの更新
-	Update3DReticle(viewProjection);
+	Update2DReticle(viewProjection);
 
 	// ImGui
 	ImGui::Begin("Player Pos");
@@ -120,9 +138,9 @@ void player::Rotate() {
 }
 
 void player::Attack() {
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->IsPressMouse(0)) {
 		const float kBulletSpeed = 1.0f;
-		Vector3 bulletVelocity = {0.0f, 0.0f, 0.0f};
+		Vector3 bulletVelocity;
 
 		Vector3 diff = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
 		diff = Normalize(diff);
@@ -135,6 +153,29 @@ void player::Attack() {
 
 		bullets_.push_back(newBullet_);
 	}
+
+	XINPUT_STATE joyState;
+
+	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		const float kBulletSpeed = 1.0f;
+		Vector3 bulletVelocity;
+
+		Vector3 diff = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
+		diff = Normalize(diff);
+		bulletVelocity = Multiply(diff, kBulletSpeed);
+
+		Vector3 playerPos = GetWorldPosition();
+
+		playerBullet* newBullet_ = new playerBullet();
+		newBullet_->Initialize(model_, playerPos, bulletVelocity);
+
+		bullets_.push_back(newBullet_);
+	}
+
 }
 
 Vector3 player::GetWorldPosition() {
@@ -192,9 +233,26 @@ void player::Update2DReticle(ViewProjection& viewProjection) {
 	HWND hWnd = WinApp::GetInstance()->GetHwnd();
 	ScreenToClient(hWnd, &mousePos);
 
+	sprite2DReticle_->SetPosition(Vector2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)));
+
 	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
 	Matrix4x4 matVPV = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
 	Matrix4x4 inverseMatVPV = Inverse(matVPV);
+
+	// 2Dスクリーン座標からワールド座標への変換
+	Vector3 posNear = {sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0};
+	Vector3 posFar = {sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 1};
+
+	posNear = TransForm(inverseMatVPV, posNear);
+	posFar = TransForm(inverseMatVPV, posFar);
+
+	Vector3 mouseDir = Subtract(posFar, posNear);
+	mouseDir = Normalize(mouseDir);
+
+	const float kReticleDistance = 80.0f;
+
+	worldTransform3DReticle_.translation_ = Add(posNear, Multiply(mouseDir, kReticleDistance));
+	worldTransform3DReticle_.UpdateMatrix();
 }
 
 void player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
