@@ -150,7 +150,7 @@ void EnemyPhaseLeave::Update(Enemy* enemy) {
 	//}
 
 	// 発動したFireCallback()をクリア
-	enemy->ClearCallbackList();
+	//enemy->ClearCallbackList();
 
 	Vector3 velocity_ = {0.0f, 0.0f, 0.0f};
 	enemy->SetTranlation(velocity_);

@@ -2,12 +2,14 @@
 #include "ImGuiManager.h"
 #include "Input.h"
 #include "Matrix4x4Function.h"
+#include <Vector3Function.h>
 #include "Model.h"
 #include "TextureManager.h"
 #include "WorldTransform.h"
 #include "myFunction.h"
 #include <algorithm>
 #include <cassert>
+#include "cmath"
 
 class EnemyBullet {
 public:
