@@ -8,14 +8,16 @@
 #include <list>
 #include <Vector3.h>
 #include <Vector3Function.h>
+#include "functional"
+#include "TimedCall.h"
+
+static const int kFireInterval = 60;
 
 class Enemy;
 
 class player;
 
 class GameScene;
-
-static const int kFireInterval = 60;
 
 class BaseEnemyPhase {
 
@@ -59,6 +61,10 @@ public:
 
 	void Fire();
 
+	void FireCallback();
+
+	void ClearCallbackList();
+
 	void OnCollision();
 
 	void Aproach();
@@ -80,6 +86,9 @@ public:
 private:
 	// 関数ポインター配列
 	static void (Enemy::*const pPhaseFunctionTable_[])();
+
+	// 時限発動リスト
+	std::list<TimedCall*> timedCallList_;
 
 	// ゲームシーン
 	GameScene* gameScene_ = nullptr;

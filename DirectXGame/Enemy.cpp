@@ -6,6 +6,10 @@ Enemy::Enemy() {}
 
 Enemy::~Enemy() {
 	delete enemyPhase_;
+
+	for (TimedCall* timedCall : timedCallList_) {
+		delete timedCall;
+	}
 }
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 position) {
@@ -28,6 +32,19 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 position) {
 
 void Enemy::Update() {
 	enemyPhase_->Update(this);
+
+	// 終了したタイマーを削除
+	timedCallList_.remove_if([](TimedCall* timedCall) {
+		if (timedCall->IsFinished()) {
+			delete timedCall;
+			return true;
+		}
+		return false;
+	});
+
+	for (TimedCall* timedCall : timedCallList_) {
+		timedCall->Update();
+	}
 
 	worldTransform_.UpdateMatrix();
 }
@@ -67,6 +84,20 @@ void Enemy::Fire() {
 	gameScene_->AddEnemyBullet(newBullet_);
 }
 
+// 弾を発射してタイマーリセットする関数
+void Enemy::FireCallback() {
+	Fire();
+
+	//std::function<void(void)> callback = std::bind(&Enemy::FireCallback, this);
+	//TimedCall* timedCall = new TimedCall(callback, time);
+	//timedCallList_.push_back(timedCall);
+	timedCallList_.push_back(new TimedCall(std::bind(&Enemy::FireCallback, this), kFireInterval));
+}
+
+void Enemy::ClearCallbackList() {
+	timedCallList_.clear();
+}
+
 Vector3 Enemy::GetWorldPosition() {
 
 	Vector3 worldPos;
@@ -93,12 +124,10 @@ void EnemyPhaseAproach::Init() { fireTimer_ = kFireInterval; }
 void EnemyPhaseLeave::Init() { fireTimer_ = kFireInterval; }
 
 void EnemyPhaseAproach::Update(Enemy* enemy) {
-
 	fireTimer_--;
 
 	if (fireTimer_ <= 0) {
-		enemy->Fire();
-		fireTimer_ = kFireInterval;
+		enemy->FireCallback();
 	}
 
 	Vector3 velocity_ = {0.0f, 0.0f, -0.1f};
@@ -113,12 +142,15 @@ void EnemyPhaseAproach::Update(Enemy* enemy) {
 
 void EnemyPhaseLeave::Update(Enemy* enemy) {
 
-	fireTimer_--;
+	//fireTimer_--;
 
-	if (fireTimer_ <= 0) {
-		enemy->Fire();
-		fireTimer_ = kFireInterval;
-	}
+	//if (fireTimer_ <= 0) {
+	//	enemy->Fire();
+	//	fireTimer_ = kFireInterval;
+	//}
+
+	// 発動したFireCallback()をクリア
+	enemy->ClearCallbackList();
 
 	Vector3 velocity_ = {0.0f, 0.0f, 0.0f};
 	enemy->SetTranlation(velocity_);

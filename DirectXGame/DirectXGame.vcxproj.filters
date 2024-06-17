@@ -64,6 +64,9 @@
     <Filter Include="ソース ファイル\3d">
       <UniqueIdentifier>{337124e4-8243-437c-9b69-a3649bb2a9aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Function">
+      <UniqueIdentifier>{d2794372-b1cb-490d-b478-3f899f230970}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,12 +87,6 @@
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix4x4Function.cpp">
-      <Filter>ヘッダー ファイル\Function</Filter>
-    </ClCompile>
-    <ClCompile Include="myFunction.cpp">
-      <Filter>ヘッダー ファイル\Function</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerBullet.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
@@ -102,9 +99,6 @@
     <ClCompile Include="EnemyBullet.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
-    <ClCompile Include="Vector3Function.cpp">
-      <Filter>ヘッダー ファイル\Function</Filter>
-    </ClCompile>
     <ClCompile Include="Skydome.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
@@ -113,6 +107,18 @@
     </ClCompile>
     <ClCompile Include="Matrix4x4.cpp">
       <Filter>ソース ファイル\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4x4Function.cpp">
+      <Filter>ソース ファイル\Function</Filter>
+    </ClCompile>
+    <ClCompile Include="myFunction.cpp">
+      <Filter>ソース ファイル\Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3Function.cpp">
+      <Filter>ソース ファイル\Function</Filter>
+    </ClCompile>
+    <ClCompile Include="TimedCall.cpp">
+      <Filter>ソース ファイル\Function</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="RailCamera.h">
       <Filter>ヘッダー ファイル\object</Filter>
+    </ClInclude>
+    <ClInclude Include="TimedCall.h">
+      <Filter>ヘッダー ファイル\Function</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
