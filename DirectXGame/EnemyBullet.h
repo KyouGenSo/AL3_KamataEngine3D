@@ -10,10 +10,11 @@
 #include <algorithm>
 #include <cassert>
 #include "cmath"
+#include "Collider.h"
 
 class player;
 
-class EnemyBullet {
+class EnemyBullet : public Collider {
 public:
 
 	const int32_t kLifeTime = 60 * 5;
@@ -29,9 +30,9 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
-	void OnCollision();
+	void OnCollision() override;
 
-	Vector3 GetWorldPosition() const { return worldTransform_.translation_; }
+	Vector3 GetWorldPosition() override{ return worldTransform_.translation_; }
 
 	float GetRadius() const { return radius_; }
 

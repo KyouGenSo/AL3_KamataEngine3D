@@ -10,6 +10,7 @@
 #include <Vector3Function.h>
 #include "functional"
 #include "TimedCall.h"
+#include "Collider.h"
 
 static const int kFireInterval = 60;
 
@@ -45,7 +46,7 @@ private:
 	uint32_t fireTimer_;
 };
 
-class Enemy {
+class Enemy : public Collider {
 
 public:
 	Enemy();
@@ -65,7 +66,7 @@ public:
 
 	void ClearCallbackList();
 
-	void OnCollision();
+	void OnCollision() override;
 
 	void Aproach();
 	void Leave();
@@ -77,7 +78,7 @@ public:
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 
 	float GetRadius() const { return radius_; }
 

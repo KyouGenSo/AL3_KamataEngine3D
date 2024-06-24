@@ -8,8 +8,9 @@
 #include "myFunction.h"
 #include <algorithm>
 #include "TextureManager.h"
+#include "Collider.h"
 
-class playerBullet {
+class playerBullet : public Collider {
 public:
 	playerBullet();
 	~playerBullet();
@@ -20,9 +21,9 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
-	void OnCollision();
+	void OnCollision() override;
 
-	Vector3 GetWorldPosition() const { return worldTransform_.translation_; }
+	Vector3 GetWorldPosition() override { return worldTransform_.translation_; }
 
 	float GetRadius() const { return radius_; }
 

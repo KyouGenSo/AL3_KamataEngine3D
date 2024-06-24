@@ -14,9 +14,10 @@
 #include "Vector3.h"
 #include "Vector3Function.h"
 #include "WinApp.h"
+#include "Collider.h"
 
 // 自キャラクラス
-class player {
+class player : public Collider{
 
 public: // メンバ関数
 
@@ -36,7 +37,7 @@ public: // メンバ関数
 	// 攻撃
 	void Attack();
 	// 衝突判定
-	void OnCollision();
+	void OnCollision() override;
 
 	// 3Dレティクルの座標計算
 	void Update3DReticle(ViewProjection& viewProjection);
@@ -49,7 +50,7 @@ public: // メンバ関数
 	const std::list<playerBullet*>& GetBullets() const { return bullets_; }
 
 	// ワールド座標を取得
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 
 	Vector3 GetWorldPosition3DReticle();
 
