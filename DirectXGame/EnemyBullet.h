@@ -48,7 +48,7 @@ private:
 	// 半径
 	float radius_ = 1.0f;
 
-	float t = 0.1f;
+	float t = 0.05f;
 	
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;

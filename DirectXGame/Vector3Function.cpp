@@ -15,12 +15,32 @@ Vector3 Normalize(const Vector3& v) {
 	return Vector3(v.x / (float)length, v.y / (float)length, v.z / (float)length);
 }
 
+float Lerp(const float a, const float b, const float t) { return a + (b - a) * t; }
+
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t) {
 	float dot = Dot(v1, v2);
+
 	dot = dot > 1.0f ? 1.0f : dot;
 	dot = dot < -1.0f ? -1.0f : dot;
+
 	float theta = (float)acos(dot) * t;
-	Vector3 relativeVec = Subtract(v2, Multiply(v1, dot));
-	relativeVec = Normalize(relativeVec);
-	return Add(Multiply(v1, (float)cos(theta)), Multiply(relativeVec, (float)sin(theta)));
+
+	float sinTheta = (float)sin(theta);
+
+	float sinThetaFrom = (float)sin((1.0f - t) * theta);
+	float sinThetaTo = (float)sin(t * theta);
+
+	float length1 = (float)Length(v1);
+	float length2 = (float)Length(v2);
+
+	float length = Lerp(length1, length2, t);
+
+	if (sinTheta < 1.0e-5) {
+
+		return v1;
+
+	} else {
+
+		return Multiply(Add(Multiply(v1, sinThetaFrom / sinTheta), Multiply(v2, sinThetaTo / sinTheta)), length);
+	}
 }

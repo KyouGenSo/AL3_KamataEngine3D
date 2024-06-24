@@ -14,4 +14,6 @@ double Length(const Vector3& v);
 
 Vector3 Normalize(const Vector3& v);
 
+float Lerp(const float a, const float b, const float t);
+
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
