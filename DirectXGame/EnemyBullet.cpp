@@ -1,4 +1,5 @@
 #include "EnemyBullet.h"
+#include "player.h"
 
 EnemyBullet::EnemyBullet(){}
 
@@ -18,14 +19,14 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.rotation_.y = std::atan2(velocity.x, velocity.z);
 
 	// 解法1
-	//Matrix4x4 thetaYRotationMatrix = MakeRotateMatrixY(std::atan2(velocity.y, velocity.z));
-	//Vector3 velocityZ = TransForm(thetaYRotationMatrix, velocity);
-	//worldTransform_.rotation_.x = std::atan2(-velocityZ.y, velocityZ.z);
+	Matrix4x4 thetaYRotationMatrix = MakeRotateMatrixY(std::atan2(velocity.y, velocity.z));
+	Vector3 velocityZ = TransForm(thetaYRotationMatrix, velocity);
+	worldTransform_.rotation_.x = std::atan2(-velocityZ.y, velocityZ.z);
 
 	// 解法2
-	Vector3 velocityXZ = Vector3(velocity.x, 0.0f, velocity.z);
-	float XZlength = (float)Length(velocityXZ);
-	worldTransform_.rotation_.x = std::atan2(-velocity.y, XZlength);
+	//Vector3 velocityXZ = Vector3(velocity.x, 0.0f, velocity.z);
+	//float XZlength = (float)Length(velocityXZ);
+	//worldTransform_.rotation_.x = std::atan2(-velocity.y, XZlength);
 
 	worldTransform_.translation_ = position;
 
@@ -39,7 +40,19 @@ void EnemyBullet::Update() {
 		isDead_ = true;
 	}
 
+	float speed = 1.2f;
+
+	Vector3 toPlayer = Subtract(player_->GetWorldPosition(), worldTransform_.translation_);
+
+	velocity_ = Multiply(Slerp(Normalize(velocity_), Normalize(toPlayer), t), speed);
+
 	worldTransform_.translation_ += velocity_;
+
+	Matrix4x4 thetaYRotationMatrix = MakeRotateMatrixY(std::atan2(velocity_.y, velocity_.z));
+	Vector3 velocityZ = TransForm(thetaYRotationMatrix, velocity_);
+	worldTransform_.rotation_.x = std::atan2(-velocityZ.y, velocityZ.z);
+	worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
+
 	worldTransform_.UpdateMatrix();
 }
 

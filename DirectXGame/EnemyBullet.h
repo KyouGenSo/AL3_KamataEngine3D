@@ -11,6 +11,8 @@
 #include <cassert>
 #include "cmath"
 
+class player;
+
 class EnemyBullet {
 public:
 
@@ -32,6 +34,8 @@ public:
 	Vector3 GetWorldPosition() const { return worldTransform_.translation_; }
 
 	float GetRadius() const { return radius_; }
+
+	void SetPlayer(player* player) { player_ = player; }
 	
 private:
 	Model* model_;
@@ -39,8 +43,12 @@ private:
 	Vector3 velocity_;
 	uint32_t textureHandle_;
 
+	player* player_ = nullptr;
+
 	// 半径
 	float radius_ = 1.0f;
+
+	float t = 0.1f;
 	
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;

@@ -51,7 +51,7 @@ void player::Update(ViewProjection& viewProjection) {
 
 	// 移動
 	Vector3 move = {0.0f, 0.0f, 0.0f};
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.5f;
 
 	if (input_->PushKey(DIK_LEFT)) {
 		move.x -= kCharacterSpeed;

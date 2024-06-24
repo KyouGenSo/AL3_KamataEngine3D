@@ -68,7 +68,6 @@ void GameScene::Initialize() {
 
 	// 敵の生成スクリプトの読み込み
 	LoadEnemyPopData();
-	// CreateEnemy(Vector3(0.0f, 0.0f, 150.0f));
 
 	// スカイドームの生成
 	skydome_ = new Skydome();
@@ -131,13 +130,13 @@ void GameScene::Update() {
 	}
 
 	// 死亡した敵弾を削除
-	enemyBullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	//enemyBullets_.remove_if([](EnemyBullet* bullet) {
+	//	if (bullet->IsDead()) {
+	//		delete bullet;
+	//		return true;
+	//	}
+	//	return false;
+	//});
 
 	// 天球の更新
 	skydome_->Update();

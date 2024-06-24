@@ -81,6 +81,8 @@ void Enemy::Fire() {
 	EnemyBullet* newBullet_ = new EnemyBullet();
 	newBullet_->Initialize(model_, worldTransform_.translation_, bulletVelocity);
 
+	newBullet_->SetPlayer(player_);
+
 	gameScene_->AddEnemyBullet(newBullet_);
 }
 
