@@ -6,6 +6,10 @@ playerBullet::~playerBullet() {}
 
 void playerBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
 
+	SetCollisionSide(kCollisionPlayerSide);
+
+	SetCollisionMask(~kCollisionPlayerSide);
+
 	assert(model);
 
 	model_ = model;

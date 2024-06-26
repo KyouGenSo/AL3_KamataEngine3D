@@ -219,36 +219,6 @@ void GameScene::CreateEnemy(Vector3 position) {
 	enemies_.push_back(enemy);
 }
 
-void GameScene::CheckAllCollision() {
-	std::list<Collider*> colliders;
-
-	// コライダーをリストに追加
-	colliders.push_back(player_);
-
-	for (Enemy* enemy : enemies_) {
-		colliders.push_back(enemy);
-	}
-
-	for (playerBullet* playerBullet : player_->GetBullets()) {
-		colliders.push_back(playerBullet);
-	}
-
-	for (EnemyBullet* enemyBullet : enemyBullets_) {
-		colliders.push_back(enemyBullet);
-	}
-
-	// 衝突判定
-	std::list<Collider*>::iterator it1 = colliders.begin();
-	for (; it1 != colliders.end(); ++it1) {
-
-		std::list<Collider*>::iterator it2 = it1;
-
-		for (++it2; it2 != colliders.end(); ++it2) {
-			CheckCollision(*it1, *it2);
-		}
-	}
-}
-
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) { enemyBullets_.push_back(enemyBullet); }
 
 void GameScene::LoadEnemyPopData() {
@@ -315,8 +285,44 @@ void GameScene::CheckCollision(Collider* collider1, Collider* collider2) {
 	Vector3 posB = collider2->GetWorldPosition();
 	float distance = Distance(posA, posB);
 
+	if ((collider1->GetCollisionSide() & collider2->GetCollisionMask()) == 0 || 
+		(collider2->GetCollisionSide() & collider1->GetCollisionMask()) == 0) {
+		return;
+	}
+
 	if (distance <= collider1->GetRadius() + collider2->GetRadius()) {
 		collider1->OnCollision();
 		collider2->OnCollision();
+	}
+}
+
+void GameScene::CheckAllCollision() {
+	std::list<Collider*> colliders;
+
+	// コライダーをリストに追加
+	colliders.push_back(player_);
+
+	for (Enemy* enemy : enemies_) {
+		colliders.push_back(enemy);
+	}
+
+	for (playerBullet* playerBullet : player_->GetBullets()) {
+		colliders.push_back(playerBullet);
+	}
+
+	for (EnemyBullet* enemyBullet : enemyBullets_) {
+		colliders.push_back(enemyBullet);
+	}
+
+	// 衝突判定
+	std::list<Collider*>::iterator it1 = colliders.begin();
+	for (; it1 != colliders.end(); ++it1) {
+
+		std::list<Collider*>::iterator it2 = it1;
+
+		for (++it2; it2 != colliders.end(); ++it2) {
+
+			CheckCollision(*it1, *it2);
+		}
 	}
 }

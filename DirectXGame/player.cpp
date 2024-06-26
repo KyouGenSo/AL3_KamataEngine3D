@@ -14,6 +14,10 @@ player::~player() {
 
 void player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos) {
 
+	SetCollisionSide(kCollisionPlayerSide);
+
+	SetCollisionMask(~kCollisionPlayerSide);
+
 	assert(model);
 	model_ = model;
 	model3DReticle_ = model;

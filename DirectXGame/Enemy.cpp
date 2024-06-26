@@ -14,6 +14,10 @@ Enemy::~Enemy() {
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 position) {
 
+	SetCollisionSide(kCollisionEnemySide);
+
+	SetCollisionMask(~kCollisionEnemySide);
+
 	assert(model);
 
 	model_ = model;

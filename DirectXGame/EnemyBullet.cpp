@@ -6,6 +6,11 @@ EnemyBullet::EnemyBullet(){}
 EnemyBullet::~EnemyBullet(){}
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) { 
+
+	SetCollisionSide(kCollisionEnemySide);
+
+	SetCollisionMask(~kCollisionEnemySide);
+
 	assert(model);
 
 	model_ = model;
