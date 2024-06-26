@@ -53,7 +53,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 衝突判定と応答
 	/// </summary>
-	//void CheckAllCollision();
+	void CheckAllCollision();
 
 	/// <summary>
 	/// 敵の生成

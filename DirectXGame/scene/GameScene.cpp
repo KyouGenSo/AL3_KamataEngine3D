@@ -129,8 +129,8 @@ void GameScene::Update() {
 		bullet->Update();
 	}
 
-	 //死亡した敵弾を削除
-	 enemyBullets_.remove_if([](EnemyBullet* bullet) {
+	// 死亡した敵弾を削除
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {
 			delete bullet;
 			return true;
@@ -141,27 +141,8 @@ void GameScene::Update() {
 	// 天球の更新
 	skydome_->Update();
 
-#pragma region 自機と敵弾の衝突判定
-	for (EnemyBullet* bullet : enemyBullets_) {
-		CheckCollision(player_, bullet);
-	}
-#pragma endregion
-
-#pragma region 敵と自機弾の衝突判定
-	for (playerBullet* playerBullet : player_->GetBullets()) {
-		for (Enemy* enemy : enemies_) {
-			CheckCollision(playerBullet, enemy);
-		}
-	}
-#pragma endregion
-
-#pragma region 自機弾と敵弾の衝突判定
-	for (playerBullet* playerBullet : player_->GetBullets()) {
-		for (EnemyBullet* enemyBullet : enemyBullets_) {
-			CheckCollision(playerBullet, enemyBullet);
-		}
-	}
-#pragma endregion
+	// 衝突判定
+	CheckAllCollision();
 }
 
 void GameScene::Draw() {
@@ -238,49 +219,35 @@ void GameScene::CreateEnemy(Vector3 position) {
 	enemies_.push_back(enemy);
 }
 
-// void GameScene::CheckAllCollision() {
-//	Vector3 posA, posB;
-//
-//	const std::list<playerBullet*>& playerBullets = player_->GetBullets();
-//
-// #pragma region プレイヤーと敵弾の衝突判定
-//	posA = player_->GetWorldPosition();
-//
-//	for (EnemyBullet* enemyBullet : enemyBullets_) {
-//		posB = enemyBullet->GetWorldPosition();
-//		if (Distance(posA, posB) <= player_->GetRadius() + enemyBullet->GetRadius()) {
-//			player_->OnCollision();
-//			enemyBullet->OnCollision();
-//		}
-//	}
-// #pragma endregion
-//
-// #pragma region 敵とプレイヤー弾の衝突判定
-//	for (playerBullet* playerBullet : playerBullets) {
-//		posA = playerBullet->GetWorldPosition();
-//		for (Enemy* enemy : enemies_) {
-//			posB = enemy->GetWorldPosition();
-//			if (Distance(posA, posB) <= playerBullet->GetRadius() + enemy->GetRadius()) {
-//				playerBullet->OnCollision();
-//				enemy->OnCollision();
-//			}
-//		}
-//	}
-// #pragma endregion
-//
-// #pragma region プレイヤー弾と敵弾の衝突判定
-//	for (playerBullet* playerBullet : playerBullets) {
-//		posA = playerBullet->GetWorldPosition();
-//		for (EnemyBullet* enemyBullet : enemyBullets_) {
-//			posB = enemyBullet->GetWorldPosition();
-//			if (Distance(posA, posB) <= playerBullet->GetRadius() + enemyBullet->GetRadius()) {
-//				playerBullet->OnCollision();
-//				enemyBullet->OnCollision();
-//			}
-//		}
-//	}
-// #pragma endregion
-// }
+void GameScene::CheckAllCollision() {
+	std::list<Collider*> colliders;
+
+	// コライダーをリストに追加
+	colliders.push_back(player_);
+
+	for (Enemy* enemy : enemies_) {
+		colliders.push_back(enemy);
+	}
+
+	for (playerBullet* playerBullet : player_->GetBullets()) {
+		colliders.push_back(playerBullet);
+	}
+
+	for (EnemyBullet* enemyBullet : enemyBullets_) {
+		colliders.push_back(enemyBullet);
+	}
+
+	// 衝突判定
+	std::list<Collider*>::iterator it1 = colliders.begin();
+	for (; it1 != colliders.end(); ++it1) {
+
+		std::list<Collider*>::iterator it2 = it1;
+
+		for (++it2; it2 != colliders.end(); ++it2) {
+			CheckCollision(*it1, *it2);
+		}
+	}
+}
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) { enemyBullets_.push_back(enemyBullet); }
 
