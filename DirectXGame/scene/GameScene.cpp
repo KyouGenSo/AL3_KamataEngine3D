@@ -13,6 +13,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete skydome_;
 	delete railCamera_;
+	delete collisionManager_;
 
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
@@ -73,6 +74,9 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	// スカイドームの初期化
 	skydome_->Initialize(skydomeModel_);
+
+	// 衝突判定マネージャの生成
+	collisionManager_ = new CollisionManager();
 }
 
 void GameScene::Update() {
@@ -115,6 +119,35 @@ void GameScene::Update() {
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 	}
+
+	// 敵弾の更新
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Update();
+	}
+
+	// 天球の更新
+	skydome_->Update();
+
+	// 衝突判定
+	collisionManager_->ClearList();
+
+	collisionManager_->AddCollider(player_);
+
+	for (Enemy* enemy : enemies_) {
+		collisionManager_->AddCollider(enemy);
+	}
+
+	for (EnemyBullet* enemyBullet : enemyBullets_) {
+		collisionManager_->AddCollider(enemyBullet);
+	}
+
+	for (playerBullet* playerBullet : player_->GetBullets()) {
+		collisionManager_->AddCollider(playerBullet);
+	}
+
+	collisionManager_->CheckAllCollision();
+
+
 	// 死亡した敵を削除
 	enemies_.remove_if([](Enemy* enemy) {
 		if (enemy->IsDead()) {
@@ -124,11 +157,6 @@ void GameScene::Update() {
 		return false;
 	});
 
-	// 敵弾の更新
-	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Update();
-	}
-
 	// 死亡した敵弾を削除
 	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -137,12 +165,6 @@ void GameScene::Update() {
 		}
 		return false;
 	});
-
-	// 天球の更新
-	skydome_->Update();
-
-	// 衝突判定
-	CheckAllCollision();
 }
 
 void GameScene::Draw() {
@@ -280,49 +302,49 @@ void GameScene::UpdateEnemyPopCommands() {
 	}
 }
 
-void GameScene::CheckCollision(Collider* collider1, Collider* collider2) {
-	Vector3 posA = collider1->GetWorldPosition();
-	Vector3 posB = collider2->GetWorldPosition();
-	float distance = Distance(posA, posB);
+// void GameScene::CheckCollision(Collider* collider1, Collider* collider2) {
+//	Vector3 posA = collider1->GetWorldPosition();
+//	Vector3 posB = collider2->GetWorldPosition();
+//	float distance = Distance(posA, posB);
+//
+//	if ((collider1->GetCollisionSide() & collider2->GetCollisionMask()) == 0 ||
+//		(collider2->GetCollisionSide() & collider1->GetCollisionMask()) == 0) {
+//		return;
+//	}
+//
+//	if (distance <= collider1->GetRadius() + collider2->GetRadius()) {
+//		collider1->OnCollision();
+//		collider2->OnCollision();
+//	}
+// }
 
-	if ((collider1->GetCollisionSide() & collider2->GetCollisionMask()) == 0 || 
-		(collider2->GetCollisionSide() & collider1->GetCollisionMask()) == 0) {
-		return;
-	}
-
-	if (distance <= collider1->GetRadius() + collider2->GetRadius()) {
-		collider1->OnCollision();
-		collider2->OnCollision();
-	}
-}
-
-void GameScene::CheckAllCollision() {
-	std::list<Collider*> colliders;
-
-	// コライダーをリストに追加
-	colliders.push_back(player_);
-
-	for (Enemy* enemy : enemies_) {
-		colliders.push_back(enemy);
-	}
-
-	for (playerBullet* playerBullet : player_->GetBullets()) {
-		colliders.push_back(playerBullet);
-	}
-
-	for (EnemyBullet* enemyBullet : enemyBullets_) {
-		colliders.push_back(enemyBullet);
-	}
-
-	// 衝突判定
-	std::list<Collider*>::iterator it1 = colliders.begin();
-	for (; it1 != colliders.end(); ++it1) {
-
-		std::list<Collider*>::iterator it2 = it1;
-
-		for (++it2; it2 != colliders.end(); ++it2) {
-
-			CheckCollision(*it1, *it2);
-		}
-	}
-}
+// void GameScene::CheckAllCollision() {
+//	std::list<Collider*> colliders;
+//
+//	// コライダーをリストに追加
+//	colliders.push_back(player_);
+//
+//	for (Enemy* enemy : enemies_) {
+//		colliders.push_back(enemy);
+//	}
+//
+//	for (playerBullet* playerBullet : player_->GetBullets()) {
+//		colliders.push_back(playerBullet);
+//	}
+//
+//	for (EnemyBullet* enemyBullet : enemyBullets_) {
+//		colliders.push_back(enemyBullet);
+//	}
+//
+//	// 衝突判定
+//	std::list<Collider*>::iterator it1 = colliders.begin();
+//	for (; it1 != colliders.end(); ++it1) {
+//
+//		std::list<Collider*>::iterator it2 = it1;
+//
+//		for (++it2; it2 != colliders.end(); ++it2) {
+//
+//			CheckCollision(*it1, *it2);
+//		}
+//	}
+// }

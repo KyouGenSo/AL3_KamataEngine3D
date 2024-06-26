@@ -70,6 +70,9 @@
     <Filter Include="ヘッダー ファイル\collision">
       <UniqueIdentifier>{1afe480f-657e-4b28-8c83-69b55270fb3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\collision">
+      <UniqueIdentifier>{d8280ce9-b98b-419a-9b5d-928206c2fa3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -122,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="TimedCall.cpp">
       <Filter>ソース ファイル\Function</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>ソース ファイル\collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -246,6 +252,9 @@
       <Filter>ヘッダー ファイル\collision</Filter>
     </ClInclude>
     <ClInclude Include="CollisionConfig.h">
+      <Filter>ヘッダー ファイル\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
       <Filter>ヘッダー ファイル\collision</Filter>
     </ClInclude>
   </ItemGroup>

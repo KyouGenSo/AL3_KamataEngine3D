@@ -17,7 +17,7 @@
 #include "player.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
-#include "Collider.h"
+#include "CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -53,7 +53,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 衝突判定と応答
 	/// </summary>
-	void CheckAllCollision();
+	//void CheckAllCollision();
 
 	/// <summary>
 	/// 敵の生成
@@ -107,10 +107,13 @@ private: // メンバ変数
 	bool isWaiting_ = false;
 	int waitTimer_ = 0;
 
+	// 衝突マネージャー
+	CollisionManager* collisionManager_;
+
 	/// <summary>
 	/// 衝突判定関数
 	/// </summary>
 	/// <param name="collider1">判定対象1</param>
 	/// <param name="collider2">判定対象2</param>
-	void CheckCollision(Collider* collider1, Collider* collider2);
+	//void CheckCollision(Collider* collider1, Collider* collider2);
 };
