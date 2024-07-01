@@ -17,3 +17,5 @@ Vector3 Normalize(const Vector3& v);
 float Lerp(const float a, const float b, const float t);
 
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
+
+Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);

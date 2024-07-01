@@ -52,7 +52,7 @@ void GameScene::Initialize() {
 
 	// レールカメラの初期化
 	railCamera_ = new RailCamera();
-	Vector3 railCameraPos = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 railCameraPos = Vector3(0.0f, 0.0f, -40.0f);
 	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
 	railCamera_->Initialize(railCameraPos, railCameraRot);
 
@@ -77,6 +77,16 @@ void GameScene::Initialize() {
 
 	// 衝突判定マネージャの生成
 	collisionManager_ = new CollisionManager();
+
+	// 制御点の設定
+	controlPoints_ = {
+		Vector3(0.0f, 0.0f, 0.0f),
+		Vector3(10.0f, 10.0f, 10.0f),
+		Vector3(10.0f, 15.0f, 10.0f),
+		Vector3(20.0f, 15.0f, 0.0f), 
+		Vector3(20.0f, 0.0f, 0.0f), 
+		Vector3(30.0f, 0.0f, 0.0f),
+	};
 }
 
 void GameScene::Update() {
@@ -213,6 +223,15 @@ void GameScene::Draw() {
 	// レールカメラの描画
 	railCamera_->Draw();
 
+	// 曲線描画
+	DrawCatmullRom(controlPoints_[0], controlPoints_[0], controlPoints_[1], controlPoints_[2]);
+
+	for (int32_t i = 0; i < controlPoints_.size() - 3; i++) {
+		DrawCatmullRom(controlPoints_[i], controlPoints_[i + 1], controlPoints_[i + 2], controlPoints_[i + 3]);
+	}
+
+	DrawCatmullRom(controlPoints_[controlPoints_.size() - 3], controlPoints_[controlPoints_.size() - 2], controlPoints_[controlPoints_.size() - 1], controlPoints_[controlPoints_.size() - 1]);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -299,6 +318,26 @@ void GameScene::UpdateEnemyPopCommands() {
 
 			break;
 		}
+	}
+}
+
+void GameScene::DrawCatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3) {
+	// 曲線描画
+	std::vector<Vector3> drawingPoints;
+
+	const int32_t pointCount = 100;
+
+	for (int32_t i = 0; i < pointCount + 1; i++) {
+		float t = 1.0f / pointCount * i;
+		Vector3 pos = CatmullRom(p0, p1, p2, p3, t);
+		drawingPoints.push_back(pos);
+	}
+
+	for (int32_t i = 0; i < pointCount - 1; i++) {
+		Vector3 start = drawingPoints[i];
+		Vector3 end = drawingPoints[i + 1];
+		PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+		PrimitiveDrawer::GetInstance()->DrawLine3d(start, end, {1.0f, 0.0f, 0.0f, 1.0f});
 	}
 }
 

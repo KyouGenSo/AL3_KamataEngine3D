@@ -13,6 +13,8 @@
 #include "Skydome.h"
 #include "myFunction.h"
 #include "sstream"
+#include <vector>
+#include "PrimitiveDrawer.h"
 
 #include "player.h"
 #include "Enemy.h"
@@ -49,6 +51,8 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	void DrawCatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3);
 
 	/// <summary>
 	/// 衝突判定と応答
@@ -109,6 +113,10 @@ private: // メンバ変数
 
 	// 衝突マネージャー
 	CollisionManager* collisionManager_;
+
+	// 曲線描画用頂点データ
+	std::vector<Vector3> controlPoints_;
+
 
 	/// <summary>
 	/// 衝突判定関数
