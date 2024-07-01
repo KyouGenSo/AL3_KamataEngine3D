@@ -80,9 +80,9 @@ void GameScene::Initialize() {
 
 	// 制御点の設定
 	controlPoints_ = {
-		Vector3(0.0f, 0.0f, 0.0f),
-		Vector3(10.0f, 10.0f, 10.0f),
-		Vector3(10.0f, 15.0f, 10.0f),
+	    Vector3(0.0f, 0.0f, 0.0f), 
+		Vector3(10.0f, 10.0f, 0.0f), 
+		Vector3(10.0f, 15.0f, 0.0f), 
 		Vector3(20.0f, 15.0f, 0.0f), 
 		Vector3(20.0f, 0.0f, 0.0f), 
 		Vector3(30.0f, 0.0f, 0.0f),
@@ -157,7 +157,6 @@ void GameScene::Update() {
 
 	collisionManager_->CheckAllCollision();
 
-
 	// 死亡した敵を削除
 	enemies_.remove_if([](Enemy* enemy) {
 		if (enemy->IsDead()) {
@@ -224,13 +223,7 @@ void GameScene::Draw() {
 	railCamera_->Draw();
 
 	// 曲線描画
-	DrawCatmullRom(controlPoints_[0], controlPoints_[0], controlPoints_[1], controlPoints_[2]);
-
-	for (int32_t i = 0; i < controlPoints_.size() - 3; i++) {
-		DrawCatmullRom(controlPoints_[i], controlPoints_[i + 1], controlPoints_[i + 2], controlPoints_[i + 3]);
-	}
-
-	DrawCatmullRom(controlPoints_[controlPoints_.size() - 3], controlPoints_[controlPoints_.size() - 2], controlPoints_[controlPoints_.size() - 1], controlPoints_[controlPoints_.size() - 1]);
+	DrawCatmullRom(controlPoints_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -321,24 +314,50 @@ void GameScene::UpdateEnemyPopCommands() {
 	}
 }
 
-void GameScene::DrawCatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3) {
+void GameScene::DrawCatmullRom(const std::vector<Vector3>& controlPoints) {
 	// 曲線描画
 	std::vector<Vector3> drawingPoints;
 
 	const int32_t pointCount = 100;
 
-	for (int32_t i = 0; i < pointCount + 1; i++) {
+	for (int32_t i = 0; i <= pointCount; i++) {
 		float t = 1.0f / pointCount * i;
-		Vector3 pos = CatmullRom(p0, p1, p2, p3, t);
+		Vector3 pos = CatmullRomPosition(controlPoints, t);
 		drawingPoints.push_back(pos);
 	}
 
-	for (int32_t i = 0; i < pointCount - 1; i++) {
+	for (int32_t i = 0; i < pointCount ; i++) {
 		Vector3 start = drawingPoints[i];
 		Vector3 end = drawingPoints[i + 1];
 		PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 		PrimitiveDrawer::GetInstance()->DrawLine3d(start, end, {1.0f, 0.0f, 0.0f, 1.0f});
 	}
+}
+
+Vector3 GameScene::CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t) {
+	assert(controlPoints.size() >= 4);
+
+	size_t division = controlPoints.size() - 1;
+	float areaWid = 1.0f / division;
+
+	float t_2 = std::fmod(t, areaWid) * division;
+	t_2 = std::clamp(t_2, 0.0f, 1.0f);
+
+	size_t index = static_cast<size_t>(t / areaWid);
+	// indexが上限を超えないように収める
+	index = std::clamp(index, size_t(0), controlPoints.size() - 1);
+
+    size_t index0 = (index == 0) ? index : index - 1;
+	size_t index1 = index;
+	size_t index2 = (index + 1 >= controlPoints.size()) ? index : index + 1;
+	size_t index3 = (index + 2 >= controlPoints.size()) ? index2 : index + 2;
+
+	const Vector3& p0 = controlPoints[index0];
+	const Vector3& p1 = controlPoints[index1];
+	const Vector3& p2 = controlPoints[index2];
+	const Vector3& p3 = controlPoints[index3];
+
+	return CatmullRom(p0, p1, p2, p3, t_2);
 }
 
 // void GameScene::CheckCollision(Collider* collider1, Collider* collider2) {
