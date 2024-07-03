@@ -15,6 +15,7 @@
 #include "sstream"
 #include <vector>
 #include "PrimitiveDrawer.h"
+#include "Matrix4x4Function.h"
 
 #include "player.h"
 #include "Enemy.h"
@@ -82,6 +83,7 @@ private: // メンバ変数
 
 	// レールカメラ
 	RailCamera* railCamera_ = nullptr;
+	float t_ = 0.0f;
 
 	// スカイドーム
 	Skydome* skydome_ = nullptr;

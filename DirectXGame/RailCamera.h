@@ -16,6 +16,15 @@ public:
 	Matrix4x4 GetProjectionMatrix() { return viewProjection_.matProjection; }
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	void SetWorldTransform(const WorldTransform& worldTransform) {
+		worldTransform_.translation_ = worldTransform.translation_;
+		worldTransform_.rotation_ = worldTransform.rotation_;
+		worldTransform_.scale_ = worldTransform.scale_;
+	}
+
+	void SetTranslation(Vector3 translation) { worldTransform_.translation_ = translation; }
+	void SetRotation(Vector3 rotation) { worldTransform_.rotation_ = rotation; }
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;

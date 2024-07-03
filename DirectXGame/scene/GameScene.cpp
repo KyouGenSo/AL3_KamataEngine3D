@@ -52,8 +52,8 @@ void GameScene::Initialize() {
 
 	// レールカメラの初期化
 	railCamera_ = new RailCamera();
-	Vector3 railCameraPos = Vector3(0.0f, 0.0f, -40.0f);
-	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
+	Vector3 railCameraPos = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 railCameraRot = Vector3(0.0f, 0.0f, 0.0f);
 	railCamera_->Initialize(railCameraPos, railCameraRot);
 
 	// レティクルのテクスチャ
@@ -62,7 +62,7 @@ void GameScene::Initialize() {
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
-	Vector3 playerPos = Vector3(0.0f, 0.0f, 30.0f);
+	Vector3 playerPos = Vector3(0.0f, 0.0f,40.0f);
 	player_->Initialize(model_, playerTextureHandle_, playerPos);
 	// レールカメラにプレイヤーを設定
 	player_->SetParent(&railCamera_->GetWorldTransform());
@@ -81,11 +81,11 @@ void GameScene::Initialize() {
 	// 制御点の設定
 	controlPoints_ = {
 	    Vector3(0.0f, 0.0f, 0.0f), 
-		Vector3(10.0f, 10.0f, 0.0f), 
-		Vector3(10.0f, 15.0f, 0.0f), 
-		Vector3(20.0f, 15.0f, 0.0f), 
-		Vector3(20.0f, 0.0f, 0.0f), 
-		Vector3(30.0f, 0.0f, 0.0f),
+		Vector3(10.0f, 10.0f, 10.0f), 
+		Vector3(10.0f, 15.0f, 13.0f), 
+		Vector3(20.0f, 15.0f, 15.0f), 
+		Vector3(20.0f, 0.0f, 18.0f), 
+		Vector3(30.0f, 0.0f, 20.0f),
 	};
 }
 
@@ -109,15 +109,32 @@ void GameScene::Update() {
 		viewProjection_.matView = railCamera_->GetViewMatrix();
 		viewProjection_.matProjection = railCamera_->GetProjectionMatrix();
 
-		ImGui::Begin("viewproj");
-		ImGui::DragFloat3("translation", &viewProjection_.translation_.x, -100.0f, 100.0f);
-		ImGui::DragFloat3("rotation", &viewProjection_.rotation_.x, -3.14f, 3.14f);
-		ImGui::End();
+		//ImGui::Begin("viewproj");
+		//ImGui::DragFloat3("translation", &viewProjection_.translation_.x, -100.0f, 100.0f);
+		//ImGui::DragFloat3("rotation", &viewProjection_.rotation_.x, -3.14f, 3.14f);
+		//ImGui::End();
 		viewProjection_.TransferMatrix();
 	}
 
 	// レールカメラの更新
+	Vector3 currentPos = CatmullRomPosition(controlPoints_, t_);
+	railCamera_->SetTranslation(currentPos);
+
+	// レールカメラ回転角度計算
+	Vector3 target = CatmullRomPosition(controlPoints_, t_ + 0.005f);
+	Vector3 forward = Normalize(target - currentPos);
+
+	float horizontalDistance = std::sqrt(forward.x * forward.x + forward.z * forward.z);
+
+	railCamera_->SetRotation(Vector3(-std::atan2(forward.y, horizontalDistance), std::atan2(forward.x, forward.z), 0.0f));
+
 	railCamera_->Update();
+
+	t_ += 0.001f;
+	
+	if (t_ >= 1.0f) {
+		t_ = 0.0f;
+	}
 
 	// プレイヤーの更新
 	player_->Update(viewProjection_);

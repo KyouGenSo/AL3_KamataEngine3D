@@ -110,12 +110,6 @@ void player::Update(ViewProjection& viewProjection) {
 
 	// 3Dレティクルの更新
 	Update2DReticle(viewProjection);
-
-	// ImGui
-	ImGui::Begin("Player Pos");
-	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, -1.0f, 1.0f);
-	ImGui::Text("x: %f, y: %f, z: %f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]);
-	ImGui::End();
 }
 
 void player::Draw3D(ViewProjection& viewProjection) {
