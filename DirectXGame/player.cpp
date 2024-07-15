@@ -1,4 +1,5 @@
 #include "player.h"
+#include "Enemy.h"
 
 player::player() {}
 
@@ -26,6 +27,8 @@ void player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos) {
 	// 3Dレティクルのスプライトハンドル
 	uint32_t reticleTexture = TextureManager::Load("reticle.png");
 	sprite2DReticle_ = Sprite::Create(reticleTexture, {500, 100}, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f));
+	reticleTexture = TextureManager::Load("reticle_lockOn.png");
+	sprite2DReticleLockOn_ = Sprite::Create(reticleTexture, {500, 100}, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f));
 
 	input_ = Input::GetInstance();
 
@@ -36,7 +39,7 @@ void player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos) {
 	worldTransform_.UpdateMatrix();
 }
 
-void player::Update(ViewProjection& viewProjection) {
+void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 
 	bullets_.remove_if([](playerBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -107,7 +110,13 @@ void player::Draw3D(ViewProjection& viewProjection) {
 	}
 }
 
-void player::DrawUI() { sprite2DReticle_->Draw(); }
+void player::DrawUI() { 
+	if (isLockOn_) {
+		sprite2DReticleLockOn_->Draw();
+	} else {
+		sprite2DReticle_->Draw();
+	}
+}
 
 void player::Rotate() {
 	const float kRotateSpeed = 0.02f;
@@ -177,12 +186,14 @@ void player::Update3DReticle(ViewProjection& viewProjection) {
 	worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
 	worldTransform3DReticle_.UpdateMatrix();
 
-	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
-	Vector3 reticlePos = GetWorldPosition3DReticle();
 	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
 	Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+
+	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
+	Vector3 reticlePos = GetWorldPosition3DReticle();
 	reticlePos = TransForm(matViewProjectionViewPort, reticlePos);
 	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+	sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
 }
 
 void player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }

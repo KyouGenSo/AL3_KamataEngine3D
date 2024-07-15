@@ -15,6 +15,8 @@
 #include "Vector3Function.h"
 #include "WinApp.h"
 
+class Enemy;
+
 // 自キャラクラス
 class player {
 
@@ -27,7 +29,7 @@ public: // メンバ関数
 	// 初期化
 	void Initialize(Model* model, uint32_t textureHandle, Vector3 pos);
 	// 毎フレーム処理
-	void Update(ViewProjection& viewProjection);
+	void Update(ViewProjection& viewProjection, std::list<Enemy*> enemies);
 	// 描画
 	void Draw3D(ViewProjection& viewProjection);
 	void DrawUI();
@@ -43,6 +45,14 @@ public: // メンバ関数
 
 	// 親子関係を設定
 	void SetParent(const WorldTransform* parent);
+
+	void SetLockOn(bool isLockOn) { isLockOn_ = isLockOn; }
+
+	void Set2DReticlePosition(Vector2 pos) { sprite2DReticle_->SetPosition(pos); }
+
+	void Set2DReticleLockOnPosition(Vector2 pos) { sprite2DReticleLockOn_->SetPosition(pos); }
+
+	bool GetLockOn() { return isLockOn_; }
 
 	const std::list<playerBullet*>& GetBullets() const { return bullets_; }
 
@@ -60,6 +70,8 @@ public: // メンバ関数
 
 	float GetBulletRadius() const { return bullets_.front()->GetRadius(); }
 
+	Vector2 Get2DReticlePosition() { return sprite2DReticle_->GetPosition(); }
+
 private: // メンバ変数
 
 	// モデル
@@ -72,11 +84,15 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 	// 3Dレティカルのスプライトハンドル
 	Sprite* sprite2DReticle_ = nullptr;
+	Sprite* sprite2DReticleLockOn_ = nullptr;
+
 	//キーボード入力
 	Input* input_ = nullptr;
 
 	// 半径
 	float radius_ = 1.0f;
+
+	bool isLockOn_ = false;
 
 	// プレイヤーの弾
 	std::list<playerBullet*> bullets_;
