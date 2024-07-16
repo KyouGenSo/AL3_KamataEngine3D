@@ -43,7 +43,7 @@ public: // メンバ関数
 	void Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies);
 
 	// レティクルのロックオン
-	void ReticleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies);
+	void ReticleSingleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies);
 
 	// 親子関係を設定
 	void SetParent(const WorldTransform* parent);

@@ -227,11 +227,11 @@ void player::Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> e
 
 	// sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
 
-	// レティクルのロックオン
-	ReticleLockOn(viewProjection, enemies);
+	// レティクルのシングルロックオン
+	ReticleSingleLockOn(viewProjection, enemies);
 }
 
-void player::ReticleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
+void player::ReticleSingleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	float lockOnRange = 30.0f;
 
 	for (Enemy* enemy : enemies) {
