@@ -13,6 +13,39 @@ player::~player() {
 	delete model3DReticle_;
 }
 
+// --------------------------------------------Getters-------------------------------------------- //
+Vector3 player::GetWorldPosition() {
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+Vector3 player::GetWorldPosition3DReticle() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+Vector3 player::GetWorldRotation() {
+	Vector3 worldRot;
+	worldRot.x = worldTransform_.rotation_.x;
+	worldRot.y = worldTransform_.rotation_.y;
+	worldRot.z = worldTransform_.rotation_.z;
+
+	return worldRot;
+}
+
+// --------------------------------------------Setters-------------------------------------------- //
+void player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+
+// --------------------------------------------Public functions-------------------------------------------- //
 void player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos) {
 
 	assert(model);
@@ -79,7 +112,7 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
 
 	// 攻撃
-	Attack();
+	Attack(enemies);
 
 	// プレイヤーの弾の更新
 	for (playerBullet* bullet : bullets_) {
@@ -90,12 +123,17 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	worldTransform_.UpdateMatrix();
 
 	// 3Dレティクルの更新
-	Update3DReticle(viewProjection);
+	Update3DReticle(viewProjection, enemies);
 
 	// ImGui
 	ImGui::Begin("Player Pos");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, -1.0f, 1.0f);
 	ImGui::Text("x: %f, y: %f, z: %f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]);
+	ImGui::End();
+
+	ImGui::Begin("LockOn");
+	ImGui::Text("isLockOn_: %d", isLockOn_);
+	ImGui::Text("easingT_: %f", easingT_);
 	ImGui::End();
 }
 
@@ -110,7 +148,7 @@ void player::Draw3D(ViewProjection& viewProjection) {
 	}
 }
 
-void player::DrawUI() { 
+void player::DrawUI() {
 	if (isLockOn_) {
 		sprite2DReticleLockOn_->Draw();
 	} else {
@@ -128,14 +166,35 @@ void player::Rotate() {
 	}
 }
 
-void player::Attack() {
+void player::Attack(std::list<Enemy*> enemies) {
 	if (input_->TriggerKey(DIK_SPACE)) {
 		const float kBulletSpeed = 1.0f;
 		Vector3 bulletVelocity = {0.0f, 0.0f, 0.0f};
+		float minDis = 1000000.0f;
 
-		Vector3 diff = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
-		diff = Normalize(diff);
-		bulletVelocity = Multiply(diff, kBulletSpeed);
+		if (isLockOn_) {
+			for (Enemy* enemy : enemies) {
+				if (enemy->IsDead()) {
+					continue;
+				}
+
+				Vector3 E2PDiff = Subtract(enemy->GetWorldPosition(), GetWorldPosition());
+				// float E2PDis = float(Length(E2PDiff));
+
+				Vector2 enemy2DPos = {enemy->GetWorldPosition().x, enemy->GetWorldPosition().y};
+				Vector2 reticle2DPos = {GetWorldPosition3DReticle().x, GetWorldPosition3DReticle().y};
+
+				float E2RDis = float(Distance(enemy2DPos, reticle2DPos));
+				if (E2RDis < minDis) {
+					minDis = E2RDis;
+					bulletVelocity = Multiply(Normalize(E2PDiff), kBulletSpeed);
+				}
+			}
+		} else {
+			Vector3 diff = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
+			diff = Normalize(diff);
+			bulletVelocity = Multiply(diff, kBulletSpeed);
+		}
 
 		Vector3 playerPos = GetWorldPosition();
 
@@ -146,37 +205,8 @@ void player::Attack() {
 	}
 }
 
-Vector3 player::GetWorldPosition() {
-	Vector3 worldPos;
-	worldPos.x = worldTransform_.matWorld_.m[3][0];
-	worldPos.y = worldTransform_.matWorld_.m[3][1];
-	worldPos.z = worldTransform_.matWorld_.m[3][2];
+void player::Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 
-	return worldPos;
-}
-
-Vector3 player::GetWorldPosition3DReticle() {
-	Vector3 worldPos;
-
-	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
-	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
-	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
-
-	return worldPos;
-}
-
-Vector3 player::GetWorldRotation() {
-	Vector3 worldRot;
-	worldRot.x = worldTransform_.rotation_.x;
-	worldRot.y = worldTransform_.rotation_.y;
-	worldRot.z = worldTransform_.rotation_.z;
-
-	return worldRot;
-}
-
-void player::OnCollision() {}
-
-void player::Update3DReticle(ViewProjection& viewProjection) {
 	// 3Dレティクルのワールド座標変換
 	const float kReticleDistance = 20.0f;
 	Vector3 offset = {0.0f, 0.0f, 1.0f};
@@ -192,8 +222,54 @@ void player::Update3DReticle(ViewProjection& viewProjection) {
 	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
 	Vector3 reticlePos = GetWorldPosition3DReticle();
 	reticlePos = TransForm(matViewProjectionViewPort, reticlePos);
+
 	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
-	sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+
+	// sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+
+	// レティクルのロックオン
+	ReticleLockOn(viewProjection, enemies);
 }
 
-void player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+void player::ReticleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
+	float lockOnRange = 30.0f;
+
+	for (Enemy* enemy : enemies) {
+		if (enemy->IsDead()) {
+			isLockOn_ = false;
+			continue;
+		}
+
+		Vector3 enemyWorldPos = enemy->GetWorldPosition();
+		Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+		Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+		Vector3 enemyScreenPos = TransForm(matViewProjectionViewPort, enemyWorldPos);
+
+		Vector2 reticlePos2D = Get2DReticlePosition();
+		Vector2 enemyScreenPos2D = Vector2(enemyScreenPos.x, enemyScreenPos.y);
+
+		float dis = float(Distance(enemyScreenPos2D, reticlePos2D));
+
+		if (dis < lockOnRange) {
+			isLockOn_ = true;
+			// sprite2DReticle_->SetPosition(enemyScreenPos2D);
+			sprite2DReticleLockOn_->SetPosition(enemyScreenPos2D);
+			easingT_ = 0.0f;
+			break;
+		} else {
+			if (isLockOn_) {
+				while (easingT_ < 1.0f) {
+					isLockOn_ = true;
+					easingT_ += 0.01f;
+				    sprite2DReticleLockOn_->SetPosition(EaseIn(sprite2DReticleLockOn_->GetPosition(), reticlePos2D, easingT_)); 
+					sprite2DReticle_->SetPosition(EaseIn(sprite2DReticle_->GetPosition(), reticlePos2D, easingT_));
+				}
+			}
+
+			isLockOn_ = false;
+			
+		}
+	}
+}
+
+void player::OnCollision() {}

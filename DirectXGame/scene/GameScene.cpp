@@ -130,14 +130,20 @@ void GameScene::Update() {
 		bullet->Update();
 	}
 
+	// 死亡した敵弾を削除
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	// 天球の更新
 	skydome_->Update();
 
 	// 衝突判定
 	CheckAllCollision();
-
-	// レティクルのロックオン
-	PlayerReticleLockOn();
 }
 
 void GameScene::Draw() {
@@ -206,6 +212,8 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
+
+// ------------------------------------------------敵関連関数------------------------------------------------　//
 void GameScene::CreateEnemy(Vector3 position) {
 	Enemy* enemy = new Enemy();
 	enemy->Initialize(model_, enemyTextureHandle_, position);
@@ -256,38 +264,6 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 #pragma endregion
-}
-
-void GameScene::PlayerReticleLockOn() {
-	//enemyのワールド座標をスクリーンに変換
-	for (Enemy* enemy : enemies_) {
-		Vector3 worldPos = enemy->GetWorldPosition();
-		Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
-		Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection_.matView, viewProjection_.matProjection), matViewPort);
-		Vector3 screenPos = TransForm(matViewProjectionViewPort, worldPos);
-
-		//スクリーン座標をレティクル座標に変換
-		Vector2 reticlePos = player_->Get2DReticlePosition();
-		Vector2 screenPos2D = Vector2(screenPos.x, screenPos.y);
-
-		//差分ベクトルの長さを計算
-		float dis = Distance(screenPos2D, reticlePos);
-
-		//差分ベクトルの長さが一定以下ならば当たり
-		if (dis < 30.0f) {
-			player_->SetLockOn(true);
-			//player_->Set2DReticlePosition(Vector2(screenPos.x, screenPos.y));
-			player_->Set2DReticleLockOnPosition(Vector2(screenPos.x, screenPos.y));
-			break;
-		} else {
-			player_->SetLockOn(false);
-		}
-	}
-
-	ImGui::Begin("Collision");
-	ImGui::Text("LockOn:%d", player_->GetLockOn());
-	ImGui::End();
-
 }
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) { enemyBullets_.push_back(enemyBullet); }

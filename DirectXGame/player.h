@@ -1,19 +1,19 @@
 #pragma once
-#include <list>
-#include "Model.h"
-#include "Sprite.h"
-#include "WorldTransform.h"
-#include "ViewProjection.h"
+#include "ImGuiManager.h"
 #include "Input.h"
 #include "Matrix4x4Function.h"
-#include <cassert>
-#include "ImGuiManager.h"
-#include "myFunction.h"
-#include <algorithm>
+#include "Model.h"
 #include "PlayerBullet.h"
+#include "Sprite.h"
 #include "Vector3.h"
 #include "Vector3Function.h"
+#include "ViewProjection.h"
 #include "WinApp.h"
+#include "WorldTransform.h"
+#include "myFunction.h"
+#include <algorithm>
+#include <cassert>
+#include <list>
 
 class Enemy;
 
@@ -21,7 +21,6 @@ class Enemy;
 class player {
 
 public: // メンバ関数
-
 	// コンストラクタ
 	player();
 	// デストラクタ
@@ -36,12 +35,15 @@ public: // メンバ関数
 	// 旋回
 	void Rotate();
 	// 攻撃
-	void Attack();
+	void Attack(std::list<Enemy*> enemies);
 	// 衝突判定
 	void OnCollision();
 
 	// 3Dレティクルの座標計算
-	void Update3DReticle(ViewProjection& viewProjection);
+	void Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies);
+
+	// レティクルのロックオン
+	void ReticleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies);
 
 	// 親子関係を設定
 	void SetParent(const WorldTransform* parent);
@@ -73,7 +75,6 @@ public: // メンバ関数
 	Vector2 Get2DReticlePosition() { return sprite2DReticle_->GetPosition(); }
 
 private: // メンバ変数
-
 	// モデル
 	Model* model_ = nullptr;
 	Model* model3DReticle_ = nullptr;
@@ -86,15 +87,18 @@ private: // メンバ変数
 	Sprite* sprite2DReticle_ = nullptr;
 	Sprite* sprite2DReticleLockOn_ = nullptr;
 
-	//キーボード入力
+	// キーボード入力
 	Input* input_ = nullptr;
 
 	// 半径
 	float radius_ = 1.0f;
 
 	bool isLockOn_ = false;
+	bool isEased_ = false;
+
+	float easingT_ = 0.0f;
+
 
 	// プレイヤーの弾
 	std::list<playerBullet*> bullets_;
-
 };

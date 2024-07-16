@@ -54,8 +54,6 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollision();
 
-	void PlayerReticleLockOn();
-
 	/// <summary>
 	/// 敵の生成
 	/// </summary>
