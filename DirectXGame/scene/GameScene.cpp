@@ -49,19 +49,18 @@ void GameScene::Initialize() {
 	// ビュー射影行列の初期化
 	viewProjection_.Initialize();
 
-	// レールカメラの初期化
-	railCamera_ = new RailCamera();
-	Vector3 railCameraPos = Vector3(0.0f, 0.0f, 0.0f);
-	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
-	railCamera_->Initialize(railCameraPos, railCameraRot);
-
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
-	Vector3 playerPos = Vector3(0.0f, 0.0f, 35.0f);
+	Vector3 playerPos = Vector3(0.0f, 0.0f, 0.0f);
 	player_->Initialize(model_, playerTextureHandle_, playerPos);
 	// レールカメラにプレイヤーを設定ｑ
 	player_->SetParent(&railCamera_->GetWorldTransform());
+
+	// レールカメラの初期化
+	railCamera_ = new RailCamera();
+	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
+	railCamera_->Initialize(player_->GetWorldPosition(), player_->GetWorldRotation());
 
 	// 敵の生成スクリプトの読み込み
 	LoadEnemyPopData();
@@ -101,7 +100,7 @@ void GameScene::Update() {
 	}
 
 	// レールカメラの更新
-	railCamera_->Update();
+	railCamera_->Update(player_->GetWorldPosition(), player_->GetWorldRotation());
 
 	// プレイヤーの更新
 	player_->Update(viewProjection_, enemies_);

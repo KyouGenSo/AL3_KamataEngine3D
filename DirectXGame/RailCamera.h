@@ -9,7 +9,7 @@
 class RailCamera {
 public:
 	void Initialize(Vector3 translation, Vector3 rotation);
-	void Update();
+	void Update(Vector3 translation, Vector3 rotation);
 	void Draw();
 
 	Matrix4x4 GetViewMatrix() { return viewProjection_.matView; }
