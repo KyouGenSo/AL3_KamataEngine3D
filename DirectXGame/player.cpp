@@ -11,6 +11,7 @@ player::~player() {
 	delete sprite2DReticle_;
 	delete model_;
 	delete model3DReticle_;
+	delete sprite2DReticleLockOn_;
 }
 
 // --------------------------------------------Getters-------------------------------------------- //
@@ -60,6 +61,7 @@ void player::Initialize(Model* model, uint32_t textureHandle, Vector3 pos) {
 	// 3Dレティクルのスプライトハンドル
 	uint32_t reticleTexture = TextureManager::Load("reticle.png");
 	sprite2DReticle_ = Sprite::Create(reticleTexture, {500, 100}, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f));
+
 	reticleTexture = TextureManager::Load("reticle_lockOn.png");
 	sprite2DReticleLockOn_ = Sprite::Create(reticleTexture, {500, 100}, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f));
 
@@ -112,7 +114,23 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
 
 	// 攻撃
-	Attack(enemies);
+	for (Enemy* enemy : enemies) {
+		if (enemy->IsDead()) {
+			enemyLockOnCount_--;
+			continue;
+		}
+
+		if (enemy->GetIsLocked()) {
+			enemyLockOnCount_++;
+			break;
+		}
+	}
+
+	if (enemyLockOnCount_ > 1) {
+		MultiAttack(enemies);
+	} else {
+		SingleAttack(enemies);
+	}
 
 	// プレイヤーの弾の更新
 	for (playerBullet* bullet : bullets_) {
@@ -125,15 +143,18 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	// 3Dレティクルの更新
 	Update3DReticle(viewProjection, enemies);
 
+	// レティクルのマルチロックオン
+	ReticleMultiLockOn(viewProjection, enemies);
+
+	// マルチロックオンの更新
+	//UpdateMultiLockOn(viewProjection, enemies);
+
+
 	// ImGui
 	ImGui::Begin("Player Pos");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, -1.0f, 1.0f);
 	ImGui::Text("x: %f, y: %f, z: %f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]);
-	ImGui::End();
-
-	ImGui::Begin("LockOn");
-	ImGui::Text("isLockOn_: %d", isLockOn_);
-	ImGui::Text("easingT_: %f", easingT_);
+	ImGui::Text("enemyLockOnCount_ : %d", enemyLockOnCount_);
 	ImGui::End();
 }
 
@@ -149,11 +170,9 @@ void player::Draw3D(ViewProjection& viewProjection) {
 }
 
 void player::DrawUI() {
-	if (isLockOn_) {
-		sprite2DReticleLockOn_->Draw();
-	} else {
-		sprite2DReticle_->Draw();
-	}
+
+	sprite2DReticle_->Draw();
+
 }
 
 void player::Rotate() {
@@ -166,7 +185,7 @@ void player::Rotate() {
 	}
 }
 
-void player::Attack(std::list<Enemy*> enemies) {
+void player::SingleAttack(std::list<Enemy*> enemies) {
 	if (input_->TriggerKey(DIK_SPACE)) {
 		const float kBulletSpeed = 1.0f;
 		Vector3 bulletVelocity = {0.0f, 0.0f, 0.0f};
@@ -205,6 +224,31 @@ void player::Attack(std::list<Enemy*> enemies) {
 	}
 }
 
+void player::MultiAttack(std::list<Enemy*> enemies) {
+	if (input_->TriggerKey(DIK_SPACE)) {
+		const float kBulletSpeed = 1.0f;
+		Vector3 bulletVelocity = {0.0f, 0.0f, 0.0f};
+
+		for (Enemy* enemy : enemies) {
+			if (enemy->IsDead()) {
+				continue;
+			}
+
+			if (enemy->GetIsLocked()) {
+				Vector3 E2PDiff = Subtract(enemy->GetWorldPosition(), GetWorldPosition());
+				bulletVelocity = Multiply(Normalize(E2PDiff), kBulletSpeed);
+
+				Vector3 playerPos = GetWorldPosition();
+
+				playerBullet* newBullet_ = new playerBullet();
+				newBullet_->Initialize(model_, playerPos, bulletVelocity);
+
+				bullets_.push_back(newBullet_);
+			}
+		}
+	}
+}
+
 void player::Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 
 	// 3Dレティクルのワールド座標変換
@@ -228,7 +272,7 @@ void player::Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> e
 	// sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
 
 	// レティクルのシングルロックオン
-	ReticleSingleLockOn(viewProjection, enemies);
+	// ReticleSingleLockOn(viewProjection, enemies);
 }
 
 void player::ReticleSingleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
@@ -261,15 +305,40 @@ void player::ReticleSingleLockOn(ViewProjection& viewProjection, std::list<Enemy
 				while (easingT_ < 1.0f) {
 					isLockOn_ = true;
 					easingT_ += 0.01f;
-				    sprite2DReticleLockOn_->SetPosition(EaseIn(sprite2DReticleLockOn_->GetPosition(), reticlePos2D, easingT_)); 
+					sprite2DReticleLockOn_->SetPosition(EaseIn(sprite2DReticleLockOn_->GetPosition(), reticlePos2D, easingT_));
 					sprite2DReticle_->SetPosition(EaseIn(sprite2DReticle_->GetPosition(), reticlePos2D, easingT_));
 				}
 			}
 
 			isLockOn_ = false;
-			
 		}
 	}
 }
+
+void player::ReticleMultiLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
+	float lockOnRange = 30.0f;
+
+	for (Enemy* enemy : enemies) {
+		if (enemy->IsDead()) {
+			continue;
+		}
+
+		Vector3 enemyWorldPos = enemy->GetWorldPosition();
+		Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+		Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+		Vector3 enemyScreenPos = TransForm(matViewProjectionViewPort, enemyWorldPos);
+
+		Vector2 reticlePos2D = Get2DReticlePosition();
+		Vector2 enemyScreenPos2D = Vector2(enemyScreenPos.x, enemyScreenPos.y);
+
+		float dis = float(Distance(enemyScreenPos2D, reticlePos2D));
+
+		if (dis < lockOnRange && enemy->GetIsLocked() == false) {
+			enemy->SetLockOn(true);
+		}
+
+	}
+}
+
 
 void player::OnCollision() {}

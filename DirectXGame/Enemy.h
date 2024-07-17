@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "Matrix4x4Function.h"
 #include "Model.h"
+#include "Sprite.h"
 #include "WorldTransform.h"
 #include <algorithm>
 #include <list>
@@ -57,6 +58,8 @@ public:
 
 	void Draw(ViewProjection& viewProjection);
 
+	void DrawUI(ViewProjection& viewProjection);
+
 	void Fire();
 
 	void OnCollision();
@@ -65,17 +68,23 @@ public:
 	void Leave();
 
 	//------------------------------------------------------------------------------------------------
+	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+
 	void SetTranlation(const Vector3& velocity) { worldTransform_.translation_ += velocity; }
 
 	void SetPlayer(player* player) { player_ = player; }
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
+	void SetLockOn(bool isLocked) { isLocked_ = isLocked; }
+
 	Vector3 GetWorldPosition();
 
 	float GetRadius() const { return radius_; }
 
 	bool IsDead() const { return isDead_; }
+
+	bool GetIsLocked() const { return isLocked_; }
 
 private:
 	// 関数ポインター配列
@@ -87,11 +96,21 @@ private:
 	// プレイヤー
 	player* player_ = nullptr;
 
+	// テクスチャハンドル
+	uint32_t lockOnTextureHandle_ = 0;
+
+	// ロックオンスプライト
+	Sprite* spriteLockOn_ = nullptr;
+
+
 	// 敵の状態
 	BaseEnemyPhase* enemyPhase_;
 
 	// 死亡フラグ
 	bool isDead_ = false;
+
+	// ロックオンフラグ
+	bool isLocked_ = false;
 
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;

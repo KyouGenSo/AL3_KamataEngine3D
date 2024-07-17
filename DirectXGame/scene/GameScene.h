@@ -1,22 +1,22 @@
 #pragma once
 
 #include "Audio.h"
+#include "DebugCamera.h"
 #include "DirectXCommon.h"
+#include "ImGuiManager.h"
 #include "Input.h"
 #include "Model.h"
-#include "Sprite.h"
-#include "ImGuiManager.h"
-#include "ViewProjection.h"
-#include "WorldTransform.h"
-#include "DebugCamera.h"
 #include "RailCamera.h"
 #include "Skydome.h"
+#include "Sprite.h"
+#include "ViewProjection.h"
+#include "WorldTransform.h"
 #include "myFunction.h"
 #include "sstream"
 
-#include "player.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
+#include "player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -65,6 +65,11 @@ public: // メンバ関数
 
 	void UpdateEnemyPopCommands();
 
+	/// <summary>
+	/// プレイヤーロックオン
+	/// </summary>
+	void ReticleMultiLockOn();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -82,7 +87,7 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	
+
 	// プレイヤー
 	player* player_ = nullptr;
 

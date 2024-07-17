@@ -55,15 +55,12 @@ void GameScene::Initialize() {
 	Vector3 railCameraRot = Vector3(0.0f, 0.1f, 0.0f);
 	railCamera_->Initialize(railCameraPos, railCameraRot);
 
-	// レティクルのテクスチャ
-	/*uint32_t reticleTextureHandle = */TextureManager::Load("./Resources/reticle.png");
-
 	// プレイヤーの生成
 	player_ = new player();
 	// プレイヤーの初期化
 	Vector3 playerPos = Vector3(0.0f, 0.0f, 35.0f);
 	player_->Initialize(model_, playerTextureHandle_, playerPos);
-	// レールカメラにプレイヤーを設定
+	// レールカメラにプレイヤーを設定ｑ
 	player_->SetParent(&railCamera_->GetWorldTransform());
 
 	// 敵の生成スクリプトの読み込み
@@ -119,6 +116,7 @@ void GameScene::Update() {
 	// 死亡した敵を削除
 	enemies_.remove_if([](Enemy* enemy) {
 		if (enemy->IsDead()) {
+			enemy->SetLockOn(false);
 			delete enemy;
 			return true;
 		}
@@ -206,20 +204,14 @@ void GameScene::Draw() {
 
 	player_->DrawUI();
 
+	for (Enemy* enemy : enemies_) {
+		enemy->DrawUI(viewProjection_);
+	}
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
 #pragma endregion
-}
-
-
-// ------------------------------------------------敵関連関数------------------------------------------------　//
-void GameScene::CreateEnemy(Vector3 position) {
-	Enemy* enemy = new Enemy();
-	enemy->Initialize(model_, enemyTextureHandle_, position);
-	enemy->SetPlayer(player_);
-	enemy->SetGameScene(this);
-	enemies_.push_back(enemy);
 }
 
 void GameScene::CheckAllCollision() {
@@ -264,6 +256,15 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 #pragma endregion
+}
+
+// ------------------------------------------------敵関連関数------------------------------------------------　//
+void GameScene::CreateEnemy(Vector3 position) {
+	Enemy* enemy = new Enemy();
+	enemy->Initialize(model_, enemyTextureHandle_, position);
+	enemy->SetPlayer(player_);
+	enemy->SetGameScene(this);
+	enemies_.push_back(enemy);
 }
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) { enemyBullets_.push_back(enemyBullet); }
@@ -326,3 +327,4 @@ void GameScene::UpdateEnemyPopCommands() {
 		}
 	}
 }
+

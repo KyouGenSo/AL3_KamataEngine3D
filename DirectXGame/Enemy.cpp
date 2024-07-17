@@ -1,11 +1,12 @@
 #include "Enemy.h"
-#include "player.h"
 #include "GameScene.h"
+#include "player.h"
 
 Enemy::Enemy() {}
 
-Enemy::~Enemy() {
+Enemy::~Enemy() { 
 	delete enemyPhase_;
+	delete spriteLockOn_;
 }
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 position) {
@@ -15,6 +16,10 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 position) {
 	model_ = model;
 
 	textureHandle_ = textureHandle;
+
+	lockOnTextureHandle_ = TextureManager::Load("reticle_lockOn.png");
+
+	spriteLockOn_ = Sprite::Create(lockOnTextureHandle_, {500, 100}, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f));
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
@@ -34,6 +39,17 @@ void Enemy::Update() {
 
 void Enemy::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+}
+
+void Enemy::DrawUI(ViewProjection& viewProjection) {
+	if (isLocked_) {
+		Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+		Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+		Vector3 enemyScreenPos = TransForm(matViewProjectionViewPort, worldTransform_.translation_);
+
+		spriteLockOn_->SetPosition(Vector2(enemyScreenPos.x, enemyScreenPos.y));
+		spriteLockOn_->Draw();
+	}
 }
 
 void Enemy::Fire() {
@@ -78,9 +94,7 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
-void Enemy::OnCollision() {
-	isDead_ = true; 
-}
+void Enemy::OnCollision() { isDead_ = true; }
 
 void Enemy::ChangePhase(BaseEnemyPhase* phase) {
 	delete enemyPhase_;
@@ -129,4 +143,3 @@ void EnemyPhaseLeave::Update(Enemy* enemy) {
 	//	enemy->ChangePhase(new EnemyPhaseAproach());
 	// }
 }
-

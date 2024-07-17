@@ -23,27 +23,38 @@ class player {
 public: // メンバ関数
 	// コンストラクタ
 	player();
+
 	// デストラクタ
 	~player();
+
 	// 初期化
 	void Initialize(Model* model, uint32_t textureHandle, Vector3 pos);
+
 	// 毎フレーム処理
 	void Update(ViewProjection& viewProjection, std::list<Enemy*> enemies);
+
 	// 描画
 	void Draw3D(ViewProjection& viewProjection);
 	void DrawUI();
+
 	// 旋回
 	void Rotate();
+
 	// 攻撃
-	void Attack(std::list<Enemy*> enemies);
+	void SingleAttack(std::list<Enemy*> enemies);
+	void MultiAttack(std::list<Enemy*> enemies);
+
 	// 衝突判定
 	void OnCollision();
 
 	// 3Dレティクルの座標計算
 	void Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies);
 
-	// レティクルのロックオン
+	// レティクルのシングルロックオン
 	void ReticleSingleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies);
+
+	// レティクルのマルチロックオン
+	void ReticleMultiLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies);
 
 	// 親子関係を設定
 	void SetParent(const WorldTransform* parent);
@@ -83,9 +94,12 @@ private: // メンバ変数
 	WorldTransform worldTransform3DReticle_;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
-	// 3Dレティカルのスプライトハンドル
+
+	// レティカルのスプライトハンドル
 	Sprite* sprite2DReticle_ = nullptr;
 	Sprite* sprite2DReticleLockOn_ = nullptr;
+
+	//std::list<Sprite*> sprite2DReticleLockOns_;
 
 	// キーボード入力
 	Input* input_ = nullptr;
@@ -94,10 +108,11 @@ private: // メンバ変数
 	float radius_ = 1.0f;
 
 	bool isLockOn_ = false;
+	int enemyLockOnCount_ = 0;
+
 	bool isEased_ = false;
 
 	float easingT_ = 0.0f;
-
 
 	// プレイヤーの弾
 	std::list<playerBullet*> bullets_;
