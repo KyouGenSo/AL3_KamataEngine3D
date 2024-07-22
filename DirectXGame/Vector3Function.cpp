@@ -48,3 +48,29 @@ Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t) {
 Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
 	return ((p0 * -1.0f + p1 * 3.0f - p2 * 3.0f + p3) * t * t * t + (p0 * 2.0f - p1 * 5.0f + p2 * 4.0f - p3) * t * t + (p0 * -1.0f + p2) * t + p1 * 2.0f) * 0.5f;
 }
+
+Vector3 CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t) {
+	assert(controlPoints.size() >= 4);
+
+	size_t division = controlPoints.size() - 1;
+	float areaWid = 1.0f / division;
+
+	float t_2 = std::fmod(t, areaWid) * division;
+	t_2 = std::clamp(t_2, 0.0f, 1.0f);
+
+	size_t index = static_cast<size_t>(t / areaWid);
+	// indexが上限を超えないように収める
+	index = std::clamp(index, size_t(0), controlPoints.size() - 1);
+
+	size_t index0 = (index == 0) ? index : index - 1;
+	size_t index1 = index;
+	size_t index2 = (index + 1 >= controlPoints.size()) ? index : index + 1;
+	size_t index3 = (index + 2 >= controlPoints.size()) ? index2 : index + 2;
+
+	const Vector3& p0 = controlPoints[index0];
+	const Vector3& p1 = controlPoints[index1];
+	const Vector3& p2 = controlPoints[index2];
+	const Vector3& p3 = controlPoints[index3];
+
+	return CatmullRom(p0, p1, p2, p3, t_2);
+}

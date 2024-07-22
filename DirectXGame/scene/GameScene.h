@@ -55,7 +55,7 @@ public: // メンバ関数
 
 	void DrawCatmullRom(const std::vector<Vector3>& controlPoints);
 
-	Vector3 CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t);
+	//Vector3 CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t);
 
 	/// <summary>
 	/// 衝突判定と応答

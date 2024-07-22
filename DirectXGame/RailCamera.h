@@ -3,13 +3,16 @@
 #include "ViewProjection.h"
 #include "Vector3.h"
 #include "Matrix4x4Function.h"
+#include "Vector3Function.h"
 #include "Matrix4x4.h"
 #include "ImGuiManager.h"
+#include <vector>
+ #include <algorithm>
 
 class RailCamera {
 public:
 	void Initialize(Vector3 translation, Vector3 rotation);
-	void Update();
+	void Update(std::vector<Vector3> controlPoints);
 	void Draw();
 
 	Matrix4x4 GetViewMatrix() { return viewProjection_.matView; }
@@ -28,4 +31,6 @@ public:
 private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
+
+	float t_ = 0.0f;
 };

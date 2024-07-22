@@ -117,24 +117,26 @@ void GameScene::Update() {
 	}
 
 	// レールカメラの更新
-	Vector3 currentPos = CatmullRomPosition(controlPoints_, t_);
-	railCamera_->SetTranslation(currentPos);
+	railCamera_->Update(controlPoints_);
 
-	// レールカメラ回転角度計算
-	Vector3 target = CatmullRomPosition(controlPoints_, t_ + 0.005f);
-	Vector3 forward = Normalize(target - currentPos);
+	//Vector3 currentPos = CatmullRomPosition(controlPoints_, t_);
+	//railCamera_->SetTranslation(currentPos);
 
-	float horizontalDistance = std::sqrt(forward.x * forward.x + forward.z * forward.z);
+	//// レールカメラ回転角度計算
+	//Vector3 target = CatmullRomPosition(controlPoints_, t_ + 0.005f);
+	//Vector3 forward = Normalize(target - currentPos);
 
-	railCamera_->SetRotation(Vector3(-std::atan2(forward.y, horizontalDistance), std::atan2(forward.x, forward.z), 0.0f));
+	//float horizontalDistance = std::sqrt(forward.x * forward.x + forward.z * forward.z);
 
-	railCamera_->Update();
+	//railCamera_->SetRotation(Vector3(-std::atan2(forward.y, horizontalDistance), std::atan2(forward.x, forward.z), 0.0f));
 
-	t_ += 0.001f;
-	
-	if (t_ >= 1.0f) {
-		t_ = 0.0f;
-	}
+	//t_ += 0.001f;
+	//
+	//if (t_ >= 1.0f) {
+	//	t_ = 0.0f;
+	//}
+
+
 
 	// プレイヤーの更新
 	player_->Update(viewProjection_);
@@ -351,31 +353,31 @@ void GameScene::DrawCatmullRom(const std::vector<Vector3>& controlPoints) {
 	}
 }
 
-Vector3 GameScene::CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t) {
-	assert(controlPoints.size() >= 4);
-
-	size_t division = controlPoints.size() - 1;
-	float areaWid = 1.0f / division;
-
-	float t_2 = std::fmod(t, areaWid) * division;
-	t_2 = std::clamp(t_2, 0.0f, 1.0f);
-
-	size_t index = static_cast<size_t>(t / areaWid);
-	// indexが上限を超えないように収める
-	index = std::clamp(index, size_t(0), controlPoints.size() - 1);
-
-    size_t index0 = (index == 0) ? index : index - 1;
-	size_t index1 = index;
-	size_t index2 = (index + 1 >= controlPoints.size()) ? index : index + 1;
-	size_t index3 = (index + 2 >= controlPoints.size()) ? index2 : index + 2;
-
-	const Vector3& p0 = controlPoints[index0];
-	const Vector3& p1 = controlPoints[index1];
-	const Vector3& p2 = controlPoints[index2];
-	const Vector3& p3 = controlPoints[index3];
-
-	return CatmullRom(p0, p1, p2, p3, t_2);
-}
+//Vector3 GameScene::CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t) {
+//	assert(controlPoints.size() >= 4);
+//
+//	size_t division = controlPoints.size() - 1;
+//	float areaWid = 1.0f / division;
+//
+//	float t_2 = std::fmod(t, areaWid) * division;
+//	t_2 = std::clamp(t_2, 0.0f, 1.0f);
+//
+//	size_t index = static_cast<size_t>(t / areaWid);
+//	// indexが上限を超えないように収める
+//	index = std::clamp(index, size_t(0), controlPoints.size() - 1);
+//
+//    size_t index0 = (index == 0) ? index : index - 1;
+//	size_t index1 = index;
+//	size_t index2 = (index + 1 >= controlPoints.size()) ? index : index + 1;
+//	size_t index3 = (index + 2 >= controlPoints.size()) ? index2 : index + 2;
+//
+//	const Vector3& p0 = controlPoints[index0];
+//	const Vector3& p1 = controlPoints[index1];
+//	const Vector3& p2 = controlPoints[index2];
+//	const Vector3& p3 = controlPoints[index3];
+//
+//	return CatmullRom(p0, p1, p2, p3, t_2);
+//}
 
 // void GameScene::CheckCollision(Collider* collider1, Collider* collider2) {
 //	Vector3 posA = collider1->GetWorldPosition();

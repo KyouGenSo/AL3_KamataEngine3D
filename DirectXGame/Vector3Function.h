@@ -1,6 +1,10 @@
 #pragma once
 #include<Vector3.h>
 #include<math.h>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 
 Vector3 Add(const Vector3& v1, const Vector3& v2);
 
@@ -19,3 +23,5 @@ float Lerp(const float a, const float b, const float t);
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
 
 Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
+
+Vector3 CatmullRomPosition(const std::vector<Vector3>& controlPoints, float t);
