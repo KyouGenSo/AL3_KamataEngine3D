@@ -8,6 +8,10 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "memory"
+
+// Game Object
+#include "Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -49,21 +53,23 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	uint32_t textureHandle_ = 0;
-	uint32_t soundHandle_ = 0;
-	uint32_t voiceHandle_ = 0;
 
-	Sprite* sprite_ = nullptr;
-	Vector2 spriteSize_;
+	std::unique_ptr <Model> model_ = nullptr;
 
-	Model* model_ = nullptr;
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
+
+	// -----Game Object----- //
+
+	//Player
+	std::unique_ptr<Player> player_ = nullptr;
+	
+	// -----Game Object----- //
 	/// <summary>
 	/// DeBug用
 	/// </summary>
-	float inPutFloat3[3] = {0.0f, 0.0f, 0.0f};
 
-	DebugCamera* debugCamera_ = nullptr;
+
 
 };
