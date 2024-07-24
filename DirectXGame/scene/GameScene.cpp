@@ -49,7 +49,7 @@ void GameScene::Update() {
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewMatrix();
 		viewProjection_.matProjection = debugCamera_->GetProjectionMatrix();
-		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
 	}
 
 	player_->Update();
