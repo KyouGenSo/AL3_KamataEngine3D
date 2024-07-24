@@ -48,6 +48,8 @@ void GameScene::Update() {
 		// デバッグカメラの更新
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewMatrix();
+		viewProjection_.matProjection = debugCamera_->GetProjectionMatrix();
+		viewProjection_.UpdateMatrix();
 	}
 
 	player_->Update();
