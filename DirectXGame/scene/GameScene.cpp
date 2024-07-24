@@ -7,7 +7,7 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() { delete skydomeModel_; }
 
 void GameScene::Initialize() {
 
@@ -28,8 +28,8 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 
 	// 3Dモデルの作成
-	// model_.reset(Model::Create());
 	model_.reset(Model::CreateFromOBJ("player", true));
+	skydomeModel_->CreateFromOBJ("skydome", true);
 
 	// worldTransformとviewProjectionの初期化
 	worldTransform_.Initialize();
@@ -38,6 +38,9 @@ void GameScene::Initialize() {
 	// プレイヤーの初期化
 	player_ = std::make_unique<Player>();
 	player_->Initialize(model_.get(), textureHandle_);
+
+	// Skydomeの初期化
+	skydome_->Initialize(skydomeModel_);
 }
 
 void GameScene::Update() {
@@ -57,7 +60,11 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 
+	// プレイヤーの更新
 	player_->Update();
+
+	// Skydomeの更新
+	skydome_->Update();
 }
 
 void GameScene::Draw() {
@@ -90,6 +97,9 @@ void GameScene::Draw() {
 
 	// プレイヤーの描画
 	player_->Draw(viewProjection_);
+
+	// Skydomeの描画
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

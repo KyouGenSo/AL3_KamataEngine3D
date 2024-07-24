@@ -2,7 +2,7 @@
 
 Skydome::Skydome() {}
 
-Skydome::~Skydome() {}
+Skydome::~Skydome() { delete model_; }
 
 void Skydome::Initialize(Model* model) {
 	assert(model);

@@ -13,6 +13,7 @@
 
 // Game Object
 #include "Player.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -71,6 +72,10 @@ private: // メンバ変数
 
 	//Player
 	std::unique_ptr<Player> player_ = nullptr;
+
+	// 天球
+	std::unique_ptr<Skydome> skydome_ = nullptr;
+	Model* skydomeModel_ = nullptr;
 	
 	// -----Game Object----- //
 
