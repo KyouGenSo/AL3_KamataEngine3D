@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "Vector3.h"
 #include <cassert>
+#include "memory"
 
 class Skydome {
 public:
