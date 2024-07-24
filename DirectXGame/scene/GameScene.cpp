@@ -1,15 +1,13 @@
 #include "GameScene.h"
+#include "AxisIndicator.h"
 #include "ImGuiManager.h"
 #include "TextureManager.h"
-#include <cassert>
 #include <PrimitiveDrawer.h>
-#include "AxisIndicator.h"
+#include <cassert>
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {
-
-}
+GameScene::~GameScene() {}
 
 void GameScene::Initialize() {
 
@@ -18,14 +16,14 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	// DebugCameraの初期化
-	debugCamera_ = std::make_unique<DebugCamera>();
+	//debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_.reset(new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight));
 
 	// テクスチャの読み込み
 	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 
 	// 3Dモデルの作成
-	//model_.reset(Model::Create());
+	// model_.reset(Model::Create());
 	model_.reset(Model::CreateFromOBJ("player", true));
 
 	// worldTransformとviewProjectionの初期化
@@ -39,10 +37,20 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	
+#ifdef _DEBUG
+	// デバッグカメラのアクティブ切り替え
+	if (input_->TriggerKey(DIK_F1)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+#endif
+
+	if (isDebugCameraActive_) {
+		// デバッグカメラの更新
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewMatrix();
+	}
 
 	player_->Update();
-
 }
 
 void GameScene::Draw() {
@@ -57,8 +65,6 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
-
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -90,8 +96,6 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
-
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
