@@ -17,11 +17,16 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	// DebugCameraの初期化
+	debugCamera_ = std::make_unique<DebugCamera>();
+	debugCamera_.reset(new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight));
+
 	// テクスチャの読み込み
-	textureHandle_ = TextureManager::Load("./Resources/uvChecker.png");
+	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 
 	// 3Dモデルの作成
-	model_.reset(Model::Create());
+	//model_.reset(Model::Create());
+	model_.reset(Model::CreateFromOBJ("player", true));
 
 	// worldTransformとviewProjectionの初期化
 	worldTransform_.Initialize();
@@ -33,6 +38,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+	
 
 	player_->Update();
 

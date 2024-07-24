@@ -60,15 +60,19 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 
 
+	/// <summary>
+	/// DeBug用
+	/// </summary>
+	bool isDebugCameraActive_ = false;
+	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
+
 	// -----Game Object----- //
 
 	//Player
 	std::unique_ptr<Player> player_ = nullptr;
 	
 	// -----Game Object----- //
-	/// <summary>
-	/// DeBug用
-	/// </summary>
+
 
 
 
