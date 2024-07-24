@@ -15,9 +15,14 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+#ifdef _DEBUG
 	// DebugCameraの初期化
-	//debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_.reset(new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight));
+
+	// 軸の初期化
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+#endif _DEBUG
 
 	// テクスチャの読み込み
 	textureHandle_ = TextureManager::Load("./Resources/player/player.png");

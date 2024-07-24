@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "AxisIndicator.h"
 #include "memory"
 
 // Game Object
