@@ -4,6 +4,8 @@
 #include "WorldTransform.h"
 #include "cassert"
 #include "memory"
+#include "Xinput.h"
+#include "Input.h"
 
 class Player {
 
@@ -33,7 +35,16 @@ public: // メンバ関数
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	/// <summary>
+	/// 移動
+	/// </summary>
+	void Move();
+
 private: // メンバ変数
+
+	Input* input_ = nullptr;
+
+
 	/// <summary>
 	/// プレイヤー用
 	/// </summary>
