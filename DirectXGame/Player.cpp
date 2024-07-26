@@ -34,26 +34,42 @@ void Player::Move() {
 
 		Vector3 move = {(float)joyState.Gamepad.sThumbLX, 0.0f, (float)joyState.Gamepad.sThumbLY};
 
-		move = move.Normalize() * speed;
+		move = move.normalize() * speed;
+
+		Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+
+		move = TransFormNormal(move, rotationMatrix);
 
 		worldTransform_.translation_ += move;
 	}
 
 	// キーボードによる移動
 	if (input_->PushKey(DIK_W)) {
-		worldTransform_.translation_.z += speed;
+		Vector3 move = {0.0f, 0.0f, speed};
+		Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+		move = TransFormNormal(move, rotationMatrix);
+		worldTransform_.translation_ += move;
 	}
 
 	if (input_->PushKey(DIK_S)) {
-		worldTransform_.translation_.z -= speed;
+		Vector3 move = {0.0f, 0.0f, -speed};
+		Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+		move = TransFormNormal(move, rotationMatrix);
+		worldTransform_.translation_ += move;
 	}
 
 	if (input_->PushKey(DIK_A)) {
-		worldTransform_.translation_.x -= speed;
+		Vector3 move = {-speed, 0.0f, 0.0f};
+		Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+		move = TransFormNormal(move, rotationMatrix);
+		worldTransform_.translation_ += move;
 	}
 
 	if (input_->PushKey(DIK_D)) {
-		worldTransform_.translation_.x += speed;
+		Vector3 move = {speed, 0.0f, 0.0f};
+		Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+		move = TransFormNormal(move, rotationMatrix);
+		worldTransform_.translation_ += move;
 	}
 
 	worldTransform_.UpdateMatrix();

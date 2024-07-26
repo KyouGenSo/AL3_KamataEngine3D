@@ -49,6 +49,14 @@ void GameScene::Initialize() {
 	// 地面の初期化
 	ground_ = std::make_unique<Ground>();
 	ground_->Initialize(groundModel_.get());
+
+	// 追従カメラの初期化
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+	followCamera_->SetTarget(&player_->GetWorldTransform());
+
+	// 追従カメラのViewProjectionをplayerに持たせる
+	player_->SetCameraViewProjection(&followCamera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -70,6 +78,10 @@ void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	// 追従カメラの更新
+	followCamera_->Update();
+	SetFollowCamera(followCamera_->GetViewProjection());
 
 	// Skydomeの更新
 	skydome_->Update();
@@ -132,4 +144,10 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::SetFollowCamera(ViewProjection& viewProjection) { 
+	viewProjection_.matView = viewProjection.matView;
+	viewProjection_.matProjection = viewProjection.matProjection;
+	viewProjection_.TransferMatrix();
 }

@@ -6,6 +6,8 @@
 #include "memory"
 #include "Xinput.h"
 #include "Input.h"
+#include "Matrix4x4Function.h"
+#include "Vector3Function.h"
 
 class Player {
 
@@ -40,6 +42,16 @@ public: // メンバ関数
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// Getters
+	/// </summary>
+	WorldTransform& GetWorldTransform() { return worldTransform_; }
+
+	/// <summary>
+	/// Setters
+	/// </summary>
+	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
+
 private: // メンバ変数
 
 	Input* input_ = nullptr;
@@ -53,5 +65,6 @@ private: // メンバ変数
 	Model* model_ = nullptr;
 
 	WorldTransform worldTransform_;
+	const ViewProjection* cameraViewProjection_;
 
 };

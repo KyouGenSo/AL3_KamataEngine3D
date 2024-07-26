@@ -9,20 +9,20 @@ struct Vector3 final {
 	float y;
 	float z;
 
-	Vector3 operator+(const Vector3& v) {
-		Vector3 result;
-		result.x = x + v.x;
-		result.y = y + v.y;
-		result.z = z + v.z;
-
-		return result;
-	}
-
 	Vector3 operator+=(const Vector3& v) {
 		Vector3 result;
 		x += v.x;
 		y += v.y;
 		z += v.z;
+
+		return result;
+	}
+
+	Vector3 operator+(const Vector3& v) const {
+		Vector3 result;
+		result.x = x + v.x;
+		result.y = y + v.y;
+		result.z = z + v.z;
 
 		return result;
 	}
@@ -36,7 +36,7 @@ struct Vector3 final {
 		return result;
 	}
 
-	Vector3 operator-(const Vector3& v) {
+	Vector3 operator-(const Vector3& v) const {
 		Vector3 result;
 		result.x = x - v.x;
 		result.y = y - v.y;
@@ -99,9 +99,15 @@ struct Vector3 final {
 		return result;
 	}
 
-	Vector3 Normalize() {
-		Vector3 result;
+	float length() const {
 		float length = sqrt(x * x + y * y + z * z);
+
+		return length;
+	}
+
+	Vector3 normalize() const {
+		Vector3 result;
+		float length = this->length();
 		result.x = x / length;
 		result.y = y / length;
 		result.z = z / length;

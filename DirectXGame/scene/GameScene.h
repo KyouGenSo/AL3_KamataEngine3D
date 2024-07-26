@@ -15,6 +15,7 @@
 #include "Player.h"
 #include "Skydome.h"
 #include "Ground.h"
+#include "followCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -47,6 +48,8 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void SetFollowCamera(ViewProjection& viewProjection);
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -60,18 +63,14 @@ private: // メンバ変数
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
-
-	/// <summary>
-	/// DeBug用
-	/// </summary>
-	bool isDebugCameraActive_ = false;
-	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
+	// 追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_ = nullptr;
 
 	// -----Game Object----- //
 
-	//Player
+	// Player
 	std::unique_ptr<Player> player_ = nullptr;
-	std::unique_ptr<Model> playerModel_ = nullptr; 
+	std::unique_ptr<Model> playerModel_ = nullptr;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;
@@ -81,10 +80,12 @@ private: // メンバ変数
 	std::unique_ptr<Ground> ground_ = nullptr;
 	std::unique_ptr<Model> groundModel_ = nullptr;
 
-	
 	// -----Game Object----- //
 
-
-
+	/// <summary>
+	/// DeBug用
+	/// </summary>
+	bool isDebugCameraActive_ = false;
+	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 };
