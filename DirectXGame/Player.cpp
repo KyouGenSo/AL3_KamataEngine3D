@@ -33,18 +33,26 @@ void Player::Move() {
 	XINPUT_STATE joyState;
 
 	if (input_->GetJoystickState(0, joyState)) {
+		const float deadzone = 0.24f;
+		bool isMoving = false;
 
 		move_ = {(float)joyState.Gamepad.sThumbLX, 0.0f, (float)joyState.Gamepad.sThumbLY};
 
-		move_ = move_.normalize() * speed;
+		if (Length(move_) > deadzone) {
+			isMoving = true;
+		}
 
-		rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+		if (isMoving) {
+			move_ = move_.normalize() * speed;
 
-		move_ = TransFormNormal(move_, rotationMatrix);
+			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 
-		worldTransform_.translation_ += move_;
+			move_ = TransFormNormal(move_, rotationMatrix);
 
-		worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			worldTransform_.translation_ += move_;
+
+			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+		}
 	} else { // キーボードによる移動
 
 		if (input_->PushKey(DIK_W)) {
