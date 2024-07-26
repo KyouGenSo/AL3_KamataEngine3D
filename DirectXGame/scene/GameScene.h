@@ -56,8 +56,6 @@ private: // メンバ変数
 	/// </summary>
 	uint32_t textureHandle_ = 0;
 
-	std::unique_ptr <Model> model_ = nullptr;
-
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
@@ -72,6 +70,7 @@ private: // メンバ変数
 
 	//Player
 	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<Model> playerModel_ = nullptr; 
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;
