@@ -1,14 +1,14 @@
 #pragma once
 #include "Model.h"
-#include "WorldTransform.h"
 #include "Vector3.h"
-#include <cassert>
+#include "WorldTransform.h"
 #include "memory"
+#include <cassert>
 
-class Skydome {
+class Ground {
 public:
-	Skydome();
-	~Skydome();
+	Ground();
+	~Ground();
 
 	void Initialize(Model* model);
 	void Update();

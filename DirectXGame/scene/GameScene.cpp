@@ -8,7 +8,6 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	delete skydomeModel_;
 }
 
 void GameScene::Initialize() {
@@ -31,7 +30,9 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの作成
 	playerModel_.reset(Model::CreateFromOBJ("player", true));
-	skydomeModel_ = Model::CreateFromOBJ("skydome", true);
+	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
+	groundModel_.reset(Model::CreateFromOBJ("ground", true));
+
 
 	// worldTransformとviewProjectionの初期化
 	worldTransform_.Initialize();
@@ -43,7 +44,11 @@ void GameScene::Initialize() {
 
 	// Skydomeの初期化
 	skydome_ = std::make_unique<Skydome>();
-	skydome_->Initialize(skydomeModel_);
+	skydome_->Initialize(skydomeModel_.get());
+
+	// 地面の初期化
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(groundModel_.get());
 }
 
 void GameScene::Update() {
@@ -68,6 +73,9 @@ void GameScene::Update() {
 
 	// Skydomeの更新
 	skydome_->Update();
+
+	// 地面の更新
+	ground_->Update();
 }
 
 void GameScene::Draw() {
@@ -103,6 +111,9 @@ void GameScene::Draw() {
 
 	// Skydomeの描画
 	skydome_->Draw(viewProjection_);
+
+	// 地面の描画
+	ground_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
