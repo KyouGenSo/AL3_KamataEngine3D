@@ -51,7 +51,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		}
 	} else { // キーボードによる移動
 
@@ -63,7 +65,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_.normalize() * speed;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		}else if (input_->PushKey(DIK_W) && input_->PushKey(DIK_D)) {
 			move_ = {speed, 0.0f, speed};
 
@@ -72,7 +76,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_.normalize() * speed;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		}else if (input_->PushKey(DIK_S) && input_->PushKey(DIK_A)) {
 			move_ = {-speed, 0.0f, -speed};
 
@@ -81,7 +87,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_.normalize() * speed;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		}else if (input_->PushKey(DIK_S) && input_->PushKey(DIK_D)) {
 			move_ = {speed, 0.0f, -speed};
 
@@ -90,7 +98,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_.normalize() * speed;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		} else if (input_->PushKey(DIK_W)) {
 			move_ = {0.0f, 0.0f, speed};
 
@@ -99,7 +109,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		} else if (input_->PushKey(DIK_S)) {
 			move_ = {0.0f, 0.0f, -speed};
 
@@ -108,7 +120,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		} else if (input_->PushKey(DIK_A)) {
 			move_ = {-speed, 0.0f, 0.0f};
 
@@ -117,7 +131,9 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		} else if (input_->PushKey(DIK_D)) {
 			move_ = {speed, 0.0f, 0.0f};
 
@@ -126,9 +142,20 @@ void Player::Move() {
 
 			worldTransform_.translation_ += move_;
 
-			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+			targetAngle_ = std::atan2(move_.x, move_.z);
+
+			t_ = 0.0f;
 		}
 	}
+
+	if (t_ < 1.0f) {
+		t_ += 0.1f;
+	} else {
+		t_ = 1.0f;
+	}
+
+	// ターゲットの角度に向かって回転
+	worldTransform_.rotation_.y = LerpShortAngle(worldTransform_.rotation_.y, targetAngle_, t_);
 
 	worldTransform_.UpdateMatrix();
 }

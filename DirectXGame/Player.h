@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "Matrix4x4Function.h"
 #include "Vector3Function.h"
+#include "myFunction.h"
 
 class Player {
 
@@ -66,5 +67,8 @@ private: // メンバ変数
 
 	WorldTransform worldTransform_;
 	const ViewProjection* cameraViewProjection_;
+
+	float targetAngle_ = 0.0f;
+	float t_ = 0.0f;
 
 };
