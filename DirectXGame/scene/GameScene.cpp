@@ -7,7 +7,9 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { delete skydomeModel_; }
+GameScene::~GameScene() { 
+	delete skydomeModel_;
+}
 
 void GameScene::Initialize() {
 
@@ -29,7 +31,7 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの作成
 	model_.reset(Model::CreateFromOBJ("player", true));
-	skydomeModel_->CreateFromOBJ("skydome", true);
+	skydomeModel_->Model::CreateFromOBJ("skydome", true);
 
 	// worldTransformとviewProjectionの初期化
 	worldTransform_.Initialize();
@@ -40,6 +42,7 @@ void GameScene::Initialize() {
 	player_->Initialize(model_.get(), textureHandle_);
 
 	// Skydomeの初期化
+	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize(skydomeModel_);
 }
 
