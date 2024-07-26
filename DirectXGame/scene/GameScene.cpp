@@ -81,7 +81,9 @@ void GameScene::Update() {
 
 	// 追従カメラの更新
 	followCamera_->Update();
-	SetFollowCamera(followCamera_->GetViewProjection());
+	if (!isDebugCameraActive_) {
+		SetFollowCamera(followCamera_->GetViewProjection());
+	}
 
 	// Skydomeの更新
 	skydome_->Update();

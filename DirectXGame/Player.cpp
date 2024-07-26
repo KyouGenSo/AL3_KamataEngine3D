@@ -55,7 +55,43 @@ void Player::Move() {
 		}
 	} else { // キーボードによる移動
 
-		if (input_->PushKey(DIK_W)) {
+		if (input_->PushKey(DIK_W) && input_->PushKey(DIK_A)) {
+			move_ = {-speed, 0.0f, speed};
+
+			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+			move_ = TransFormNormal(move_, rotationMatrix);
+
+			worldTransform_.translation_ += move_.normalize() * speed;
+
+			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+		}else if (input_->PushKey(DIK_W) && input_->PushKey(DIK_D)) {
+			move_ = {speed, 0.0f, speed};
+
+			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+			move_ = TransFormNormal(move_, rotationMatrix);
+
+			worldTransform_.translation_ += move_.normalize() * speed;
+
+			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+		}else if (input_->PushKey(DIK_S) && input_->PushKey(DIK_A)) {
+			move_ = {-speed, 0.0f, -speed};
+
+			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+			move_ = TransFormNormal(move_, rotationMatrix);
+
+			worldTransform_.translation_ += move_.normalize() * speed;
+
+			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+		}else if (input_->PushKey(DIK_S) && input_->PushKey(DIK_D)) {
+			move_ = {speed, 0.0f, -speed};
+
+			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+			move_ = TransFormNormal(move_, rotationMatrix);
+
+			worldTransform_.translation_ += move_.normalize() * speed;
+
+			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
+		} else if (input_->PushKey(DIK_W)) {
 			move_ = {0.0f, 0.0f, speed};
 
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
@@ -64,9 +100,7 @@ void Player::Move() {
 			worldTransform_.translation_ += move_;
 
 			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
-		}
-
-		if (input_->PushKey(DIK_S)) {
+		} else if (input_->PushKey(DIK_S)) {
 			move_ = {0.0f, 0.0f, -speed};
 
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
@@ -75,9 +109,7 @@ void Player::Move() {
 			worldTransform_.translation_ += move_;
 
 			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
-		}
-
-		if (input_->PushKey(DIK_A)) {
+		} else if (input_->PushKey(DIK_A)) {
 			move_ = {-speed, 0.0f, 0.0f};
 
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
@@ -86,9 +118,7 @@ void Player::Move() {
 			worldTransform_.translation_ += move_;
 
 			worldTransform_.rotation_.y = std::atan2(move_.x, move_.z);
-		}
-
-		if (input_->PushKey(DIK_D)) {
+		} else if (input_->PushKey(DIK_D)) {
 			move_ = {speed, 0.0f, 0.0f};
 
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
