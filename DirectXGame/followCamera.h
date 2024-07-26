@@ -32,6 +32,4 @@ private: // メンバ変数
 
 	Input* input_ = nullptr;
 
-	// 回転速度
-	const float rotateSpeed_ = 0.035f;
 };

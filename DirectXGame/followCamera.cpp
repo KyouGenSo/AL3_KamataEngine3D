@@ -11,19 +11,21 @@ void FollowCamera::Initialize() {
 
 void FollowCamera::Update() {
 
+	float rotateSpeed = 0.003f;
+
 	// ゲームパッドによる回転
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
 
-		viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX * rotateSpeed_;
+		viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX * rotateSpeed * 0.001f;
 	}
 
 	// キーボードによる回転
 	if (input_->PushKey(DIK_LEFT)) {
-		viewProjection_.rotation_.y -= rotateSpeed_;
+		viewProjection_.rotation_.y -= rotateSpeed;
 	}
 	if (input_->PushKey(DIK_RIGHT)) {
-		viewProjection_.rotation_.y += rotateSpeed_;
+		viewProjection_.rotation_.y += rotateSpeed;
 	}
 
 	// ターゲットが存在する場合
