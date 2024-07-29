@@ -95,7 +95,7 @@ private: // メンバ変数
 
 	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;
-	// 　周期
+	// 周期
 	float period = 130.0f; // 60フレームで1周期
 	// 振幅
 	float amplitude = 0.15f;
