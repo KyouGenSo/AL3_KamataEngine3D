@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Audio.h"
+#include "ImGuiManager.h"
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "Model.h"

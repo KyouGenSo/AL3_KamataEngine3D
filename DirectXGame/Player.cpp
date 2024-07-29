@@ -64,6 +64,15 @@ void Player::Draw(ViewProjection& viewProjection) {
 
 	// 右腕の描画
 	modelR_arm_->Draw(worldTransformR_arm_, viewProjection);
+
+	// imGui
+	ImGui::Begin("Player");
+	ImGui::DragFloat3("Head", &worldTransformHead_.translation_.x, 0.1f);
+	ImGui::DragFloat3("Body", &worldTransformBody_.translation_.x, 0.1f);
+	ImGui::DragFloat3("L_arm", &worldTransformL_arm_.translation_.x, 0.1f);
+	ImGui::DragFloat3("R_arm", &worldTransformR_arm_.translation_.x, 0.1f);
+	ImGui::End();
+
 }
 
 void Player::Move() {

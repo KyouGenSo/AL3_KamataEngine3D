@@ -1,4 +1,5 @@
 #pragma once
+#include "ImGuiManager.h"
 #include "Model.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
