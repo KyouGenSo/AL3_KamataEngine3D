@@ -26,7 +26,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* modelHead, Model* modelBody, Model* modelL_arm, Model* modelR_arm);
 
 	/// <summary>
 	/// 毎フレーム処理
@@ -44,9 +44,19 @@ public: // メンバ関数
 	void Move();
 
 	/// <summary>
+	/// 浮遊アニメーションの初期化
+	/// </summary>
+	void InitializeFloatAnimation();
+
+	/// <summary>
+	/// 浮遊アニメーションの更新処理
+	/// </summary>
+	void UpdateFloatAnimation();
+
+	/// <summary>
 	/// Getters
 	/// </summary>
-	WorldTransform& GetWorldTransform() { return worldTransform_; }
+	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
 	/// <summary>
 	/// Setters
@@ -61,14 +71,23 @@ private: // メンバ変数
 	/// <summary>
 	/// プレイヤー用
 	/// </summary>
-	uint32_t textureHandle_ = 0;
 
-	Model* model_ = nullptr;
+	Model* modelHead_ = nullptr;
+	Model* modelBody_ = nullptr;
+	Model* modelL_arm_ = nullptr;
+	Model* modelR_arm_ = nullptr;
 
-	WorldTransform worldTransform_;
+	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformHead_;
+	WorldTransform worldTransformBody_;
+	WorldTransform worldTransformL_arm_;
+	WorldTransform worldTransformR_arm_;
+
 	const ViewProjection* cameraViewProjection_;
 
 	float targetAngle_ = 0.0f;
 	float t_ = 0.0f;
 
+	// 浮遊アニメーション用
+	float floatingParam_ = 0.0f;
 };

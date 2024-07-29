@@ -29,7 +29,11 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 
 	// 3Dモデルの作成
-	playerModel_.reset(Model::CreateFromOBJ("player", true));
+	playerHeadModel_.reset(Model::CreateFromOBJ("float_Head", true));
+	playerBodyModel_.reset(Model::CreateFromOBJ("float_Body", true));
+	playerL_armModel_.reset(Model::CreateFromOBJ("float_L_arm", true));
+	playerR_armModel_.reset(Model::CreateFromOBJ("float_R_arm", true));
+
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
 	groundModel_.reset(Model::CreateFromOBJ("ground", true));
 
@@ -40,7 +44,7 @@ void GameScene::Initialize() {
 
 	// プレイヤーの初期化
 	player_ = std::make_unique<Player>();
-	player_->Initialize(playerModel_.get(), textureHandle_);
+	player_->Initialize(playerHeadModel_.get(), playerBodyModel_.get(), playerL_armModel_.get(), playerR_armModel_.get());
 
 	// Skydomeの初期化
 	skydome_ = std::make_unique<Skydome>();

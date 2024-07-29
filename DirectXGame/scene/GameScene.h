@@ -10,6 +10,7 @@
 #include "DebugCamera.h"
 #include "AxisIndicator.h"
 #include "memory"
+#include "vector"
 
 // Game Object
 #include "Player.h"
@@ -70,8 +71,13 @@ private: // メンバ変数
 
 	// Player
 	std::unique_ptr<Player> player_ = nullptr;
-	std::unique_ptr<Model> playerModel_ = nullptr;
-
+	std::unique_ptr<Model> playerHeadModel_ = nullptr;
+	std::unique_ptr<Model> playerBodyModel_ = nullptr;
+	std::unique_ptr<Model> playerL_armModel_ = nullptr;
+	std::unique_ptr<Model> playerR_armModel_ = nullptr;
+	//std::vector<std::unique_ptr<Model>> playerModels_;
+	//std::unique_ptr<std::vector<Model*>> playerModels_;
+	
 	// 天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;
 	std::unique_ptr<Model> skydomeModel_ = nullptr;
