@@ -1,5 +1,4 @@
 #pragma once
-#include "ImGuiManager.h"
 #include "Model.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
@@ -38,6 +37,11 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
+
+	/// <summary>
+	/// ImGuiによるデバッグ表示
+	/// </summary>
+	void ImGuiDraw();
 
 	/// <summary>
 	/// 移動
@@ -89,6 +93,10 @@ private: // メンバ変数
 	float targetAngle_ = 0.0f;
 	float t_ = 0.0f;
 
-	// 浮遊アニメーション用
+	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;
+	// 　周期
+	float period = 130.0f; // 60フレームで1周期
+	// 振幅
+	float amplitude = 0.15f;
 };

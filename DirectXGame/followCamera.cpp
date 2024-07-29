@@ -11,7 +11,7 @@ void FollowCamera::Initialize() {
 
 void FollowCamera::Update() {
 
-	float rotateSpeed = 0.003f;
+	float rotateSpeed = 0.03f;
 
 	// ゲームパッドによる回転
 	XINPUT_STATE joyState;

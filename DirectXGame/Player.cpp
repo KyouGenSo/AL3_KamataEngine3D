@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "ImGuiManager.h"
 
 Player::Player() {}
 
@@ -22,10 +23,9 @@ void Player::Initialize(Model* modelHead, Model* modelBody, Model* modelL_arm, M
 	worldTransformR_arm_.Initialize();
 
 	// モデルの初期位置を設定
-	//worldTransformHead_.translation_ = {0.0f, 10.0f, 0.0f};
-	//worldTransformBody_.translation_ = {0.0f, 5.0f, 0.0f};
-	//worldTransformL_arm_.translation_ = {5.0f, 5.0f, 0.0f};
-	//worldTransformR_arm_.translation_ = {-5.0f, 5.0f, 0.0f};
+	worldTransformHead_.translation_ = {0.0f, 1.5f, 0.0f};
+	worldTransformL_arm_.translation_ = {-0.55f, 1.3f, 0.0f};
+	worldTransformR_arm_.translation_ = {0.55f, 1.3f, 0.0f};
 
 	// モデル同士の親子関係を設定
 	worldTransformBody_.SetParent(&worldTransformBase_);
@@ -50,6 +50,18 @@ void Player::Update() {
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
+
+	ImGuiDraw();
+}
+
+void Player::ImGuiDraw() {
+	ImGui::Begin("Player");
+	ImGui::DragFloat3("Head", &worldTransformHead_.translation_.x, 0.1f);
+	ImGui::DragFloat3("L_arm", &worldTransformL_arm_.translation_.x, 0.1f);
+	ImGui::DragFloat3("R_arm", &worldTransformR_arm_.translation_.x, 0.1f);
+	ImGui::DragFloat("period", &period, 0.1f);
+	ImGui::DragFloat("amplitude", &amplitude, 0.1f);
+	ImGui::End();
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
@@ -64,14 +76,6 @@ void Player::Draw(ViewProjection& viewProjection) {
 
 	// 右腕の描画
 	modelR_arm_->Draw(worldTransformR_arm_, viewProjection);
-
-	// imGui
-	ImGui::Begin("Player");
-	ImGui::DragFloat3("Head", &worldTransformHead_.translation_.x, 0.1f);
-	ImGui::DragFloat3("Body", &worldTransformBody_.translation_.x, 0.1f);
-	ImGui::DragFloat3("L_arm", &worldTransformL_arm_.translation_.x, 0.1f);
-	ImGui::DragFloat3("R_arm", &worldTransformR_arm_.translation_.x, 0.1f);
-	ImGui::End();
 
 }
 
@@ -214,20 +218,17 @@ void Player::Move() {
 void Player::InitializeFloatAnimation() { floatingParam_ = 0.0f; }
 
 void Player::UpdateFloatAnimation() {
-	// sinカーブで浮遊アニメーション
-
-	//　周期
-	const float period = 60.0f; // 60フレームで1周期
 	// 1フレームでの加算量
-	const float add = float(2.0f * M_PI / period);
+	float add = float(2.0f * M_PI / period);
 
 	floatingParam_ += add;
 	// 2πを超えたら0に戻す
 	floatingParam_ = float(std::fmod(floatingParam_, 2.0f * M_PI));
 
-	// 振幅
-	const float amplitude = 0.1f;
-
 	worldTransformBody_.translation_.y = std::sin(floatingParam_) * amplitude;
+
+	// 腕を揺らす
+	worldTransformL_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
+	worldTransformR_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
 
 }
