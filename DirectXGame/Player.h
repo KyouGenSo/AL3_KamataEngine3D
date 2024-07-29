@@ -10,7 +10,10 @@
 #include "Vector3Function.h"
 #include "myFunction.h"
 
-class Player {
+// 親クラス
+#include "BaseCharacter.h"
+
+class Player : public BaseCharacter {
 
 public: // メンバ関数
 	/// <summary>
@@ -26,17 +29,17 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* modelHead, Model* modelBody, Model* modelL_arm, Model* modelR_arm);
+	void Initialize(const std::vector<Model*> models) override;
 
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection) override;
 
 	/// <summary>
 	/// ImGuiによるデバッグ表示
@@ -61,7 +64,6 @@ public: // メンバ関数
 	/// <summary>
 	/// Getters
 	/// </summary>
-	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
 	/// <summary>
 	/// Setters
@@ -72,17 +74,11 @@ private: // メンバ変数
 
 	Input* input_ = nullptr;
 
-
 	/// <summary>
 	/// プレイヤー用
 	/// </summary>
 
-	Model* modelHead_ = nullptr;
-	Model* modelBody_ = nullptr;
-	Model* modelL_arm_ = nullptr;
-	Model* modelR_arm_ = nullptr;
 
-	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformL_arm_;

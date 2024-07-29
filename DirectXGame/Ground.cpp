@@ -2,7 +2,10 @@
 
 Ground::Ground() {}
 
-Ground::~Ground() {}
+Ground::~Ground() {
+
+
+}
 
 void Ground::Initialize(Model* model) {
 	assert(model);

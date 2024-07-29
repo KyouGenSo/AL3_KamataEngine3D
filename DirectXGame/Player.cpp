@@ -3,20 +3,18 @@
 
 Player::Player() {}
 
-Player::~Player() {}
+Player::~Player() {
+	models_.clear();
+	models_.shrink_to_fit();
 
-void Player::Initialize(Model* modelHead, Model* modelBody, Model* modelL_arm, Model* modelR_arm) {
-	assert(modelHead);
-	assert(modelBody);
-	assert(modelL_arm);
-	assert(modelR_arm);
+}
 
-	modelHead_ = modelHead;
-	modelBody_ = modelBody;
-	modelL_arm_ = modelL_arm;
-	modelR_arm_ = modelR_arm;
+void Player::Initialize(const std::vector<Model*> models) {
 
-	worldTransformBase_.Initialize();
+	BaseCharacter::Initialize(models);
+
+	// ワールド変換データの初期化
+	//worldTransform_.Initialize();
 	worldTransformHead_.Initialize();
 	worldTransformBody_.Initialize();
 	worldTransformL_arm_.Initialize();
@@ -28,7 +26,7 @@ void Player::Initialize(Model* modelHead, Model* modelBody, Model* modelL_arm, M
 	worldTransformR_arm_.translation_ = {0.55f, 1.3f, 0.0f};
 
 	// モデル同士の親子関係を設定
-	worldTransformBody_.SetParent(&worldTransformBase_);
+	worldTransformBody_.SetParent(&worldTransform_);
 	worldTransformHead_.SetParent(&worldTransformBody_);
 	worldTransformL_arm_.SetParent(&worldTransformBody_);
 	worldTransformR_arm_.SetParent(&worldTransformBody_);
@@ -44,7 +42,7 @@ void Player::Update() {
 
 	UpdateFloatAnimation();
 
-	worldTransformBase_.TransferMatrix();
+	BaseCharacter::Update();
 
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
@@ -64,19 +62,18 @@ void Player::ImGuiDraw() {
 	ImGui::End();
 }
 
-void Player::Draw(ViewProjection& viewProjection) {
+void Player::Draw(const ViewProjection& viewProjection) {
 	// ヘッドの描画
-	modelHead_->Draw(worldTransformHead_, viewProjection);
+	models_[0]->Draw(worldTransformHead_, viewProjection);
 
 	// 胴体の描画
-	modelBody_->Draw(worldTransformBody_, viewProjection);
+	models_[1]->Draw(worldTransformBody_, viewProjection);
 
 	// 左腕の描画
-	modelL_arm_->Draw(worldTransformL_arm_, viewProjection);
+	models_[2]->Draw(worldTransformL_arm_, viewProjection);
 
 	// 右腕の描画
-	modelR_arm_->Draw(worldTransformR_arm_, viewProjection);
-
+	models_[3]->Draw(worldTransformR_arm_, viewProjection);
 }
 
 void Player::Move() {
@@ -104,7 +101,7 @@ void Player::Move() {
 
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_;
+			worldTransform_.translation_ += move_;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -118,7 +115,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_.normalize() * speed;
+			worldTransform_.translation_ += move_.normalize() * speed;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -129,7 +126,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_.normalize() * speed;
+			worldTransform_.translation_ += move_.normalize() * speed;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -140,7 +137,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_.normalize() * speed;
+			worldTransform_.translation_ += move_.normalize() * speed;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -151,7 +148,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_.normalize() * speed;
+			worldTransform_.translation_ += move_.normalize() * speed;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -162,7 +159,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_;
+			worldTransform_.translation_ += move_;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -173,7 +170,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_;
+			worldTransform_.translation_ += move_;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -184,7 +181,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_;
+			worldTransform_.translation_ += move_;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -195,7 +192,7 @@ void Player::Move() {
 			rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
 			move_ = TransFormNormal(move_, rotationMatrix);
 
-			worldTransformBase_.translation_ += move_;
+			worldTransform_.translation_ += move_;
 
 			targetAngle_ = std::atan2(move_.x, move_.z);
 
@@ -210,9 +207,9 @@ void Player::Move() {
 	}
 
 	// ターゲットの角度に向かって回転
-	worldTransformBase_.rotation_.y = LerpShortAngle(worldTransformBase_.rotation_.y, targetAngle_, t_);
+	worldTransform_.rotation_.y = LerpShortAngle(worldTransform_.rotation_.y, targetAngle_, t_);
 
-	worldTransformBase_.UpdateMatrix();
+	worldTransform_.UpdateMatrix();
 }
 
 void Player::InitializeFloatAnimation() { floatingParam_ = 0.0f; }

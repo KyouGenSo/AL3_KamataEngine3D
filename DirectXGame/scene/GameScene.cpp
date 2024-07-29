@@ -7,7 +7,8 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { 
+GameScene::~GameScene() {
+
 }
 
 void GameScene::Initialize() {
@@ -25,7 +26,11 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 #endif _DEBUG
 
-	// テクスチャの読み込み
+	// worldTransformとviewProjectionの初期化
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
+
+		// テクスチャの読み込み
 	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
 
 	// 3Dモデルの作成
@@ -33,18 +38,18 @@ void GameScene::Initialize() {
 	playerBodyModel_.reset(Model::CreateFromOBJ("float_Body", true));
 	playerL_armModel_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	playerR_armModel_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	playerModels_ = { 
+		playerHeadModel_.get(), 
+		playerBodyModel_.get(), 
+		playerL_armModel_.get(), 
+		playerR_armModel_.get() };
 
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
 	groundModel_.reset(Model::CreateFromOBJ("ground", true));
 
-
-	// worldTransformとviewProjectionの初期化
-	worldTransform_.Initialize();
-	viewProjection_.Initialize();
-
 	// プレイヤーの初期化
 	player_ = std::make_unique<Player>();
-	player_->Initialize(playerHeadModel_.get(), playerBodyModel_.get(), playerL_armModel_.get(), playerR_armModel_.get());
+	player_->Initialize(playerModels_);
 
 	// Skydomeの初期化
 	skydome_ = std::make_unique<Skydome>();
@@ -152,7 +157,7 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
-void GameScene::SetFollowCamera(ViewProjection& viewProjection) { 
+void GameScene::SetFollowCamera(ViewProjection& viewProjection) {
 	viewProjection_.matView = viewProjection.matView;
 	viewProjection_.matProjection = viewProjection.matProjection;
 	viewProjection_.TransferMatrix();

@@ -76,9 +76,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerBodyModel_ = nullptr;
 	std::unique_ptr<Model> playerL_armModel_ = nullptr;
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
-	//std::vector<std::unique_ptr<Model>> playerModels_;
-	//std::unique_ptr<std::vector<Model*>> playerModels_;
-	
+	std::vector<Model*> playerModels_;
+
 	// 天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;
 	std::unique_ptr<Model> skydomeModel_ = nullptr;
