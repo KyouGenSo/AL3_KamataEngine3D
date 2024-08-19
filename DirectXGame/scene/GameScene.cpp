@@ -30,8 +30,9 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
-		// テクスチャの読み込み
-	textureHandle_ = TextureManager::Load("./Resources/player/player.png");
+	// テクスチャの読み込み
+	playerTextureHandle_ = TextureManager::Load("./Resources/player/player.png");
+	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy/enemy_bloom.png");
 
 	// 3Dモデルの作成
 	playerHeadModel_.reset(Model::CreateFromOBJ("float_Head", true));
@@ -44,12 +45,21 @@ void GameScene::Initialize() {
 		playerL_armModel_.get(), 
 		playerR_armModel_.get() };
 
+	enemyBodyModel_.reset(Model::CreateFromOBJ("enemy_body", true));
+	enemyL_armModel_.reset(Model::CreateFromOBJ("enemy_L_arm", true));
+	enemyR_armModel_.reset(Model::CreateFromOBJ("enemy_R_arm", true));
+	enemyModels_ = {enemyBodyModel_.get(), enemyL_armModel_.get(), enemyR_armModel_.get()};
+
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
 	groundModel_.reset(Model::CreateFromOBJ("ground", true));
 
 	// プレイヤーの初期化
 	player_ = std::make_unique<Player>();
 	player_->Initialize(playerModels_);
+
+	// 敵の初期化
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(enemyModels_);
 
 	// Skydomeの初期化
 	skydome_ = std::make_unique<Skydome>();
@@ -87,6 +97,9 @@ void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	// 敵の更新
+	enemy_->Update();
 
 	// 追従カメラの更新
 	followCamera_->Update();
@@ -131,6 +144,9 @@ void GameScene::Draw() {
 
 	// プレイヤーの描画
 	player_->Draw(viewProjection_);
+
+	// 敵の描画
+	enemy_->Draw(viewProjection_);
 
 	// Skydomeの描画
 	skydome_->Draw(viewProjection_);

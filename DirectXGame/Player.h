@@ -64,6 +64,14 @@ public: // メンバ関数
 	/// <summary>
 	/// Getters
 	/// </summary>
+	const WorldTransform& GetWorldTransformHead() const { return worldTransformHead_; }
+	const WorldTransform& GetWorldTransformBody() const { return worldTransformBody_; }
+	const WorldTransform& GetWorldTransformL_arm() const { return worldTransformL_arm_; }
+	const WorldTransform& GetWorldTransformR_arm() const { return worldTransformR_arm_; }
+	// ----------------------浮遊アニメーション用---------------------
+	float GetFloatingParam() const { return floatingParam_; }
+	float GetPeriod() const { return period; }
+	float GetAmplitude() const { return amplitude; }
 
 	/// <summary>
 	/// Setters

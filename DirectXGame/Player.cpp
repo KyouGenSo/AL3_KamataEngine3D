@@ -49,10 +49,12 @@ void Player::Update() {
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 
+	// ImGuiによるデバッグ表示
 	ImGuiDraw();
 }
 
 void Player::ImGuiDraw() {
+#ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::DragFloat3("Head", &worldTransformHead_.translation_.x, 0.1f);
 	ImGui::DragFloat3("L_arm", &worldTransformL_arm_.translation_.x, 0.1f);
@@ -60,6 +62,7 @@ void Player::ImGuiDraw() {
 	ImGui::DragFloat("period", &period, 0.1f);
 	ImGui::DragFloat("amplitude", &amplitude, 0.1f);
 	ImGui::End();
+#endif _DEBUG
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
@@ -81,10 +84,10 @@ void Player::Move() {
 	Vector3 move_;
 	Matrix4x4 rotationMatrix;
 
-	// ゲームパッドによる移動
+	
 	XINPUT_STATE joyState;
 
-	if (input_->GetJoystickState(0, joyState)) {
+	if (input_->GetJoystickState(0, joyState)) { // ゲームパッドによる移動
 		const float deadzone = 0.24f;
 		bool isMoving = false;
 

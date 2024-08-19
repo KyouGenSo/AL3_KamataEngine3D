@@ -17,7 +17,7 @@ void FollowCamera::Update() {
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
 
-		viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX * rotateSpeed * 0.001f;
+		viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX * rotateSpeed * 0.0001f;
 	}
 
 	// キーボードによる回転

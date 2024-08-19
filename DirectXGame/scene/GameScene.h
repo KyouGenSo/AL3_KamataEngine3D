@@ -15,6 +15,7 @@
 
 // Game Object
 #include "Player.h"
+#include "Enemy.h"
 #include "Skydome.h"
 #include "Ground.h"
 #include "followCamera.h"
@@ -50,6 +51,7 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+
 	void SetFollowCamera(ViewProjection& viewProjection);
 
 private: // メンバ変数
@@ -60,7 +62,6 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	uint32_t textureHandle_ = 0;
 
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
@@ -77,6 +78,15 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerL_armModel_ = nullptr;
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
 	std::vector<Model*> playerModels_;
+	uint32_t playerTextureHandle_ = 0;
+
+	// enemy
+	std::unique_ptr<Enemy> enemy_ = nullptr;
+	std::unique_ptr<Model> enemyBodyModel_ = nullptr;
+	std::unique_ptr<Model> enemyL_armModel_ = nullptr;
+	std::unique_ptr<Model> enemyR_armModel_ = nullptr;
+	std::vector<Model*> enemyModels_;
+	uint32_t enemyTextureHandle_ = 0;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;
