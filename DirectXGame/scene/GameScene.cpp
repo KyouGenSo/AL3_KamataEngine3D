@@ -34,23 +34,30 @@ void GameScene::Initialize() {
 	playerTextureHandle_ = TextureManager::Load("./Resources/player/player.png");
 	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy/enemy_bloom.png");
 
-	// 3Dモデルの作成
+	// 3Dモデルの作成----------------------------------------------------
+	// プレイヤーのモデル
 	playerHeadModel_.reset(Model::CreateFromOBJ("float_Head", true));
 	playerBodyModel_.reset(Model::CreateFromOBJ("float_Body", true));
 	playerL_armModel_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	playerR_armModel_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	playerWeaponModel_.reset(Model::CreateFromOBJ("weapon", true));// プレイヤーの武器のモデル
 	playerModels_ = { 
 		playerHeadModel_.get(), 
 		playerBodyModel_.get(), 
 		playerL_armModel_.get(), 
-		playerR_armModel_.get() };
+		playerR_armModel_.get(), 
+		playerWeaponModel_.get()};
 
+	// 敵のモデル
 	enemyBodyModel_.reset(Model::CreateFromOBJ("enemy_body", true));
 	enemyL_armModel_.reset(Model::CreateFromOBJ("enemy_L_arm", true));
 	enemyR_armModel_.reset(Model::CreateFromOBJ("enemy_R_arm", true));
 	enemyModels_ = {enemyBodyModel_.get(), enemyL_armModel_.get(), enemyR_armModel_.get()};
 
+	// Skydomeのモデル
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
+
+	// 地面のモデル
 	groundModel_.reset(Model::CreateFromOBJ("ground", true));
 
 	// プレイヤーの初期化

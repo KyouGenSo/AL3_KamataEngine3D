@@ -77,6 +77,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerBodyModel_ = nullptr;
 	std::unique_ptr<Model> playerL_armModel_ = nullptr;
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
+	std::unique_ptr<Model> playerWeaponModel_ = nullptr; // weapon
 	std::vector<Model*> playerModels_;
 	uint32_t playerTextureHandle_ = 0;
 
