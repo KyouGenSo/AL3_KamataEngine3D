@@ -79,7 +79,6 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
 	std::unique_ptr<Model> playerWeaponModel_ = nullptr; // weapon
 	std::vector<Model*> playerModels_;
-	uint32_t playerTextureHandle_ = 0;
 
 	// enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;
@@ -87,7 +86,6 @@ private: // メンバ変数
 	std::unique_ptr<Model> enemyL_armModel_ = nullptr;
 	std::unique_ptr<Model> enemyR_armModel_ = nullptr;
 	std::vector<Model*> enemyModels_;
-	uint32_t enemyTextureHandle_ = 0;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;

@@ -30,10 +30,6 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
-	// テクスチャの読み込み
-	playerTextureHandle_ = TextureManager::Load("./Resources/player/player.png");
-	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy/enemy_bloom.png");
-
 	// 3Dモデルの作成----------------------------------------------------
 	// プレイヤーのモデル
 	playerHeadModel_.reset(Model::CreateFromOBJ("float_Head", true));
@@ -60,6 +56,7 @@ void GameScene::Initialize() {
 	// 地面のモデル
 	groundModel_.reset(Model::CreateFromOBJ("ground", true));
 
+	// 初期化------------------------------------------------------------
 	// プレイヤーの初期化
 	player_ = std::make_unique<Player>();
 	player_->Initialize(playerModels_);

@@ -45,11 +45,17 @@ public: // メンバ関数
 	/// <summary>
 	/// Behaviors
 	/// </summary>
-	void BehaviorRootInitialize();
-	void BehaviorRootUpdate();
+	void BehaviorRootInitialize(); // 通常状態の初期化
+	void BehaviorRootUpdate();     // 通常状態の更新
 
-	void BehaviorAttackInitialize();
-	void BehaviorAttackUpdate();
+	void BehaviorAttackInitialize(); // 攻撃状態の初期化
+	void BehaviorAttackUpdate();     // 攻撃状態の更新
+
+	void BehaviorDashInitialize(); // ダッシュ状態の初期化
+	void BehaviorDashUpdate();     // ダッシュ状態の更新
+
+	void BehaviorJumpInitialize(); // ジャンプ状態の初期化
+	void BehaviorJumpUpdate();     // ジャンプ状態の更新
 
 	/// <summary>
 	/// ImGuiによるデバッグ表示
@@ -90,8 +96,21 @@ public: // メンバ関数
 
 
 private: // メンバ変数
+	struct WorkAttack {
+		bool isPreAttack_ = true;
+		bool isAttack_ = false;
+		float preAttackAngle_ = -3.1f;
+		float attackAngle_ = -1.2f;
+	};
+
+	struct WorkDash {
+		// ダッシュ用の媒介変数
+		uint32_t dashParam = 0;
+	};
 
 	Input* input_ = nullptr;
+
+	XINPUT_STATE joyState_;
 
 	/// <summary>
 	/// プレイヤー用
@@ -104,6 +123,8 @@ private: // メンバ変数
 	WorldTransform worldTransformR_arm_;
 	WorldTransform worldTransformWeapon_;
 
+	Vector3 velocity_ = {};
+
 	const ViewProjection* cameraViewProjection_;
 
 	float targetAngle_ = 0.0f;
@@ -113,18 +134,20 @@ private: // メンバ変数
 	enum class Behavior {
 		kRoot,
 		kAttack,
+		kDash,
+		kJump,
 	};
 
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
-	//----------------------攻撃アニメーション用---------------------
+	//----------------------攻撃用---------------------
+	WorkAttack workAttack_;
 	bool enableWeapon_ = false;
-	bool isPreAttack_ = true;
-	bool isAttack_ = false;
-	float preAttackAngle_ = -3.1f;
-	float attackAngle_ = -1.2f;
 	float attackRecovryTime_ = 15.0f;
+
+	//----------------------ダッシュ用---------------------
+	WorkDash workDash_;
 
 	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;
