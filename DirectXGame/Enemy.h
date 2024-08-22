@@ -9,6 +9,7 @@
 #include <cmath>
 #include "memory"
 #include "myFunction.h"
+#include "collisionTypeIdDef.h"
 
 // 親クラス
 #include "BaseCharacter.h"
@@ -40,6 +41,11 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw(const ViewProjection& viewProjection) override;
+
+	/// <summary>
+	/// 衝突判定
+	/// </summary>
+	void OnCollision([[maybe_unused]] Collider* other) override;
 
 	/// <summary>
 	/// 移動
@@ -77,6 +83,7 @@ private: // メンバ変数
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
+
 
 	//const ViewProjection* cameraViewProjection_;
 

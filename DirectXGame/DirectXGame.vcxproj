@@ -115,6 +115,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="followCamera.cpp" />
     <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="hammer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix4x4Function.cpp" />
     <ClCompile Include="myFunction.cpp" />
@@ -151,9 +152,11 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="collider.h" />
     <ClInclude Include="collisionManager.h" />
+    <ClInclude Include="collisionTypeIdDef.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="followCamera.h" />
     <ClInclude Include="ground.h" />
+    <ClInclude Include="hammer.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\Vector2.h" />

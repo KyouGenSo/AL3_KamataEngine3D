@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "ImGuiManager.h"
 
+
 Player::Player() {}
 
 Player::~Player() {
@@ -27,24 +28,29 @@ void Player::Initialize(const std::vector<Model*> models) {
 	worldTransformBody_.Initialize();
 	worldTransformL_arm_.Initialize();
 	worldTransformR_arm_.Initialize();
-	worldTransformWeapon_.Initialize();
 
 	// モデルの初期位置を設定
 	worldTransformHead_.translation_ = {0.0f, 1.5f, 0.0f};
 	worldTransformL_arm_.translation_ = {-0.55f, 1.3f, 0.0f};
 	worldTransformR_arm_.translation_ = {0.55f, 1.3f, 0.0f};
-	worldTransformWeapon_.translation_ = {0.0f, 0.8f, 0.0f};
 
 	// モデル同士の親子関係を設定
 	worldTransformBody_.SetParent(&worldTransform_);
 	worldTransformHead_.SetParent(&worldTransformBody_);
 	worldTransformL_arm_.SetParent(&worldTransformBody_);
 	worldTransformR_arm_.SetParent(&worldTransformBody_);
-	worldTransformWeapon_.SetParent(&worldTransformBody_);
+
+	// 武器の初期化
+	hammer_ = std::make_unique<Hammer>();
+	hammer_->Initialize(models[4], Model::CreateSphere());
+	hammer_->SetParent(worldTransformBody_);
 
 	input_ = Input::GetInstance();
 
 	InitializeFloatAnimation();
+
+	// Colliderの設定
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayer));
 }
 
 void Player::Update() {
@@ -99,10 +105,9 @@ void Player::Update() {
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
-	worldTransformWeapon_.UpdateMatrix();
 
-	// ImGuiによるデバッグ表示
-	//ImGuiDraw();
+	// 武器の更新
+	hammer_->Update();
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
@@ -120,7 +125,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 
 	// 武器の描画
 	if (enableWeapon_) {
-		models_[4]->Draw(worldTransformWeapon_, viewProjection);
+		hammer_->Draw(viewProjection);
 	}
 }
 
@@ -154,13 +159,6 @@ void Player::ImGuiDraw() {
 			ImGui::DragFloat3("translation", &worldTransformR_arm_.translation_.x, 0.1f);
 			ImGui::DragFloat3("rotation", &worldTransformR_arm_.rotation_.x, 0.1f);
 			ImGui::DragFloat3("scale", &worldTransformR_arm_.scale_.x, 0.1f);
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Weapon")) {
-			ImGui::DragFloat3("translation", &worldTransformWeapon_.translation_.x, 0.1f);
-			ImGui::DragFloat3("rotation", &worldTransformWeapon_.rotation_.x, 0.1f);
-			ImGui::DragFloat3("scale", &worldTransformWeapon_.scale_.x, 0.1f);
 			ImGui::EndTabItem();
 		}
 
@@ -326,9 +324,14 @@ void Player::UpdateFloatAnimation() {
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
 }
 
-void Player::OnCollision() {
-	// 衝突処理
-	behaviorRequest_ = Behavior::kJump;
+void Player::OnCollision([[maybe_unused]] Collider* other) {
+	// 衝突相手の種別IDを取得
+	uint32_t typeID = other->GetTypeID();
+
+	// 衝突相手が敵である場合
+	if (typeID == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
+		behaviorRequest_ = Behavior::kJump;
+	}
 }
 
 // ----------------------行動遷移用---------------------
@@ -382,7 +385,7 @@ void Player::BehaviorAttackInitialize() {
 
 	attackRecovryTime_ = 15.0f;
 
-	worldTransformWeapon_.rotation_.x = 1.1f;
+	hammer_->SetRotation({1.1f, 0.0f, 0.0f});
 }
 void Player::BehaviorAttackUpdate() {
 	enableWeapon_ = true;
@@ -392,8 +395,8 @@ void Player::BehaviorAttackUpdate() {
 			worldTransformL_arm_.rotation_.x -= 0.2f;
 			worldTransformR_arm_.rotation_.x -= 0.2f;
 
-			if (worldTransformWeapon_.rotation_.x > 0.0f)
-				worldTransformWeapon_.rotation_.x -= 0.1f;
+			if (hammer_->GetRotation().x > 0.0f)
+				hammer_->SetRotation({hammer_->GetRotation().x - 0.1f, 0.0f, 0.0f});
 		} else {
 			workAttack_.isAttack_ = true;
 			workAttack_.isPreAttack_ = false;
@@ -406,8 +409,8 @@ void Player::BehaviorAttackUpdate() {
 			worldTransformL_arm_.rotation_.x += 0.3f;
 			worldTransformR_arm_.rotation_.x += 0.3f;
 
-			if (worldTransformWeapon_.rotation_.x < 1.6f)
-				worldTransformWeapon_.rotation_.x += 0.2f;
+			if (hammer_->GetRotation().x < 1.6f)
+				hammer_->SetRotation({hammer_->GetRotation().x + 0.2f, 0.0f, 0.0f});
 
 		} else {
 			attackRecovryTime_ -= 1.0f;

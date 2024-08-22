@@ -29,6 +29,8 @@ void Enemy::Initialize(const std::vector<Model*> models) {
 	worldTransformBody_.SetParent(&worldTransform_);
 	worldTransformL_arm_.SetParent(&worldTransformBody_);
 	worldTransformR_arm_.SetParent(&worldTransformBody_);
+
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeId::kEnemy));
 }
 
 void Enemy::Update() {
@@ -96,4 +98,14 @@ void Enemy::UpdateFloatAnimation() {
 	// 腕を揺らす
 	worldTransformL_arm_.translation_.y = std::sin(floatingParam_) * amplitude;
 	worldTransformR_arm_.translation_.y = std::sin(floatingParam_) * amplitude;
+}
+
+void Enemy::OnCollision([[maybe_unused]] Collider* other) {
+	// 衝突相手の種別IDを取得
+	uint32_t typeID = other->GetTypeID();
+
+	// 衝突相手がプレイヤーである場合
+	if (typeID == static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)) {
+
+	}
 }

@@ -52,7 +52,8 @@ void GameScene::Initialize() {
 	enemyBodyModel_.reset(Model::CreateFromOBJ("enemy_body", true));
 	enemyL_armModel_.reset(Model::CreateFromOBJ("enemy_L_arm", true));
 	enemyR_armModel_.reset(Model::CreateFromOBJ("enemy_R_arm", true));
-	enemyModels_ = {enemyBodyModel_.get(), enemyL_armModel_.get(), enemyR_armModel_.get()};
+	enemyHitEffectModel_.reset(Model::CreateSphere());
+	enemyModels_ = {enemyBodyModel_.get(), enemyL_armModel_.get(), enemyR_armModel_.get(), enemyHitEffectModel_.get()};
 
 	// Skydomeのモデル
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
@@ -167,9 +168,6 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	// プレイヤーの描画
-	player_->Draw(viewProjection_);
-
 	// 敵の描画
 	enemy_->Draw(viewProjection_);
 
@@ -178,6 +176,9 @@ void GameScene::Draw() {
 
 	// 地面の描画
 	ground_->Draw(viewProjection_);
+
+	// プレイヤーの描画
+	player_->Draw(viewProjection_);
 
 	// 当たり判定の表示用モデルの描画
 	collisionManager_->Draw(viewProjection_);
@@ -213,6 +214,7 @@ void GameScene::CheckAllCollisions() {
 
 	collisionManager_->AddCollider(player_.get());
 	collisionManager_->AddCollider(enemy_.get());
+	collisionManager_->AddCollider(player_->GetHammer());
 
 	collisionManager_->CheckAllCollisions();
 }

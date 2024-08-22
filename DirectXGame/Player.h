@@ -10,6 +10,7 @@
 #include "Vector3Function.h"
 #include "myFunction.h"
 #include <optional>
+#include "hammer.h"
 
 // 親クラス
 #include "BaseCharacter.h"
@@ -80,7 +81,8 @@ public: // メンバ関数
 	/// <summary>
 	/// 衝突判定
 	/// </summary>
-	void OnCollision() override;
+	void OnCollision([[maybe_unused]] Collider* other) override;
+
 	/// <summary>
 	/// Getters
 	/// </summary>
@@ -88,9 +90,8 @@ public: // メンバ関数
 	const WorldTransform& GetWorldTransformBody() const { return worldTransformBody_; }
 	const WorldTransform& GetWorldTransformL_arm() const { return worldTransformL_arm_; }
 	const WorldTransform& GetWorldTransformR_arm() const { return worldTransformR_arm_; }
-	const WorldTransform& GetWorldTransformWeapon() const { return worldTransformWeapon_; }
-
 	Vector3 GetCenter() const override;
+	Hammer* GetHammer() const { return hammer_.get(); }
 	// ----------------------浮遊アニメーション用---------------------
 	float GetFloatingParam() const { return floatingParam_; }
 	float GetPeriod() const { return period; }
@@ -128,7 +129,8 @@ private: // メンバ変数
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
-	WorldTransform worldTransformWeapon_;
+
+	std::unique_ptr<Hammer> hammer_;
 
 	Vector3 velocity_ = {};
 

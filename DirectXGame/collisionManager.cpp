@@ -40,8 +40,8 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 
 	// 衝突しているかどうか
 	if (distance < colliderA->GetRadius() + colliderB->GetRadius()) {
-		colliderA->OnCollision();
-		colliderB->OnCollision();
+		colliderA->OnCollision(colliderB);
+		colliderB->OnCollision(colliderA);
 	}
 }
 
