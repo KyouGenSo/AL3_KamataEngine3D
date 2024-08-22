@@ -21,9 +21,9 @@ void Hammer::Initialize(Model* model, Model* effectModel) {
 
 void Hammer::Update() {
 	if (isHit_) {
-		effectWorldTransform_.scale_.x += 0.2f;
-		effectWorldTransform_.scale_.y += 0.2f;
-		effectWorldTransform_.scale_.z += 0.2f;
+		effectWorldTransform_.scale_.x += 0.8f;
+		effectWorldTransform_.scale_.y += 0.8f;
+		effectWorldTransform_.scale_.z += 0.8f;
 
 		if (effectWorldTransform_.scale_.x >= 2.5f) {
 			effectWorldTransform_.scale_ = Vector3(0.0f, 0.0f, 0.0f);
@@ -52,6 +52,15 @@ void Hammer::OnCollision([[maybe_unused]] Collider* other) {
 	if (typeID == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
 		// 衝突相手を敵クラスにダウンキャスト
 		Enemy* enemy = static_cast<Enemy*>(other);
+		uint32_t serialNum = enemy->GetSerialNumber();
+
+		// すでに衝突している敵である場合は処理を終了
+		if (collisionRecord_.CheckRecord(serialNum)) {
+			return;
+		}
+
+		// 衝突した敵のシリアルナンバーを記録
+		collisionRecord_.AddRecord(serialNum);
 
 		// 敵の位置にeffectを表示
 		effectWorldTransform_.translation_ = enemy->GetCenter();

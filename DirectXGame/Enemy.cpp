@@ -1,9 +1,15 @@
 #include "Enemy.h"
 #include "ImGuiManager.h"
 
+// global serial number
+uint32_t Enemy::nextSerialNumber_ = 0;
+
 Enemy::Enemy() {}
 
-Enemy::~Enemy() {}
+Enemy::~Enemy() { 
+	serialNumber_ = nextSerialNumber_;
+	nextSerialNumber_++;
+}
 
 Vector3 Enemy::GetCenter() const {
 	Vector3 offset = {0.0f, 0.8f, 0.0f};
@@ -93,7 +99,7 @@ void Enemy::UpdateFloatAnimation() {
 	// 2πを超えたら0に戻す
 	floatingParam_ = float(std::fmod(floatingParam_, 2.0f * M_PI));
 
-	// worldTransformBody_.translation_.y = std::sin(floatingParam_) * amplitude;
+	//worldTransformBody_.translation_.y += std::sin(floatingParam_) * amplitude;
 
 	// 腕を揺らす
 	worldTransformL_arm_.translation_.y = std::sin(floatingParam_) * amplitude;

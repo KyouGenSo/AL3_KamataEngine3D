@@ -112,6 +112,7 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="collider.cpp" />
     <ClCompile Include="collisionManager.cpp" />
+    <ClCompile Include="collisionRecord.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="followCamera.cpp" />
     <ClCompile Include="Ground.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="collider.h" />
     <ClInclude Include="collisionManager.h" />
+    <ClInclude Include="collisionRecord.h" />
     <ClInclude Include="collisionTypeIdDef.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="followCamera.h" />

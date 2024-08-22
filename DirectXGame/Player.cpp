@@ -383,9 +383,10 @@ void Player::BehaviorAttackInitialize() {
 	workAttack_.preAttackAngle_ = -3.1f;
 	workAttack_.attackAngle_ = -1.2f;
 
-	attackRecovryTime_ = 15.0f;
+	attackRecovryTime_ = 30.0f;
 
 	hammer_->SetRotation({1.1f, 0.0f, 0.0f});
+	hammer_->ClearCollisionRecord();
 }
 void Player::BehaviorAttackUpdate() {
 	enableWeapon_ = true;

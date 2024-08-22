@@ -71,6 +71,7 @@ public: // メンバ関数
 	/// Getters
 	/// </summary>
 	Vector3 GetCenter() const override;
+	uint32_t GetSerialNumber() const { return serialNumber_; }
 	
 
 	/// <summary>
@@ -84,6 +85,10 @@ private: // メンバ変数
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
 
+	// シリアルナンバー
+	uint32_t serialNumber_ = 0;
+
+	static uint32_t nextSerialNumber_;
 
 	//const ViewProjection* cameraViewProjection_;
 
