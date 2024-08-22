@@ -64,6 +64,7 @@ public: // メンバ関数
 	/// <summary>
 	/// Getters
 	/// </summary>
+	Vector3 GetCenter() const override;
 	
 
 	/// <summary>
@@ -78,7 +79,6 @@ private: // メンバ変数
 	WorldTransform worldTransformR_arm_;
 
 	//const ViewProjection* cameraViewProjection_;
-
 
 	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;

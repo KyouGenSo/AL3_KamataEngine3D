@@ -78,12 +78,19 @@ public: // メンバ関数
 	void UpdateFloatAnimation();
 
 	/// <summary>
+	/// 衝突判定
+	/// </summary>
+	void OnCollision() override;
+	/// <summary>
 	/// Getters
 	/// </summary>
 	const WorldTransform& GetWorldTransformHead() const { return worldTransformHead_; }
 	const WorldTransform& GetWorldTransformBody() const { return worldTransformBody_; }
 	const WorldTransform& GetWorldTransformL_arm() const { return worldTransformL_arm_; }
 	const WorldTransform& GetWorldTransformR_arm() const { return worldTransformR_arm_; }
+	const WorldTransform& GetWorldTransformWeapon() const { return worldTransformWeapon_; }
+
+	Vector3 GetCenter() const override;
 	// ----------------------浮遊アニメーション用---------------------
 	float GetFloatingParam() const { return floatingParam_; }
 	float GetPeriod() const { return period; }
@@ -129,6 +136,8 @@ private: // メンバ変数
 
 	float targetAngle_ = 0.0f;
 	float t_ = 0.0f;
+
+	float collisionRadius_ = 0.5f;
 
 	// ----------------------行動遷移用---------------------
 	enum class Behavior {

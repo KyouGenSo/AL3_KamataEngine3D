@@ -8,7 +8,16 @@ Player::~Player() {
 	models_.shrink_to_fit();
 }
 
+Vector3 Player::GetCenter() const {
+	Vector3 offset = {0.0f, 1.5f, 0.0f};
+	Vector3 worldPos = TransForm(worldTransform_.matWorld_, offset);
+
+	return worldPos;
+}
+
 void Player::Initialize(const std::vector<Model*> models) {
+
+	SetRadius(collisionRadius_);
 
 	BaseCharacter::Initialize(models);
 
@@ -93,7 +102,7 @@ void Player::Update() {
 	worldTransformWeapon_.UpdateMatrix();
 
 	// ImGuiによるデバッグ表示
-	ImGuiDraw();
+	//ImGuiDraw();
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
@@ -315,6 +324,11 @@ void Player::UpdateFloatAnimation() {
 	// 腕を揺らす
 	worldTransformL_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
+}
+
+void Player::OnCollision() {
+	// 衝突処理
+	behaviorRequest_ = Behavior::kJump;
 }
 
 // ----------------------行動遷移用---------------------

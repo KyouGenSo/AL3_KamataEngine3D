@@ -30,6 +30,10 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
+	// collisionMnagerの生成と初期化
+	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
+
 	// 3Dモデルの作成----------------------------------------------------
 	// プレイヤーのモデル
 	playerHeadModel_.reset(Model::CreateFromOBJ("float_Head", true));
@@ -116,6 +120,21 @@ void GameScene::Update() {
 
 	// 地面の更新
 	ground_->Update();
+
+	// デバッグ表示用にトランスフォームを更新
+	collisionManager_->UpdateWorldTransform();
+
+	// 衝突判定と応答
+	CheckAllCollisions();
+
+
+	// プレイヤーのデバッグ表示
+	player_->ImGuiDraw();
+	// 敵のデバッグ表示
+	enemy_->ImGuiDraw();
+	// 当たり判定のデバッグ表示
+	collisionManager_->ImGuiDraw();
+
 }
 
 void GameScene::Draw() {
@@ -130,6 +149,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	
+
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -158,6 +179,9 @@ void GameScene::Draw() {
 	// 地面の描画
 	ground_->Draw(viewProjection_);
 
+	// 当たり判定の表示用モデルの描画
+	collisionManager_->Draw(viewProjection_);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 
@@ -181,4 +205,14 @@ void GameScene::SetFollowCamera(ViewProjection& viewProjection) {
 	viewProjection_.matView = viewProjection.matView;
 	viewProjection_.matProjection = viewProjection.matProjection;
 	viewProjection_.TransferMatrix();
+}
+
+void GameScene::CheckAllCollisions() {
+
+	collisionManager_->Reset();
+
+	collisionManager_->AddCollider(player_.get());
+	collisionManager_->AddCollider(enemy_.get());
+
+	collisionManager_->CheckAllCollisions();
 }

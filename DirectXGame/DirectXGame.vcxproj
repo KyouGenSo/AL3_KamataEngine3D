@@ -110,6 +110,8 @@
     <ClCompile Include="BaseCharacter.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="collider.cpp" />
+    <ClCompile Include="collisionManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="followCamera.cpp" />
     <ClCompile Include="Ground.cpp" />
@@ -147,6 +149,8 @@
     <ClInclude Include="base\StringUtility.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="collider.h" />
+    <ClInclude Include="collisionManager.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="followCamera.h" />
     <ClInclude Include="ground.h" />

@@ -5,6 +5,13 @@ Enemy::Enemy() {}
 
 Enemy::~Enemy() {}
 
+Vector3 Enemy::GetCenter() const {
+	Vector3 offset = {0.0f, 0.8f, 0.0f};
+	Vector3 worldPos = TransForm(worldTransform_.matWorld_, offset);
+
+	return worldPos;
+}
+
 void Enemy::Initialize(const std::vector<Model*> models) {
 	BaseCharacter::Initialize(models);
 
@@ -35,7 +42,7 @@ void Enemy::Update() {
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 
-	ImGuiDraw();
+	//ImGuiDraw();
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) {

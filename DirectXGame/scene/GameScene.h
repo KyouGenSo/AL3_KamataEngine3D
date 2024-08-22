@@ -12,6 +12,7 @@
 #include "AxisIndicator.h"
 #include "memory"
 #include "vector"
+#include "collisionManager.h"
 
 // Game Object
 #include "Player.h"
@@ -51,6 +52,10 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
+	void CheckAllCollisions();
 
 	void SetFollowCamera(ViewProjection& viewProjection);
 
@@ -68,6 +73,9 @@ private: // メンバ変数
 
 	// 追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_ = nullptr;
+
+	// 当たり判定用
+	std::unique_ptr<CollisionManager> collisionManager_;
 
 	// -----Game Object----- //
 

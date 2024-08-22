@@ -5,8 +5,9 @@
 #include "memory"
 #include "vector"
 #include "cassert"
+#include "collider.h"
 
-class BaseCharacter {
+class BaseCharacter : public Collider{
 protected:
 	std::vector<Model*> models_;
 	WorldTransform worldTransform_;
@@ -30,7 +31,9 @@ public:
 	virtual void Draw(const ViewProjection& viewProjection);
 
 	/// <summary>
-	/// ワールド変換データを取得
+	/// Getter
 	/// </summary>
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
+
+	virtual Vector3 GetCenter() const override;
 };
