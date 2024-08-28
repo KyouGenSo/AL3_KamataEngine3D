@@ -21,11 +21,11 @@ void Hammer::Initialize(Model* model, Model* effectModel) {
 
 void Hammer::Update() {
 	if (isHit_) {
-		effectWorldTransform_.scale_.x += 0.8f;
-		effectWorldTransform_.scale_.y += 0.8f;
-		effectWorldTransform_.scale_.z += 0.8f;
+		effectWorldTransform_.scale_.x += 0.5f;
+		effectWorldTransform_.scale_.y += 0.5f;
+		effectWorldTransform_.scale_.z += 0.5f;
 
-		if (effectWorldTransform_.scale_.x >= 2.5f) {
+		if (effectWorldTransform_.scale_.x >= 3.5f) {
 			effectWorldTransform_.scale_ = Vector3(0.0f, 0.0f, 0.0f);
 			isHit_ = false;
 		}

@@ -134,6 +134,13 @@ void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
 	if (ImGui::BeginTabBar("Option")) {
 
+		if (ImGui::BeginTabItem("WorldTransform")) {
+			ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
+			ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.1f);
+			ImGui::DragFloat3("scale", &worldTransform_.scale_.x, 0.1f);
+			ImGui::EndTabItem();
+		}
+
 		if (ImGui::BeginTabItem("Body")) {
 			ImGui::DragFloat3("translation", &worldTransformBody_.translation_.x, 0.1f);
 			ImGui::DragFloat3("rotation", &worldTransformBody_.rotation_.x, 0.1f);
@@ -347,6 +354,8 @@ void Player::BehaviorRootInitialize() {
 	worldTransformR_arm_.rotation_ = {0.0f, 0.0f, 0.0f};
 
 	attackRecovryTime_ = 15.0f;
+
+	hammer_->SetRotation({0.0f, 0.0f, 0.0f});
 }
 void Player::BehaviorRootUpdate() {
 	enableWeapon_ = false;
