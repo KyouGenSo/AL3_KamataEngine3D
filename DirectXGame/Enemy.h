@@ -85,13 +85,13 @@ public: // メンバ関数
 
 private: // メンバ変数
 	WorldTransform worldTransformBody_;
-	WorldTransform worldTransformL_arm_;
-	WorldTransform worldTransformR_arm_;
 
 	// シリアルナンバー
 	uint32_t serialNumber_ = 0;
 
 	static uint32_t nextSerialNumber_;
+
+	Vector3 offset_ = {0.0f, 3.9f, 0.0f};
 
 	// ヒットストップ用
 	bool isHitStop_ = false;

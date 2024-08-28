@@ -51,11 +51,9 @@ void GameScene::Initialize() {
 		playerBulletModel_.get()};
 
 	// 敵のモデル
-	enemyBodyModel_.reset(Model::CreateFromOBJ("enemy_body", true));
-	enemyL_armModel_.reset(Model::CreateFromOBJ("enemy_L_arm", true));
-	enemyR_armModel_.reset(Model::CreateFromOBJ("enemy_R_arm", true));
+	enemyBodyModel_.reset(Model::CreateFromOBJ("boss", true));
 	enemyHitEffectModel_.reset(Model::CreateSphere());
-	enemyModels_ = {enemyBodyModel_.get(), enemyL_armModel_.get(), enemyR_armModel_.get(), enemyHitEffectModel_.get()};
+	enemyModels_ = {enemyBodyModel_.get(), enemyHitEffectModel_.get()};
 
 	// Skydomeのモデル
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));

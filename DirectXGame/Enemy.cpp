@@ -12,7 +12,7 @@ Enemy::~Enemy() {
 }
 
 Vector3 Enemy::GetCenter() const {
-	Vector3 offset = {0.0f, 0.8f, 0.0f};
+	Vector3 offset = offset_;
 	Vector3 worldPos = TransForm(worldTransform_.matWorld_, offset);
 
 	return worldPos;
@@ -21,27 +21,23 @@ Vector3 Enemy::GetCenter() const {
 void Enemy::Initialize(const std::vector<Model*> models) {
 	BaseCharacter::Initialize(models);
 
+	Collider::SetRadius(5.5f);
+
 	// ワールド変換データの初期化
 	worldTransformBody_.Initialize();
-	worldTransformL_arm_.Initialize();
-	worldTransformR_arm_.Initialize();
 
 	// ワールド変換データの初期設定
-	worldTransformBody_.translation_ = {0.0f, 0.8f, 0.0f};
-	worldTransformL_arm_.translation_ = {-0.85f, 0.15f, 0.0f};
-	worldTransformR_arm_.translation_ = {0.85f, 0.15f, 0.0f};
+	worldTransformBody_.translation_ = offset_;
 
 	// モデル同士の親子関係を設定
 	worldTransformBody_.SetParent(&worldTransform_);
-	worldTransformL_arm_.SetParent(&worldTransformBody_);
-	worldTransformR_arm_.SetParent(&worldTransformBody_);
 
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeId::kEnemy));
 }
 
 void Enemy::Update() {
 
-	UpdateFloatAnimation();
+	//UpdateFloatAnimation();
 
 	if (!isHitStop_) {
 		Move();
@@ -49,15 +45,13 @@ void Enemy::Update() {
 
 	BaseCharacter::Update();
 	worldTransformBody_.UpdateMatrix();
-	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();
 
 	if (isHitStop_) {
 		hitStopTime_--;
 		ShakeEffect();
 		if (hitStopTime_ <= 0) {
 			isHitStop_ = false;
-			worldTransformBody_.translation_ = {0.0f, 0.8f, 0.0f};
+			worldTransformBody_.translation_ = offset_;
 		}
 	}
 
@@ -67,18 +61,12 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& viewProjection) {
 	// body描画
 	models_[0]->Draw(worldTransformBody_, viewProjection);
-	// L_arm描画
-	models_[1]->Draw(worldTransformL_arm_, viewProjection);
-	// R_arm描画
-	models_[2]->Draw(worldTransformR_arm_, viewProjection);
 }
 
 void Enemy::ImGuiDraw() {
 #ifdef _DEBUG
 	ImGui::Begin("Enemy");
 	ImGui::DragFloat3("Body", &worldTransformBody_.translation_.x, 0.1f);
-	ImGui::DragFloat3("L_arm", &worldTransformL_arm_.translation_.x, 0.1f);
-	ImGui::DragFloat3("R_arm", &worldTransformR_arm_.translation_.x, 0.1f);
 	ImGui::DragFloat("period", &period, 0.1f);
 	ImGui::DragFloat("amplitude", &amplitude, 0.1f);
 	ImGui::End();
@@ -110,18 +98,15 @@ void Enemy::UpdateFloatAnimation() {
 	// 2πを超えたら0に戻す
 	floatingParam_ = float(std::fmod(floatingParam_, 2.0f * M_PI));
 
-	//worldTransformBody_.translation_.y += std::sin(floatingParam_) * amplitude;
+	worldTransformBody_.translation_.y += std::sin(floatingParam_) * amplitude;
 
-	// 腕を揺らす
-	worldTransformL_arm_.translation_.y = std::sin(floatingParam_) * amplitude;
-	worldTransformR_arm_.translation_.y = std::sin(floatingParam_) * amplitude;
 }
 
 void Enemy::ShakeEffect() {
 	// ランダムな値を生成
-	float randomX = Rand(-0.1f, 0.1f);
+	float randomX = Rand(-0.15f, 0.15f);
 	float randomY = Rand(-0.03f, 0.03f);
-	float randomZ = Rand(-0.1f, 0.1f);
+	float randomZ = Rand(-0.15f, 0.15f);
 
 
 	worldTransformBody_.translation_.x += randomX;

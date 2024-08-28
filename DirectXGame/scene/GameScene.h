@@ -98,8 +98,6 @@ private: // メンバ変数
 	// enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	std::unique_ptr<Model> enemyBodyModel_ = nullptr;
-	std::unique_ptr<Model> enemyL_armModel_ = nullptr;
-	std::unique_ptr<Model> enemyR_armModel_ = nullptr;
 	std::unique_ptr<Model> enemyHitEffectModel_ = nullptr;
 	std::vector<Model*> enemyModels_;
 
