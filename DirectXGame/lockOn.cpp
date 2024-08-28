@@ -17,7 +17,7 @@ void LockOn::Update(const std::unique_ptr<Enemy>& enemy, const ViewProjection& v
 
 	if (input_->GetJoystickState(0, joyState_)) {
 		// ロックオンボタンが押されたら
-		if (joyState_.Gamepad.bLeftTrigger > 0) {
+		if (joyState_.Gamepad.bLeftTrigger > 0 && player_->GetBehavior() != 1) {
 			// ロックオン対象の検索
 			SearchTarget(enemy, viewProjection);
 		} else {

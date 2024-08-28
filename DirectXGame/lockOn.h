@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemy.h"
+#include "Player.h"
 #include "Matrix4x4Function.h"
 #include "Sprite.h"
 #include "Xinput.h"
@@ -43,6 +44,8 @@ public:
 
 	bool isTargetExist() const { return target_ ? true : false; }
 
+	void SetPlayer(const Player* player) { player_ = player; }
+
 	/// <summary>
 	/// 　getter
 	/// </summary>
@@ -59,10 +62,13 @@ private:
 	// ロックオン対象
 	const Enemy* target_ = nullptr;
 
+	// player
+	const Player* player_ = nullptr;
+
 	// 最小距離
-	float minDis_ = 0.0f;
+	float minDis_ = 10.0f;
 	// 最大距離
-	float maxDis_ = 50.0f;
+	float maxDis_ = 90.0f;
 	// 角度範囲
 	float angleRange_ = 30.0f * kDeg2Rad;
 };

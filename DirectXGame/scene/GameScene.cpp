@@ -41,12 +41,14 @@ void GameScene::Initialize() {
 	playerL_armModel_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	playerR_armModel_.reset(Model::CreateFromOBJ("float_R_arm", true));
 	playerWeaponModel_.reset(Model::CreateFromOBJ("weapon", true));// プレイヤーの武器のモデル
-	playerModels_ = { 
+	playerBulletModel_.reset(Model::CreateFromOBJ("cube", true)); // プレイヤーの弾のモデル
+	playerModels_ = {
 		playerHeadModel_.get(), 
 		playerBodyModel_.get(), 
 		playerL_armModel_.get(), 
 		playerR_armModel_.get(), 
-		playerWeaponModel_.get()};
+		playerWeaponModel_.get(), 
+		playerBulletModel_.get()};
 
 	// 敵のモデル
 	enemyBodyModel_.reset(Model::CreateFromOBJ("enemy_body", true));
@@ -72,9 +74,15 @@ void GameScene::Initialize() {
 	player_->Initialize(playerModels_);
 	player_->SetLockOn(lockOn_.get());
 
+	// LockOnにプレイヤーをセット
+	lockOn_->SetPlayer(player_.get());
+
 	// 敵の初期化
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModels_);
+
+	// プレイヤーに敵をセット
+	player_->SetEnemy(enemy_.get());
 
 	// Skydomeの初期化
 	skydome_ = std::make_unique<Skydome>();
@@ -226,6 +234,10 @@ void GameScene::CheckAllCollisions() {
 	collisionManager_->AddCollider(player_.get());
 	collisionManager_->AddCollider(enemy_.get());
 	collisionManager_->AddCollider(player_->GetHammer());
+	std::list<PlayerBullet*> bullets = player_->GetBullets();
+	for (PlayerBullet* bullet : bullets) {
+		collisionManager_->AddCollider(bullet);
+	}
 
 	collisionManager_->CheckAllCollisions();
 }

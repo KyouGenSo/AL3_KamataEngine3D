@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "ImGuiManager.h"
+#include "enemy.h"
 #include "lockOn.h"
 
 // コンボの定数表
@@ -65,6 +66,14 @@ void Player::Initialize(const std::vector<Model*> models) {
 
 void Player::Update() {
 
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	// 行動遷移
 	if (behaviorRequest_) {
 		// behavior_を変更する
@@ -111,6 +120,20 @@ void Player::Update() {
 		break;
 	}
 
+	// ロックオンしてる時に右トリガーで弾を撃つ
+	if (lockOn_->isTargetExist()) {
+		if (input_->GetJoystickState(0, joyState_)) {
+			if (joyState_.Gamepad.bRightTrigger > 0 && --shotCD_ <= 0.0f) {
+				Shot();
+			}
+		}
+	}
+
+	// 弾の更新
+	for (auto bullet : bullets_) {
+		bullet->Update();
+	}
+
 	// 行列の更新
 	BaseCharacter::Update();
 	worldTransform_.UpdateMatrix();
@@ -151,6 +174,11 @@ void Player::Draw(const ViewProjection& viewProjection) {
 
 	// 右腕の描画
 	models_[3]->Draw(worldTransformR_arm_, viewProjection);
+
+	// 弾の描画
+	for (auto bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
 
 	// 武器の描画
 	if (enableWeapon_) {
@@ -377,6 +405,20 @@ void Player::UpdateFloatAnimation() {
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
 }
 
+bool Player::IsMoveInput() {
+	if (input_->PushKey(DIK_W) || input_->PushKey(DIK_A) || input_->PushKey(DIK_S) || input_->PushKey(DIK_D) || input_->PushKey(DIK_LEFT) || input_->PushKey(DIK_RIGHT)) {
+		return true;
+	}
+
+	if (input_->GetJoystickState(0, joyState_)) {
+		if (joyState_.Gamepad.sThumbLX != 0 || joyState_.Gamepad.sThumbLY != 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void Player::OnCollision([[maybe_unused]] Collider* other) {
 	// 衝突相手の種別IDを取得
 	uint32_t typeID = other->GetTypeID();
@@ -385,6 +427,33 @@ void Player::OnCollision([[maybe_unused]] Collider* other) {
 	if (typeID == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
 		behaviorRequest_ = Behavior::kJump;
 	}
+}
+
+void Player::Shot() { 
+	assert(enemy_);
+
+	float speed = 0.5f;
+
+	Vector3 bulletVelocity = {0.0f, 0.0f, 0.0f};
+
+	// プレイヤーの位置
+	Vector3 playerPos = GetCenter();
+	// 敵の位置
+	Vector3 enemyPos = enemy_->GetCenter();
+	// プレイヤーから敵へのベクトル
+	Vector3 dir = enemyPos - playerPos;
+	// ベクトルの正規化
+	dir = dir.normalize();
+	// 弾の速度
+	bulletVelocity = dir * speed;
+
+	// プレイヤーの位置から弾を発射
+	PlayerBullet* bullet = new PlayerBullet();
+	bullet->Initialize(models_[5], playerPos, bulletVelocity);
+	bullet->SetEnemy(enemy_);
+	bullets_.push_back(bullet);
+
+	shotCD_ = 10.0f;
 }
 
 // ----------------------行動遷移用---------------------
@@ -416,13 +485,14 @@ void Player::BehaviorRootUpdate() {
 
 	if (input_->GetJoystickState(0, joyState_)) {
 		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-			if (attackRecovryTime_ <= 0.0f)
+			if (attackRecovryTime_ <= 0.0f && !lockOn_->isTargetExist()) {
 				behaviorRequest_ = Behavior::kAttack;
+			}
 		}
 
 		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
 			if (workDash_.dashCD <= 0.0f)
-			behaviorRequest_ = Behavior::kDash;
+				behaviorRequest_ = Behavior::kDash;
 		}
 
 		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
@@ -722,17 +792,3 @@ void Player::BehaviorJumpUpdate() {
 }
 
 // ----------------------行動遷移用---------------------//
-
-bool Player::IsMoveInput() {
-	if (input_->PushKey(DIK_W) || input_->PushKey(DIK_A) || input_->PushKey(DIK_S) || input_->PushKey(DIK_D) || input_->PushKey(DIK_LEFT) || input_->PushKey(DIK_RIGHT)) {
-		return true;
-	}
-
-	if (input_->GetJoystickState(0, joyState_)) {
-		if (joyState_.Gamepad.sThumbLX != 0 || joyState_.Gamepad.sThumbLY != 0) {
-			return true;
-		}
-	}
-
-	return false;
-}

@@ -29,3 +29,5 @@ float LerpShortAngle(float a, float b, float t);
 
 // EaseIn
 Vector2 EaseIn(Vector2 start, Vector2 end, float t);
+
+Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);

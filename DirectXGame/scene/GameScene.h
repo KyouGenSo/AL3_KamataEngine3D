@@ -16,6 +16,7 @@
 
 // Game Object
 #include "Player.h"
+#include "playerBullet.h"
 #include "Enemy.h"
 #include "Skydome.h"
 #include "Ground.h"
@@ -87,6 +88,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerL_armModel_ = nullptr;
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
 	std::unique_ptr<Model> playerWeaponModel_ = nullptr; // weapon
+	std::unique_ptr<Model> playerBulletModel_ = nullptr; // bullet
 	std::vector<Model*> playerModels_;
 
 	// LockOn system

@@ -11,11 +11,14 @@
 #include "myFunction.h"
 #include <optional>
 #include "hammer.h"
+#include "playerBullet.h"
 
 // 親クラス
 #include "BaseCharacter.h"
 
 class LockOn;
+
+class Enemy;
 
 class Player : public BaseCharacter {
 
@@ -99,6 +102,11 @@ public:
 	void Move();
 
 	/// <summary>
+	/// 弾を撃つ
+	/// </summary>
+	void Shot();
+
+	/// <summary>
 	/// 浮遊アニメーションの初期化
 	/// </summary>
 	void InitializeFloatAnimation();
@@ -127,6 +135,9 @@ public:
 	const WorldTransform& GetWorldTransformR_arm() const { return worldTransformR_arm_; }
 	Vector3 GetCenter() const override;
 	Hammer* GetHammer() const { return hammer_.get(); }
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+	// gat behavior
+	const int GetBehavior() const { return static_cast<int>(behavior_); }
 	// ----------------------浮遊アニメーション用---------------------
 	float GetFloatingParam() const { return floatingParam_; }
 	float GetPeriod() const { return period; }
@@ -137,6 +148,7 @@ public:
 	/// </summary>
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
 	void SetLockOn(const LockOn* lockOn) { lockOn_ = lockOn; }
+	void SetEnemy(const Enemy* enemy) { enemy_ = enemy; }
 
 
 private: // メンバ変数
@@ -161,6 +173,9 @@ private: // メンバ変数
 	// LockOn
 	const LockOn* lockOn_ = nullptr;
 
+	// Enemy
+	const Enemy* enemy_ = nullptr;
+
 	/// <summary>
 	/// プレイヤー用
 	/// </summary>
@@ -172,6 +187,10 @@ private: // メンバ変数
 	WorldTransform worldTransformR_arm_;
 
 	std::unique_ptr<Hammer> hammer_;
+
+	// bullet
+	std::list<PlayerBullet*> bullets_;
+	float shotCD_ = 0.0f;
 
 	Vector3 velocity_ = {};
 
