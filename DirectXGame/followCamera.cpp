@@ -1,6 +1,7 @@
 #include "followCamera.h"
 #include "ImGuiManager.h"
 #include "lockOn.h"
+#include "ImGuiManager.h"
 
 FollowCamera::FollowCamera() {}
 
@@ -63,6 +64,8 @@ void FollowCamera::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
+	// ImGui描画
+	ImGuiDraw();
 }
 
 void FollowCamera::Reset() { 
@@ -79,7 +82,7 @@ void FollowCamera::Reset() {
 }
 
 Vector3 FollowCamera::CalculateOffset() const {
-	Vector3 offset = {0.0f, 2.0f, -10.0f};
+	Vector3 offset = {0.0f, 3.0f, -13.0f};
 
 	// カメラの角度から回転行列を算出
 	Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(viewProjection_.rotation_);
@@ -92,4 +95,14 @@ Vector3 FollowCamera::CalculateOffset() const {
 void FollowCamera::SetTarget(const WorldTransform* target) { 
 	target_ = target;
 	Reset();
+}
+
+void FollowCamera::ImGuiDraw() {
+	ImGui::Begin("Camera");
+
+	ImGui::DragFloat3("Position", &viewProjection_.translation_.x, 0.1f);
+	ImGui::DragFloat3("Rotation", &viewProjection_.rotation_.x, 0.1f);
+
+
+	ImGui::End();
 }

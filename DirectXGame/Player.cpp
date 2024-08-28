@@ -127,6 +127,10 @@ void Player::Update() {
 		hitStopTime_ = 8;
 	}
 
+	if (workDash_.dashCD > 0) {
+		workDash_.dashCD--;
+	}
+
 	if (isHitStop_) {
 		hitStopTime_--;
 		if (hitStopTime_ <= 0) {
@@ -417,6 +421,7 @@ void Player::BehaviorRootUpdate() {
 		}
 
 		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+			if (workDash_.dashCD <= 0.0f)
 			behaviorRequest_ = Behavior::kDash;
 		}
 
@@ -685,6 +690,7 @@ void Player::BehaviorDashUpdate() {
 
 	// ダッシュの時間が経過したら
 	if (++workDash_.dashParam >= kDashTime) {
+		workDash_.dashCD = 30.f;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 }

@@ -17,9 +17,12 @@ public: // メンバ関数
 	~FollowCamera();
 
 	void Initialize();
+
 	void Update();
 
 	void Reset();
+
+	void ImGuiDraw();
 
 	// offsetの計算関数
 	Vector3 CalculateOffset() const;

@@ -150,6 +150,8 @@ private: // メンバ変数
 	struct WorkDash {
 		// ダッシュ用の媒介変数
 		uint32_t dashParam = 0;
+		// ダッシュのCD
+		float dashCD = 0.f;
 	};
 
 	Input* input_ = nullptr;
