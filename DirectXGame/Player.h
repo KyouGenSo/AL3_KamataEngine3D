@@ -17,7 +17,35 @@
 
 class Player : public BaseCharacter {
 
-public: // メンバ関数
+public: 
+	/// <summary>
+	/// 定数
+	///</summary>
+	
+	// 攻撃の定数
+	struct ConstAttack {
+		// 振りかぶりの時間
+		uint32_t preAttackTime;
+		// 溜めの時間
+		uint32_t chargeTime;
+		// 攻撃振りの時間
+		uint32_t attackTime;
+		// 硬直時間
+		uint32_t recoveryTime;
+		// 振りかぶりの移動速さ
+		float preAttackSpeed;
+		// 溜めの移動速さ
+		float chargeSpeed;
+		// 攻撃振りの移動速さ
+		float attackSpeed;
+	};
+	
+	// コンボの数
+	static const int kComboNum = 3;
+	// コンボ定数表
+	static const std::array<ConstAttack, kComboNum> kConstAttacks_;
+
+	// メンバ関数------------------------------------------------------
 	/// <summary>
 	/// コンストラクタ
 	///</summary>
@@ -105,10 +133,10 @@ public: // メンバ関数
 
 private: // メンバ変数
 	struct WorkAttack {
-		bool isPreAttack_ = true;
-		bool isAttack_ = false;
-		float preAttackAngle_ = -3.1f;
-		float attackAngle_ = -1.2f;
+		int32_t attackParam = 0;
+		int32_t comboIndex = 0;
+		int32_t inComboPhase = 0;
+		bool comboNext = false;
 	};
 
 	struct WorkDash {
@@ -156,6 +184,25 @@ private: // メンバ変数
 	WorkAttack workAttack_;
 	bool enableWeapon_ = false;
 	float attackRecovryTime_ = 15.0f;
+
+	// 攻撃の角度
+	float R_armAngleX = -3.3f;
+	float R_armAngleY = 1.5f;
+	float L_armAngleX = -3.3f;
+	float hammerAngleX = 1.6f;
+	float hammerAngleY = 3.2f;
+	float hammerAngleZ = 1.6f;
+	float hammerPosY = 1.3f;
+	float hammerPosZ = -0.4f;
+	float BodyAngleY = 6.3f;
+
+	// 各段階の時間
+	uint32_t preAttackTime = kConstAttacks_[workAttack_.comboIndex].preAttackTime;
+	uint32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
+	uint32_t attackTime = kConstAttacks_[workAttack_.comboIndex].attackTime;
+	uint32_t recoveryTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
+	// 一コンボ分の合計時間
+	int32_t comboTime = preAttackTime + chargeTime + attackTime + recoveryTime;
 
 	//----------------------ダッシュ用---------------------
 	WorkDash workDash_;

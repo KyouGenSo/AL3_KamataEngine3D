@@ -1,5 +1,6 @@
 #include "hammer.h"
 #include "enemy.h"
+#include "ImGuiManager.h"
 
 void Hammer::Initialize(Model* model, Model* effectModel) {
 	model_ = model;
@@ -34,6 +35,8 @@ void Hammer::Update() {
 
 	hammerWorldTransform_.UpdateMatrix();
 	effectWorldTransform_.UpdateMatrix();
+
+	ImGuiDraw();
 }
 
 void Hammer::Draw(const ViewProjection& viewProjection) {
@@ -42,6 +45,16 @@ void Hammer::Draw(const ViewProjection& viewProjection) {
 	if (isHit_) {
 		effectModel_->Draw(effectWorldTransform_, viewProjection);
 	}
+}
+
+void Hammer::ImGuiDraw() { 
+	ImGui::Begin("Hammer");
+
+	ImGui::DragFloat3("Position", &hammerWorldTransform_.translation_.x, 0.1f);
+	ImGui::DragFloat3("Rotation", &hammerWorldTransform_.rotation_.x, 0.1f);
+	ImGui::DragFloat3("Scale", &hammerWorldTransform_.scale_.x, 0.1f);
+
+	ImGui::End();
 }
 
 void Hammer::OnCollision([[maybe_unused]] Collider* other) {

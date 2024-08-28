@@ -7,7 +7,7 @@ void CollisionManager::Initialize() {
 	collBallModel_.get()->SetAlpha(0.7f);
 }
 
-void CollisionManager::UpdateWorldTransform() { 
+void CollisionManager::UpdateWorldTransform() {
 	if (!collBallVisibility_) {
 		return;
 	}
@@ -27,9 +27,7 @@ void CollisionManager::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
-void CollisionManager::Reset() {
-	colliders_.clear();
-}
+void CollisionManager::Reset() { colliders_.clear(); }
 
 void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
 	// 衝突判定
@@ -62,4 +60,8 @@ void CollisionManager::CheckAllCollisions() {
 	}
 }
 
-void CollisionManager::ImGuiDraw() { ImGui::Checkbox("Collision Ball Visibility", &collBallVisibility_); }
+void CollisionManager::ImGuiDraw() {
+#ifdef _DEBUG
+	ImGui::Checkbox("Collision Ball Visibility", &collBallVisibility_);
+#endif _DEBUG
+}

@@ -24,6 +24,11 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 
 	/// <summary>
+	/// ImGui描画
+	/// </summary>
+	void ImGuiDraw();
+
+	/// <summary>
 	/// 衝突判定
 	/// </summary>
 	void OnCollision([[maybe_unused]] Collider* other) override;
@@ -34,12 +39,14 @@ public:
 	/// </summary>
 	Vector3 GetCenter() const override;
 	const Vector3& GetRotation() const { return hammerWorldTransform_.rotation_; }
+	const Vector3& GetTranslation() const { return hammerWorldTransform_.translation_; }
 	const WorldTransform& GetWorldTransform() const { return hammerWorldTransform_; }
 
 	/// <summary>
 	/// Setter
 	/// </summary>
 	void SetRotation(const Vector3& rotation) { hammerWorldTransform_.rotation_ = rotation; }
+	void SetTranslation(const Vector3& translation) { hammerWorldTransform_.translation_ = translation; }
 	void SetParent(const WorldTransform& parent) { hammerWorldTransform_.parent_ = &parent; }
 
 private:

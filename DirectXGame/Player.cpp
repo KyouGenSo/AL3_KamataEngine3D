@@ -1,6 +1,15 @@
 #include "Player.h"
 #include "ImGuiManager.h"
 
+// コンボの定数表
+const std::array<Player::ConstAttack, Player::kComboNum> Player::kConstAttacks_ = {
+    {// 1コンボ目 {振りかぶり、溜め、攻撃、硬直時間 振りかぶり、溜め、攻撃の移動速さ}
+     {10, 5, 20, 5, 0.0f, 0.0f, 0.7f},
+     // 2コンボ目
+     {0, 0, 30, 10, 0.0f, 0.0f, 0.3f},
+     // 3コンボ目
+     {0, 0, 30, 10, 0.0f, 0.0f, 0.3f}}
+};
 
 Player::Player() {}
 
@@ -177,7 +186,26 @@ void Player::ImGuiDraw() {
 
 		ImGui::EndTabBar();
 	}
+	ImGui::Checkbox("EnableWeapon", &enableWeapon_);
 
+	ImGui::End();
+
+	ImGui::Begin("ComboParm");
+	ImGui::Text("ComboIndex: %d", workAttack_.comboIndex);
+	ImGui::Text("inComboPhase: %d", workAttack_.inComboPhase);
+	ImGui::Text("attackParam: %d", workAttack_.attackParam);
+	// comnoNext
+	ImGui::Text("comboNext: %d", workAttack_.comboNext);
+	// preAttackTime
+	ImGui::Text("preAttackTime: %d", preAttackTime);
+	// chargeTime
+	ImGui::Text("chargeTime: %d", chargeTime);
+	// attackTime
+	ImGui::Text("attackTime: %d", attackTime);
+	// recoveryTime
+	ImGui::Text("recoveryTime: %d", recoveryTime);
+	// comboTime
+	ImGui::Text("comboTime: %d", comboTime);
 	ImGui::End();
 #endif _DEBUG
 }
@@ -349,16 +377,22 @@ void Player::BehaviorRootInitialize() {
 	period = 130.0f;
 	amplitude = 0.15f;
 
-	// 腕の角度の初期化
+	// 攻撃の初期化
+	workAttack_.comboIndex = 0;
+
+	// 角度の初期化
 	worldTransformL_arm_.rotation_ = {0.0f, 0.0f, 0.0f};
 	worldTransformR_arm_.rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransformBody_.rotation_ = {0.0f, 0.0f, 0.0f};
+	hammer_->SetTranslation({0.0f, 1.3f, 0.0f});
+	hammer_->SetRotation({0.0f, 0.0f, 0.0f});
 
 	attackRecovryTime_ = 15.0f;
 
 	hammer_->SetRotation({0.0f, 0.0f, 0.0f});
 }
 void Player::BehaviorRootUpdate() {
-	enableWeapon_ = false;
+	//enableWeapon_ = false;
 
 	attackRecovryTime_ -= 1.0f;
 
@@ -386,49 +420,217 @@ void Player::BehaviorRootUpdate() {
 
 // 攻撃状態
 void Player::BehaviorAttackInitialize() {
-	workAttack_.isPreAttack_ = true;
-	workAttack_.isPreAttack_ = true;
-	workAttack_.isAttack_ = false;
-	workAttack_.preAttackAngle_ = -3.1f;
-	workAttack_.attackAngle_ = -1.2f;
 
-	attackRecovryTime_ = 30.0f;
+	workAttack_.attackParam = 0;
+	workAttack_.inComboPhase = 0;
+	workAttack_.comboNext = false;
 
-	hammer_->SetRotation({1.1f, 0.0f, 0.0f});
+	worldTransformL_arm_.rotation_ = {0.0f, -1.1f, -0.7f};
+	hammer_->SetRotation({-1.6f, 0.0f, 0.0f});
+	hammer_->SetTranslation({-1.5f, 1.3f, 0.0f});
+
+	// 各段階の時間
+	preAttackTime = kConstAttacks_[workAttack_.comboIndex].preAttackTime;
+	chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
+	attackTime = kConstAttacks_[workAttack_.comboIndex].attackTime;
+	recoveryTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
+	// 一コンボ分の合計時間
+	comboTime = preAttackTime + chargeTime + attackTime + recoveryTime;
+
+	// 各段階の移動速度
+	R_armAngleY = 1.5f;
+	hammerAngleX = 1.6f;
+	hammerPosZ = -0.4f;
+	BodyAngleY = 6.3f;
+	hammerAngleZ = 1.6f;
+	L_armAngleX = -3.3f;
+	R_armAngleX = -3.3f;
+	hammerPosY = 1.3f;
+
 	hammer_->ClearCollisionRecord();
 }
 void Player::BehaviorAttackUpdate() {
 	enableWeapon_ = true;
-	// 攻撃処理
-	if (workAttack_.isPreAttack_) { // 予備動作
-		if (worldTransformL_arm_.rotation_.x > workAttack_.preAttackAngle_ || worldTransformR_arm_.rotation_.x > workAttack_.preAttackAngle_) {
-			worldTransformL_arm_.rotation_.x -= 0.2f;
-			worldTransformR_arm_.rotation_.x -= 0.2f;
 
-			if (hammer_->GetRotation().x > 0.0f)
-				hammer_->SetRotation({hammer_->GetRotation().x - 0.1f, 0.0f, 0.0f});
-		} else {
-			workAttack_.isAttack_ = true;
-			workAttack_.isPreAttack_ = false;
-		}
-	}
+	XINPUT_STATE joyStatePrev;
+	XINPUT_STATE joyState;
 
-	if (workAttack_.isAttack_) { // 攻撃動作
-
-		if (worldTransformL_arm_.rotation_.x < workAttack_.attackAngle_ || worldTransformR_arm_.rotation_.x < workAttack_.attackAngle_) {
-			worldTransformL_arm_.rotation_.x += 0.3f;
-			worldTransformR_arm_.rotation_.x += 0.3f;
-
-			if (hammer_->GetRotation().x < 1.6f)
-				hammer_->SetRotation({hammer_->GetRotation().x + 0.2f, 0.0f, 0.0f});
-
-		} else {
-			attackRecovryTime_ -= 1.0f;
-			if (attackRecovryTime_ <= 0.0f) {
-				behaviorRequest_ = Behavior::kRoot;
+	// コンボの上限に達していない
+	if (workAttack_.comboIndex < kComboNum - 1) {
+		// ゲームパットの状態を取得
+		if (input_->GetJoystickState(0, joyState) && input_->GetJoystickStatePrevious(0, joyStatePrev)) {
+			// Xボタンをトリガーしたら
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !(joyStatePrev.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+				workAttack_.comboNext = true;
 			}
 		}
 	}
+
+	// コンボの進行
+	if (++workAttack_.attackParam >= comboTime) {
+		if (workAttack_.comboNext) {
+			workAttack_.comboNext = false;
+
+			if (workAttack_.comboIndex < kComboNum) {
+				workAttack_.comboIndex += 1;
+			}
+			workAttack_.inComboPhase = 0;
+			workAttack_.attackParam = 0;
+			Move();
+			BehaviorAttackInitialize();
+
+
+			 if (workAttack_.comboIndex == 2) {
+				hammer_->SetRotation({0.0f, 0.0f, 1.6f});
+			}
+
+		} else {
+			behaviorRequest_ = Behavior::kRoot;
+		}
+	}
+
+	// コンボ段階によってモーション分岐
+	switch (workAttack_.comboIndex) {
+	case 0:
+		R_armAngleY = 1.5f;
+		hammerAngleX = 1.6f;
+		hammerPosZ = -0.4f;
+
+		if (workAttack_.inComboPhase == 0) { // 振りかぶり
+			preAttackTime--;
+			if (preAttackTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+		} else if (workAttack_.inComboPhase == 1) { // 溜め
+			chargeTime--;
+			if (chargeTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+
+		} else if (workAttack_.inComboPhase == 2) { // 攻撃
+			if (worldTransformL_arm_.rotation_.y < R_armAngleY) {
+				worldTransformL_arm_.rotation_.y += kConstAttacks_[workAttack_.comboIndex].attackSpeed;
+				if (worldTransformL_arm_.rotation_.y > R_armAngleY) {
+					worldTransformL_arm_.rotation_.y = R_armAngleY;
+				}
+			}
+
+			if (hammer_->GetRotation().x < hammerAngleX) {
+				hammer_->SetRotation({hammer_->GetRotation().x + kConstAttacks_[workAttack_.comboIndex].attackSpeed, 0.0f, 0.0f});
+				if (hammer_->GetRotation().x > hammerAngleX) {
+					hammer_->SetRotation({hammerAngleX, 0.0f, 0.0f});
+				}
+			}
+
+			if (hammer_->GetTranslation().z > hammerPosZ) {
+				hammer_->SetTranslation({hammer_->GetTranslation().x, hammer_->GetTranslation().y, hammer_->GetTranslation().z - 0.1f});
+				if (hammer_->GetTranslation().z < hammerPosZ) {
+					hammer_->SetTranslation({hammer_->GetTranslation().x, hammer_->GetTranslation().y, hammerPosZ});
+				}
+			}
+
+			attackTime--;
+			if (attackTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+
+		} else if (workAttack_.inComboPhase == 3) { // 硬直
+			recoveryTime--;
+			if (recoveryTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+		}
+		break;
+
+	case 1:
+		BodyAngleY = 6.3f;
+		hammerAngleZ = 1.6f;
+
+		if (workAttack_.inComboPhase == 0) { // 振りかぶり
+			if (preAttackTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+			preAttackTime--;
+		} else if (workAttack_.inComboPhase == 1) { // 溜め
+			if (chargeTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+			chargeTime--;
+		} else if (workAttack_.inComboPhase == 2) { // 攻撃
+			if (attackTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+
+			if (worldTransformBody_.rotation_.y < BodyAngleY) {
+				worldTransformBody_.rotation_.y += kConstAttacks_[workAttack_.comboIndex].attackSpeed;
+			}
+
+			if (hammer_->GetRotation().z < hammerAngleZ) {
+				hammer_->SetRotation({0.0f, 0.0f, hammer_->GetRotation().z + kConstAttacks_[workAttack_.comboIndex].attackSpeed});
+				if (hammer_->GetRotation().z > hammerAngleZ) {
+					hammer_->SetRotation({0.0f, 0.0f, hammerAngleZ});
+				}
+			}
+
+			attackTime--;
+
+
+		} else if (workAttack_.inComboPhase == 3) { // 硬直
+			if (recoveryTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+			recoveryTime--;
+		}
+		break;
+
+	case 2:
+		BodyAngleY = 0.0f;
+		hammerAngleY = 3.2f;
+
+		if (workAttack_.inComboPhase == 0) { // 振りかぶり
+			if (preAttackTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+			preAttackTime--;
+
+		} else if (workAttack_.inComboPhase == 1) { // 溜め
+			if (chargeTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+			chargeTime--;
+
+
+		} else if (workAttack_.inComboPhase == 2) { // 攻撃
+			if (attackTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+
+			if (worldTransformBody_.rotation_.y > BodyAngleY) {
+				worldTransformBody_.rotation_.y -= kConstAttacks_[workAttack_.comboIndex].attackSpeed;
+			}
+
+			if (hammer_->GetRotation().z < hammerAngleZ) {
+				hammer_->SetRotation({hammer_->GetRotation().x, hammer_->GetRotation().y, hammer_->GetRotation().z + kConstAttacks_[workAttack_.comboIndex].attackSpeed});
+				if (hammer_->GetRotation().z > hammerAngleZ) {
+					hammer_->SetRotation({hammer_->GetRotation().x, hammer_->GetRotation().y, hammerAngleZ});
+				}
+			}
+
+			hammer_->SetRotation({hammer_->GetRotation().x, hammerAngleY, hammer_->GetRotation().z});
+
+			attackTime--;
+
+
+		} else if (workAttack_.inComboPhase == 3) { // 硬直
+			if (recoveryTime <= 0) {
+				workAttack_.inComboPhase++;
+			}
+			recoveryTime--;
+
+		}
+		break;
+	}
+
 }
 
 // ダッシュ状態
@@ -450,8 +652,8 @@ void Player::BehaviorDashUpdate() {
 }
 
 // ジャンプ状態
-void Player::BehaviorJumpInitialize() { 
-	worldTransformBody_.translation_.y = 0.0f; 
+void Player::BehaviorJumpInitialize() {
+	worldTransformBody_.translation_.y = 0.0f;
 	worldTransformL_arm_.rotation_.x = 0.0f;
 	worldTransformR_arm_.rotation_.x = 0.0f;
 
