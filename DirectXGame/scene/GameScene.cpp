@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	playerL_armModel_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	playerR_armModel_.reset(Model::CreateFromOBJ("float_R_arm", true));
 	playerWeaponModel_.reset(Model::CreateFromOBJ("weapon", true));// プレイヤーの武器のモデル
-	playerBulletModel_.reset(Model::CreateFromOBJ("cube", true)); // プレイヤーの弾のモデル
+	playerBulletModel_.reset(Model::CreateFromOBJ("playerBullet", true)); // プレイヤーの弾のモデル
 	playerModels_ = {
 		playerHeadModel_.get(), 
 		playerBodyModel_.get(), 
