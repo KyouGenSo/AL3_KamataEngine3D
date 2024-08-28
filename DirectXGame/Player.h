@@ -15,6 +15,8 @@
 // 親クラス
 #include "BaseCharacter.h"
 
+class LockOn;
+
 class Player : public BaseCharacter {
 
 public: 
@@ -112,6 +114,11 @@ public:
 	void OnCollision([[maybe_unused]] Collider* other) override;
 
 	/// <summary>
+	/// gamepadによる移動入力があるか
+	/// </summary>
+	bool IsMoveInput();
+
+	/// <summary>
 	/// Getters
 	/// </summary>
 	const WorldTransform& GetWorldTransformHead() const { return worldTransformHead_; }
@@ -129,6 +136,7 @@ public:
 	/// Setters
 	/// </summary>
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
+	void SetLockOn(const LockOn* lockOn) { lockOn_ = lockOn; }
 
 
 private: // メンバ変数
@@ -147,6 +155,9 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 
 	XINPUT_STATE joyState_;
+
+	// LockOn
+	const LockOn* lockOn_ = nullptr;
 
 	/// <summary>
 	/// プレイヤー用
@@ -169,6 +180,8 @@ private: // メンバ変数
 
 	float collisionRadius_ = 0.5f;
 
+
+	// ヒットストップ用
 	bool isHitStop_ = false;
 	uint32_t hitStopTime_ = 8;
 

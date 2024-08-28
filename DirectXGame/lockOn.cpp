@@ -88,3 +88,11 @@ bool LockOn::IsOutDistance(const ViewProjection& viewProjection) {
 
 	return false;
 }
+
+Vector3 LockOn::GetTargetPos() const {
+	if (isTargetExist()) {
+		return target_->GetCenter();
+	}
+
+	return Vector3();
+}

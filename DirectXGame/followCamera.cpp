@@ -1,5 +1,6 @@
 #include "followCamera.h"
 #include "ImGuiManager.h"
+#include "lockOn.h"
 
 FollowCamera::FollowCamera() {}
 
@@ -14,31 +15,41 @@ void FollowCamera::Update() {
 
 	float rotateSpeed = 0.03f;
 
-	// ゲームパッドによる回転
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
+	if (lockOn_->isTargetExist()) {
+		// ロックオン中はロックオン対象に向く
+		Vector3 lockOnPos = lockOn_->GetTargetPos();
+		Vector3 sub = lockOnPos - target_->translation_;
+		float angle = std::atan2(sub.x, sub.z);
+		viewProjection_.rotation_.y = angle;
+		destinationAngleY_ = angle;
+	}
+	else {
+		// ゲームパッドによる回転
+		XINPUT_STATE joyState;
+		if (input_->GetJoystickState(0, joyState)) {
 
-		destinationAngleY_ += (float)joyState.Gamepad.sThumbRX * rotateSpeed * 0.0001f;
+			destinationAngleY_ += (float)joyState.Gamepad.sThumbRX * rotateSpeed * 0.0001f;
 
-		// 右スティック押し込みで角度をターゲットの後ろにリセット
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			destinationAngleY_ = target_->rotation_.y;
+			// 右スティック押し込みで角度をターゲットの後ろにリセット
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
+				destinationAngleY_ = target_->rotation_.y;
+			}
 		}
 
+		// キーボードによる回転
+		if (input_->PushKey(DIK_LEFT)) {
+			viewProjection_.rotation_.y -= rotateSpeed;
+		}
+		if (input_->PushKey(DIK_RIGHT)) {
+			viewProjection_.rotation_.y += rotateSpeed;
+		}
 	}
 
 	// カメラの角度を目標角度に向けて補間
 	viewProjection_.rotation_.y = LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 0.15f);
 
-	// キーボードによる回転
-	if (input_->PushKey(DIK_LEFT)) {
-		viewProjection_.rotation_.y -= rotateSpeed;
-	}
-	if (input_->PushKey(DIK_RIGHT)) {
-		viewProjection_.rotation_.y += rotateSpeed;
-	}
 
-	// ターゲットが存在する場合
+	// playerの位置に補間して追従
 	if (target_) {
 		// ターゲットの位置に補間
 		interTargetPos_ = Lerp(interTargetPos_, target_->translation_, t_);

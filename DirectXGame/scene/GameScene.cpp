@@ -62,14 +62,15 @@ void GameScene::Initialize() {
 	groundModel_.reset(Model::CreateFromOBJ("ground", true));
 
 	// 初期化------------------------------------------------------------
-	// プレイヤーの初期化
-	player_ = std::make_unique<Player>();
-	player_->Initialize(playerModels_);
-
 	// LockOnの初期化
 	lockOnMarkTexture_ = TextureManager::Load("aim_sphere.png");
 	lockOn_ = std::make_unique<LockOn>();
 	lockOn_->Initialize(lockOnMarkTexture_);
+
+	// プレイヤーの初期化
+	player_ = std::make_unique<Player>();
+	player_->Initialize(playerModels_);
+	player_->SetLockOn(lockOn_.get());
 
 	// 敵の初期化
 	enemy_ = std::make_unique<Enemy>();
@@ -87,6 +88,7 @@ void GameScene::Initialize() {
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
 	followCamera_->SetTarget(&player_->GetWorldTransform());
+	followCamera_->SetLockOn(lockOn_.get());
 
 	// 追従カメラのViewProjectionをplayerに持たせる
 	player_->SetCameraViewProjection(&followCamera_->GetViewProjection());

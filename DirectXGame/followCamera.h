@@ -8,6 +8,8 @@
 #include "myFunction.h"
 #include <math.h>
 
+class LockOn;
+
 class FollowCamera {
 
 public: // メンバ関数
@@ -26,6 +28,7 @@ public: // メンバ関数
 	/// Setters
 	/// </summary>
 	void SetTarget(const WorldTransform* target);
+	void SetLockOn(const LockOn* lockOn) { lockOn_ = lockOn; }
 
 	/// <summary>
 	/// Getters
@@ -44,5 +47,8 @@ private: // メンバ変数
 	float t_ = 0.18f;
 
 	float destinationAngleY_ = 0.0f;
+
+	// ロックオン
+	const LockOn* lockOn_ = nullptr;
 
 };

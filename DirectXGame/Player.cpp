@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "ImGuiManager.h"
+#include "lockOn.h"
 
 // コンボの定数表
 const std::array<Player::ConstAttack, Player::kComboNum> Player::kConstAttacks_ = {
@@ -228,10 +229,12 @@ void Player::ImGuiDraw() {
 void Player::Move() {
 	const float speed = 0.3f;
 	Matrix4x4 rotationMatrix;
+	float targetAngle = 0.0f;
 
 	if (input_->GetJoystickState(0, joyState_)) { // ゲームパッドによる移動
 		const float deadzone = 0.24f;
 		bool isMoving = false;
+		
 
 		velocity_ = {(float)joyState_.Gamepad.sThumbLX, 0.0f, (float)joyState_.Gamepad.sThumbLY};
 
@@ -248,7 +251,7 @@ void Player::Move() {
 
 			worldTransform_.translation_ += velocity_;
 
-			targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+			targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 			t_ = 0.0f;
 		}
@@ -263,7 +266,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_.normalize() * speed;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_W) && input_->PushKey(DIK_D)) {
@@ -274,7 +277,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_.normalize() * speed;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_S) && input_->PushKey(DIK_A)) {
@@ -285,7 +288,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_.normalize() * speed;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_S) && input_->PushKey(DIK_D)) {
@@ -296,7 +299,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_.normalize() * speed;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_W)) {
@@ -307,7 +310,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_S)) {
@@ -318,7 +321,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_A)) {
@@ -329,7 +332,7 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	} else if (input_->PushKey(DIK_D)) {
@@ -340,10 +343,12 @@ void Player::Move() {
 
 		worldTransform_.translation_ += velocity_;
 
-		targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+		targetAngle = std::atan2(velocity_.x, velocity_.z);
 
 		t_ = 0.0f;
 	}
+
+	targetAngle_ = targetAngle;
 
 	if (t_ < 1.0f) {
 		t_ += 0.1f;
@@ -351,10 +356,6 @@ void Player::Move() {
 		t_ = 1.0f;
 	}
 
-	// ターゲットの角度に向かって回転
-	worldTransform_.rotation_.y = LerpShortAngle(worldTransform_.rotation_.y, targetAngle_, t_);
-
-	worldTransform_.UpdateMatrix();
 }
 
 void Player::InitializeFloatAnimation() { floatingParam_ = 0.0f; }
@@ -427,7 +428,19 @@ void Player::BehaviorRootUpdate() {
 	}
 
 	// 移動
-	Move();
+	if (IsMoveInput()) {
+		Move();
+	}
+	
+	if (lockOn_ && lockOn_->isTargetExist()) { // ロックオン時ロックオン対象に向ける
+		Vector3 targetPos = lockOn_->GetTargetPos();
+		Vector3 dir = targetPos - GetCenter();
+		targetAngle_ = std::atan2(dir.x, dir.z);
+	}
+
+	// ターゲットの角度に向かって回転
+	worldTransform_.rotation_.y = LerpShortAngle(worldTransform_.rotation_.y, targetAngle_, t_);
+	worldTransform_.UpdateMatrix();
 
 	// 浮遊アニメーション
 	UpdateFloatAnimation();
@@ -693,3 +706,22 @@ void Player::BehaviorJumpUpdate() {
 }
 
 // ----------------------行動遷移用---------------------//
+
+bool Player::IsMoveInput() {
+	if (input_->PushKey(DIK_W) || 
+		input_->PushKey(DIK_A) || 
+		input_->PushKey(DIK_S) || 
+		input_->PushKey(DIK_D) || 
+		input_->PushKey(DIK_LEFT) ||
+	    input_->PushKey(DIK_RIGHT)) {
+		return true;
+	}
+
+	if (input_->GetJoystickState(0, joyState_)) {
+		if (joyState_.Gamepad.sThumbLX != 0 || joyState_.Gamepad.sThumbLY != 0) {
+			return true;
+		}
+	}
+
+	return false;
+}

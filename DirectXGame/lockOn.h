@@ -34,8 +34,20 @@ public:
 	/// </summary>
 	void SearchTarget(const std::unique_ptr<Enemy>& enemy, const ViewProjection& viewProjection);
 
+
+	/// <summary>
+	/// ロックオン対象が範囲外かどうか
+	/// </summary>
 	bool IsOutDistance(const std::unique_ptr<Enemy>& enemy, const ViewProjection& viewProjection);
 	bool IsOutDistance(const ViewProjection& viewProjection);
+
+	bool isTargetExist() const { return target_ ? true : false; }
+
+	/// <summary>
+	/// 　getter
+	/// </summary>
+	// ロックオン対象の座標を返す
+	Vector3 GetTargetPos() const;
 
 private:
 	Input* input_ = nullptr;
@@ -46,8 +58,6 @@ private:
 
 	// ロックオン対象
 	const Enemy* target_ = nullptr;
-
-	bool isLockOn_ = false;
 
 	// 最小距離
 	float minDis_ = 0.0f;
