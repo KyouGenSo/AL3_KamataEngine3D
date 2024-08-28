@@ -23,6 +23,9 @@ void FollowCamera::Update() {
 		float angle = std::atan2(sub.x, sub.z);
 		viewProjection_.rotation_.y = angle;
 		destinationAngleY_ = angle;
+
+		// offset
+		offset_.z = Lerp(offset_.z, -8.0f, 0.08f);
 	}
 	else {
 		// ゲームパッドによる回転
@@ -44,6 +47,9 @@ void FollowCamera::Update() {
 		if (input_->PushKey(DIK_RIGHT)) {
 			viewProjection_.rotation_.y += rotateSpeed;
 		}
+
+		// offset
+		offset_.z = Lerp(offset_.z, -13.0f, 0.08f);
 	}
 
 	// カメラの角度を目標角度に向けて補間
@@ -82,7 +88,7 @@ void FollowCamera::Reset() {
 }
 
 Vector3 FollowCamera::CalculateOffset() const {
-	Vector3 offset = {0.0f, 3.0f, -13.0f};
+	Vector3 offset = offset_;
 
 	// カメラの角度から回転行列を算出
 	Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(viewProjection_.rotation_);

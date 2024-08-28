@@ -32,11 +32,13 @@ public: // メンバ関数
 	/// </summary>
 	void SetTarget(const WorldTransform* target);
 	void SetLockOn(const LockOn* lockOn) { lockOn_ = lockOn; }
+	void SetOffset(const Vector3& offset) { offset_ = offset; }
 
 	/// <summary>
 	/// Getters
 	/// </summary>
 	ViewProjection& GetViewProjection() { return viewProjection_; }
+	const Vector3& GetOffset() const { return offset_; }
 
 private: // メンバ変数
 	ViewProjection viewProjection_;
@@ -46,6 +48,8 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 
 	Vector3 interTargetPos_;
+
+	Vector3 offset_ = {0.0f, 3.0f, -13.0f};
 
 	float t_ = 0.18f;
 
