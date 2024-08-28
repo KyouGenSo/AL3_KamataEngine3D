@@ -6,10 +6,11 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "cassert"
-#include <cmath>
+#include "collisionTypeIdDef.h"
 #include "memory"
 #include "myFunction.h"
-#include "collisionTypeIdDef.h"
+#include <cmath>
+
 
 // 親クラス
 #include "BaseCharacter.h"
@@ -63,6 +64,11 @@ public: // メンバ関数
 	void UpdateFloatAnimation();
 
 	/// <summary>
+	/// シェークエフェクト
+	/// </summary>
+	void ShakeEffect();
+
+	/// <summary>
 	/// ImGuiによるデバッグ表示
 	/// </summary>
 	void ImGuiDraw();
@@ -72,15 +78,12 @@ public: // メンバ関数
 	/// </summary>
 	Vector3 GetCenter() const override;
 	uint32_t GetSerialNumber() const { return serialNumber_; }
-	
 
 	/// <summary>
 	/// Setters
 	/// </summary>
 
-
 private: // メンバ変数
-
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
@@ -90,7 +93,11 @@ private: // メンバ変数
 
 	static uint32_t nextSerialNumber_;
 
-	//const ViewProjection* cameraViewProjection_;
+	// ヒットストップ用
+	bool isHitStop_ = false;
+	uint32_t hitStopTime_ = 8;
+
+	// const ViewProjection* cameraViewProjection_;
 
 	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;

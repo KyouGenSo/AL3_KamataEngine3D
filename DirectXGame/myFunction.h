@@ -5,6 +5,7 @@
 #include "Vector2.h"
 #include "Matrix4x4.h"
 #include <numbers>
+#include <iostream>
 
 
 float clamp(float value, float min, float max);
@@ -12,6 +13,10 @@ float clamp(float value, float min, float max);
 float Distance(const Vector3& a, const Vector3& b);
 
 float Distance(const Vector2& a, const Vector2& b);
+
+float Rand(float min, float max);
+
+Vector3 RandomVector3(float min, float max);
 
 // Lerp
 float Lerp(float a, float b, float t);

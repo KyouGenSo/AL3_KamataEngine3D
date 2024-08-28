@@ -27,6 +27,8 @@ void Enemy::Initialize(const std::vector<Model*> models) {
 	worldTransformR_arm_.Initialize();
 
 	// ワールド変換データの初期設定
+	worldTransform_.matWorld_.m[3][0] = 10.0f;
+	worldTransform_.matWorld_.m[3][1] = 0.8f;
 	worldTransformBody_.translation_ = {0.0f, 0.8f, 0.0f};
 	worldTransformL_arm_.translation_ = {-0.85f, 0.15f, 0.0f};
 	worldTransformR_arm_.translation_ = {0.85f, 0.15f, 0.0f};
@@ -43,12 +45,23 @@ void Enemy::Update() {
 
 	UpdateFloatAnimation();
 
-	Move();
+	if (!isHitStop_) {
+		Move();
+	}
 
 	BaseCharacter::Update();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
+
+	if (isHitStop_) {
+		hitStopTime_--;
+		ShakeEffect();
+		if (hitStopTime_ <= 0) {
+			isHitStop_ = false;
+			worldTransformBody_.translation_ = {0.0f, 0.8f, 0.0f};
+		}
+	}
 
 	//ImGuiDraw();
 }
@@ -106,6 +119,18 @@ void Enemy::UpdateFloatAnimation() {
 	worldTransformR_arm_.translation_.y = std::sin(floatingParam_) * amplitude;
 }
 
+void Enemy::ShakeEffect() {
+	// ランダムな値を生成
+	float randomX = Rand(-0.1f, 0.1f);
+	float randomY = Rand(-0.03f, 0.03f);
+	float randomZ = Rand(-0.1f, 0.1f);
+
+
+	worldTransformBody_.translation_.x += randomX;
+	worldTransformBody_.translation_.y += randomY;
+	worldTransformBody_.translation_.z += randomZ;
+}
+
 void Enemy::OnCollision([[maybe_unused]] Collider* other) {
 	// 衝突相手の種別IDを取得
 	uint32_t typeID = other->GetTypeID();
@@ -113,5 +138,11 @@ void Enemy::OnCollision([[maybe_unused]] Collider* other) {
 	// 衝突相手がプレイヤーである場合
 	if (typeID == static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)) {
 
+	}
+
+	// 衝突相手がhammerである場合
+	if (typeID == static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)) {
+		isHitStop_ = true;
+		hitStopTime_ = 8;
 	}
 }

@@ -38,6 +38,7 @@ public:
 	/// Getter
 	/// </summary>
 	Vector3 GetCenter() const override;
+	bool IsHit() const { return isHit_; }
 	const Vector3& GetRotation() const { return hammerWorldTransform_.rotation_; }
 	const Vector3& GetTranslation() const { return hammerWorldTransform_.translation_; }
 	const WorldTransform& GetWorldTransform() const { return hammerWorldTransform_; }

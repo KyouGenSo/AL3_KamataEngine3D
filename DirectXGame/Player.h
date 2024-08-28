@@ -169,6 +169,9 @@ private: // メンバ変数
 
 	float collisionRadius_ = 0.5f;
 
+	bool isHitStop_ = false;
+	uint32_t hitStopTime_ = 8;
+
 	// ----------------------行動遷移用---------------------
 	enum class Behavior {
 		kRoot,

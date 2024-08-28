@@ -95,6 +95,9 @@ void Player::Update() {
 		break;
 
 	case Behavior::kAttack:
+		if (isHitStop_) {
+			break;
+		}
 		BehaviorAttackUpdate();
 		break;
 
@@ -117,6 +120,18 @@ void Player::Update() {
 
 	// 武器の更新
 	hammer_->Update();
+
+	if (hammer_->IsHit()) {
+		isHitStop_ = true;
+		hitStopTime_ = 8;
+	}
+
+	if (isHitStop_) {
+		hitStopTime_--;
+		if (hitStopTime_ <= 0) {
+			isHitStop_ = false;
+		}
+	}
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
