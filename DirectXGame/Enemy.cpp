@@ -27,8 +27,6 @@ void Enemy::Initialize(const std::vector<Model*> models) {
 	worldTransformR_arm_.Initialize();
 
 	// ワールド変換データの初期設定
-	worldTransform_.matWorld_.m[3][0] = 10.0f;
-	worldTransform_.matWorld_.m[3][1] = 0.8f;
 	worldTransformBody_.translation_ = {0.0f, 0.8f, 0.0f};
 	worldTransformL_arm_.translation_ = {-0.85f, 0.15f, 0.0f};
 	worldTransformR_arm_.translation_ = {0.85f, 0.15f, 0.0f};
@@ -143,6 +141,6 @@ void Enemy::OnCollision([[maybe_unused]] Collider* other) {
 	// 衝突相手がhammerである場合
 	if (typeID == static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)) {
 		isHitStop_ = true;
-		hitStopTime_ = 8;
+		hitStopTime_ = 7;
 	}
 }

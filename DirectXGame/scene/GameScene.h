@@ -20,6 +20,7 @@
 #include "Skydome.h"
 #include "Ground.h"
 #include "followCamera.h"
+#include "lockOn.h"
 
 /// <summary>
 /// ゲームシーン
@@ -87,6 +88,10 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
 	std::unique_ptr<Model> playerWeaponModel_ = nullptr; // weapon
 	std::vector<Model*> playerModels_;
+
+	// LockOn system
+	std::unique_ptr<LockOn> lockOn_ = nullptr;
+	uint32_t lockOnMarkTexture_ = 0;
 
 	// enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;

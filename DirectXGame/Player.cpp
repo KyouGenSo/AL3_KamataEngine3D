@@ -407,7 +407,7 @@ void Player::BehaviorRootInitialize() {
 	hammer_->SetRotation({0.0f, 0.0f, 0.0f});
 }
 void Player::BehaviorRootUpdate() {
-	//enableWeapon_ = false;
+	enableWeapon_ = false;
 
 	attackRecovryTime_ -= 1.0f;
 

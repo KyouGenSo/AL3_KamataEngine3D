@@ -117,6 +117,7 @@
     <ClCompile Include="followCamera.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="hammer.cpp" />
+    <ClCompile Include="lockOn.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix4x4Function.cpp" />
     <ClCompile Include="myFunction.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="ground.h" />
     <ClInclude Include="hammer.h" />
     <ClInclude Include="input\Input.h" />
+    <ClInclude Include="lockOn.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />

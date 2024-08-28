@@ -95,7 +95,7 @@ private: // メンバ変数
 
 	// ヒットストップ用
 	bool isHitStop_ = false;
-	uint32_t hitStopTime_ = 8;
+	uint32_t hitStopTime_ = 7;
 
 	// const ViewProjection* cameraViewProjection_;
 

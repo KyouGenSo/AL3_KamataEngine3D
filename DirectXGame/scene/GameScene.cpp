@@ -66,6 +66,11 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize(playerModels_);
 
+	// LockOnの初期化
+	lockOnMarkTexture_ = TextureManager::Load("aim_sphere.png");
+	lockOn_ = std::make_unique<LockOn>();
+	lockOn_->Initialize(lockOnMarkTexture_);
+
 	// 敵の初期化
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModels_);
@@ -110,6 +115,9 @@ void GameScene::Update() {
 	// 敵の更新
 	enemy_->Update();
 
+	// LockOnの更新
+	lockOn_->Update(enemy_, viewProjection_);
+
 	// 追従カメラの更新
 	followCamera_->Update();
 	if (!isDebugCameraActive_) {
@@ -127,7 +135,6 @@ void GameScene::Update() {
 
 	// 衝突判定と応答
 	CheckAllCollisions();
-
 
 	// プレイヤーのデバッグ表示
 	player_->ImGuiDraw();
@@ -195,6 +202,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	lockOn_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
