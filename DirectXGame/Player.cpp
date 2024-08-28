@@ -234,7 +234,6 @@ void Player::Move() {
 	if (input_->GetJoystickState(0, joyState_)) { // ゲームパッドによる移動
 		const float deadzone = 0.24f;
 		bool isMoving = false;
-		
 
 		velocity_ = {(float)joyState_.Gamepad.sThumbLX, 0.0f, (float)joyState_.Gamepad.sThumbLY};
 
@@ -355,7 +354,6 @@ void Player::Move() {
 	} else {
 		t_ = 1.0f;
 	}
-
 }
 
 void Player::InitializeFloatAnimation() { floatingParam_ = 0.0f; }
@@ -431,7 +429,7 @@ void Player::BehaviorRootUpdate() {
 	if (IsMoveInput()) {
 		Move();
 	}
-	
+
 	if (lockOn_ && lockOn_->isTargetExist()) { // ロックオン時ロックオン対象に向ける
 		Vector3 targetPos = lockOn_->GetTargetPos();
 		Vector3 dir = targetPos - GetCenter();
@@ -507,8 +505,7 @@ void Player::BehaviorAttackUpdate() {
 			Move();
 			BehaviorAttackInitialize();
 
-
-			 if (workAttack_.comboIndex == 2) {
+			if (workAttack_.comboIndex == 2) {
 				hammer_->SetRotation({0.0f, 0.0f, 1.6f});
 			}
 
@@ -602,7 +599,6 @@ void Player::BehaviorAttackUpdate() {
 
 			attackTime--;
 
-
 		} else if (workAttack_.inComboPhase == 3) { // 硬直
 			if (recoveryTime <= 0) {
 				workAttack_.inComboPhase++;
@@ -627,7 +623,6 @@ void Player::BehaviorAttackUpdate() {
 			}
 			chargeTime--;
 
-
 		} else if (workAttack_.inComboPhase == 2) { // 攻撃
 			if (attackTime <= 0) {
 				workAttack_.inComboPhase++;
@@ -648,17 +643,14 @@ void Player::BehaviorAttackUpdate() {
 
 			attackTime--;
 
-
 		} else if (workAttack_.inComboPhase == 3) { // 硬直
 			if (recoveryTime <= 0) {
 				workAttack_.inComboPhase++;
 			}
 			recoveryTime--;
-
 		}
 		break;
 	}
-
 }
 
 // ダッシュ状態
@@ -669,11 +661,29 @@ void Player::BehaviorDashInitialize() {
 void Player::BehaviorDashUpdate() {
 	// 今向いてる方向に移動する
 	float speed = 1.8f;
-	worldTransform_.translation_.x += std::sin(worldTransform_.rotation_.y) * speed;
-	worldTransform_.translation_.z += std::cos(worldTransform_.rotation_.y) * speed;
-
 	const uint32_t kDashTime = 10;
 
+	if (lockOn_->isTargetExist()) {
+		// 今移動してる方向に移動する
+		if (input_->GetJoystickState(0, joyState_)) { // ゲームパッドによる移動
+
+			velocity_ = {(float)joyState_.Gamepad.sThumbLX, 0.0f, (float)joyState_.Gamepad.sThumbLY};
+
+			velocity_ = velocity_.normalize() * speed;
+
+			Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(cameraViewProjection_->rotation_);
+
+			velocity_ = TransFormNormal(velocity_, rotationMatrix);
+
+			worldTransform_.translation_ += velocity_;
+		}
+	} else {
+		// 今向いてる方向に移動する
+		worldTransform_.translation_.x += std::sin(worldTransform_.rotation_.y) * speed;
+		worldTransform_.translation_.z += std::cos(worldTransform_.rotation_.y) * speed;
+	}
+
+	// ダッシュの時間が経過したら
 	if (++workDash_.dashParam >= kDashTime) {
 		behaviorRequest_ = Behavior::kRoot;
 	}
@@ -708,12 +718,7 @@ void Player::BehaviorJumpUpdate() {
 // ----------------------行動遷移用---------------------//
 
 bool Player::IsMoveInput() {
-	if (input_->PushKey(DIK_W) || 
-		input_->PushKey(DIK_A) || 
-		input_->PushKey(DIK_S) || 
-		input_->PushKey(DIK_D) || 
-		input_->PushKey(DIK_LEFT) ||
-	    input_->PushKey(DIK_RIGHT)) {
+	if (input_->PushKey(DIK_W) || input_->PushKey(DIK_A) || input_->PushKey(DIK_S) || input_->PushKey(DIK_D) || input_->PushKey(DIK_LEFT) || input_->PushKey(DIK_RIGHT)) {
 		return true;
 	}
 
