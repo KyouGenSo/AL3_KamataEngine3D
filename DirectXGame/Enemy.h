@@ -12,9 +12,10 @@
 #include <cmath>
 #include <optional>
 
-
 // 親クラス
 #include "BaseCharacter.h"
+
+class Player;
 
 class Enemy : public BaseCharacter {
 
@@ -75,6 +76,36 @@ public: // メンバ関数
 	void ImGuiDraw();
 
 	/// <summary>
+	/// Behaviors
+	/// </summary>
+	void BehaviorRootInitialize(); // 通常状態の初期化
+	void BehaviorRootUpdate();     // 通常状態の更新
+
+	void BehaviorNearInitialize(); // 接近状態の初期化
+	void BehaviorNearUpdate();     // 接近状態の更新
+
+	void BehaviorAwayInitialize(); // 離脱状態の初期化
+	void BehaviorAwayUpdate();     // 離脱状態の更新
+
+	void BehaviorFarAttack1Initialize(); // 遠距離攻撃1状態の初期化
+	void BehaviorFarAttack1Update();     // 遠距離攻撃1状態の更新
+
+	void BehaviorFarAttack2Initialize(); // 遠距離攻撃2状態の初期化
+	void BehaviorFarAttack2Update();     // 遠距離攻撃2状態の更新
+
+	void BehaviorFarAttack3Initialize(); // 遠距離攻撃3状態の初期化
+	void BehaviorFarAttack3Update();     // 遠距離攻撃3状態の更新
+
+	void BehaviorNearAttack1Initialize(); // 近距離攻撃1状態の初期化
+	void BehaviorNearAttack1Update();     // 近距離攻撃1状態の更新
+
+	void BehaviorNearAttack2Initialize(); // 近距離攻撃2状態の初期化
+	void BehaviorNearAttack2Update();     // 近距離攻撃2状態の更新
+
+	void BehaviorNearAttack3Initialize(); // 近距離攻撃3状態の初期化
+	void BehaviorNearAttack3Update();     // 近距離攻撃3状態の更新
+
+	/// <summary>
 	/// Getters
 	/// </summary>
 	Vector3 GetCenter() const override;
@@ -83,8 +114,12 @@ public: // メンバ関数
 	/// <summary>
 	/// Setters
 	/// </summary>
+	void SetPlayer(const Player* player) { player_ = player; }
 
 private: // メンバ変数
+	// player参照
+	const Player* player_ = nullptr;
+
 	WorldTransform worldTransformBody_;
 
 	// シリアルナンバー
@@ -98,18 +133,33 @@ private: // メンバ変数
 	bool isHitStop_ = false;
 	uint32_t hitStopTime_ = 7;
 
-	// const ViewProjection* cameraViewProjection_;
+	// hp
+	float hp_ = 100.0f;
 
 	// ----------------------行動遷移用---------------------
 	enum class Behavior {
 		kRoot,
-		kAttack,
-		kDash,
-		kJump,
+		kNear,
+		kAway,
+		kFarAttack1,
+		kFarAttack2,
+		kFarAttack3,
+		kNearAttack1,
+		kNearAttack2,
+		kNearAttack3,
 	};
 
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+
+	float rand_;    // 乱数
+	int randIndex_; // 乱数カウント
+
+	Vector3 toPlayerV_;
+	float toPlayerDis_;
+
+	uint32_t behaviorCD_ = 0;
+
 	// ----------------------行動遷移用---------------------
 
 	// ----------------------浮遊アニメーション用---------------------

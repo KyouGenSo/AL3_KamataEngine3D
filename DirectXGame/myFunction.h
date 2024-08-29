@@ -6,6 +6,8 @@
 #include "Matrix4x4.h"
 #include <numbers>
 #include <iostream>
+#include <stdlib.h>
+#include <time.h> 
 
 
 float clamp(float value, float min, float max);

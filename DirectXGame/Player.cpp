@@ -42,6 +42,7 @@ void Player::Initialize(const std::vector<Model*> models) {
 	worldTransformR_arm_.Initialize();
 
 	// モデルの初期位置を設定
+	worldTransform_.translation_ = {0.0f, 0.0f, -80.0f};
 	worldTransformHead_.translation_ = {0.0f, 1.5f, 0.0f};
 	worldTransformL_arm_.translation_ = {-0.55f, 1.3f, 0.0f};
 	worldTransformR_arm_.translation_ = {0.55f, 1.3f, 0.0f};

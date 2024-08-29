@@ -16,7 +16,9 @@ float Distance(const Vector3& a, const Vector3& b) { return sqrt((a.x - b.x) * (
 
 float Distance(const Vector2& a, const Vector2& b) { return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)); }
 
-float Rand(float min, float max) { return min + (float)rand() / ((float)RAND_MAX / (max - min)); }
+float Rand(float min, float max) { 
+	return min + (float)rand() / ((float)RAND_MAX / (max - min));
+}
 
 Vector3 RandomVector3(float min, float max) { return Vector3(Rand(min, max), Rand(min, max), Rand(min, max)); }
 
