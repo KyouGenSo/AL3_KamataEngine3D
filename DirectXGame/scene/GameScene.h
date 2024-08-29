@@ -89,6 +89,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> playerR_armModel_ = nullptr;
 	std::unique_ptr<Model> playerWeaponModel_ = nullptr; // weapon
 	std::unique_ptr<Model> playerBulletModel_ = nullptr; // bullet
+	std::unique_ptr<Model> playerWeaponEffectModel_ = nullptr; // weapon effect
 	std::vector<Model*> playerModels_;
 
 	// LockOn system

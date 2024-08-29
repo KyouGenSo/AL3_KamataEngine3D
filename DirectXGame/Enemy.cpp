@@ -21,7 +21,7 @@ Vector3 Enemy::GetCenter() const {
 void Enemy::Initialize(const std::vector<Model*> models) {
 	BaseCharacter::Initialize(models);
 
-	Collider::SetRadius(5.5f);
+	Collider::SetRadius(5.4f);
 
 	// ワールド変換データの初期化
 	worldTransformBody_.Initialize();

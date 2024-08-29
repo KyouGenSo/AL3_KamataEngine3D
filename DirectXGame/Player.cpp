@@ -28,6 +28,7 @@ Vector3 Player::GetCenter() const {
 }
 
 void Player::Initialize(const std::vector<Model*> models) {
+	input_ = Input::GetInstance();
 
 	SetRadius(collisionRadius_);
 
@@ -53,14 +54,12 @@ void Player::Initialize(const std::vector<Model*> models) {
 
 	// 武器の初期化
 	hammer_ = std::make_unique<Hammer>();
-	hammer_->Initialize(models[4], Model::CreateSphere());
+	hammer_->Initialize(models[4], models[6]);
 	hammer_->SetParent(worldTransformBody_);
-
-	input_ = Input::GetInstance();
 
 	InitializeFloatAnimation();
 
-	// Colliderの設定
+	// ColliderIDの設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayer));
 }
 
@@ -73,6 +72,12 @@ void Player::Update() {
 		}
 		return false;
 	});
+
+	if (!enableWeapon_) {
+		hammer_->SetRadius(0.0f);
+	} else {
+		hammer_->SetRadius(1.0f);
+		}
 
 	// 行動遷移
 	if (behaviorRequest_) {

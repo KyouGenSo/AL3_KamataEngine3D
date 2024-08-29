@@ -1,9 +1,11 @@
 #include "hammer.h"
-#include "enemy.h"
 #include "ImGuiManager.h"
+#include "enemy.h"
 
 void Hammer::Initialize(Model* model, Model* effectModel) {
+
 	model_ = model;
+
 	effectModel_ = effectModel;
 	effectModel_->SetAlpha(0.5f);
 
@@ -22,16 +24,15 @@ void Hammer::Initialize(Model* model, Model* effectModel) {
 
 void Hammer::Update() {
 	if (isHit_) {
-		effectWorldTransform_.scale_.x += 0.5f;
-		effectWorldTransform_.scale_.y += 0.5f;
-		effectWorldTransform_.scale_.z += 0.5f;
+		effectWorldTransform_.scale_.x += 0.9f;
+		effectWorldTransform_.scale_.y += 0.9f;
+		effectWorldTransform_.scale_.z += 0.9f;
 
-		if (effectWorldTransform_.scale_.x >= 3.5f) {
+		if (effectWorldTransform_.scale_.x >= 8.5f) {
 			effectWorldTransform_.scale_ = Vector3(0.0f, 0.0f, 0.0f);
 			isHit_ = false;
 		}
 	}
-
 
 	hammerWorldTransform_.UpdateMatrix();
 	effectWorldTransform_.UpdateMatrix();
@@ -47,7 +48,7 @@ void Hammer::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
-void Hammer::ImGuiDraw() { 
+void Hammer::ImGuiDraw() {
 	ImGui::Begin("Hammer");
 
 	ImGui::DragFloat3("Position", &hammerWorldTransform_.translation_.x, 0.1f);
@@ -79,7 +80,6 @@ void Hammer::OnCollision([[maybe_unused]] Collider* other) {
 		effectWorldTransform_.translation_ = enemy->GetCenter();
 		isHit_ = true;
 	}
-
 }
 
 Vector3 Hammer::GetCenter() const {

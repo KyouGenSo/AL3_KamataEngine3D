@@ -42,13 +42,16 @@ void GameScene::Initialize() {
 	playerR_armModel_.reset(Model::CreateFromOBJ("float_R_arm", true));
 	playerWeaponModel_.reset(Model::CreateFromOBJ("weapon", true));// プレイヤーの武器のモデル
 	playerBulletModel_.reset(Model::CreateFromOBJ("playerBullet", true)); // プレイヤーの弾のモデル
+	playerWeaponEffectModel_.reset(Model::CreateFromOBJ("efffect_ball", true)); // プレイヤーの武器のエフェクトのモデル
 	playerModels_ = {
 		playerHeadModel_.get(), 
 		playerBodyModel_.get(), 
 		playerL_armModel_.get(), 
 		playerR_armModel_.get(), 
 		playerWeaponModel_.get(), 
-		playerBulletModel_.get()};
+		playerBulletModel_.get(),
+		playerWeaponEffectModel_.get()
+	};
 
 	// 敵のモデル
 	enemyBodyModel_.reset(Model::CreateFromOBJ("boss", true));

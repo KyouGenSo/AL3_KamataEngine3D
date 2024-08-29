@@ -10,6 +10,7 @@
 #include "memory"
 #include "myFunction.h"
 #include <cmath>
+#include <optional>
 
 
 // 親クラス
@@ -98,6 +99,18 @@ private: // メンバ変数
 	uint32_t hitStopTime_ = 7;
 
 	// const ViewProjection* cameraViewProjection_;
+
+	// ----------------------行動遷移用---------------------
+	enum class Behavior {
+		kRoot,
+		kAttack,
+		kDash,
+		kJump,
+	};
+
+	Behavior behavior_ = Behavior::kRoot;
+	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+	// ----------------------行動遷移用---------------------
 
 	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;
