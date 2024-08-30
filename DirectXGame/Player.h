@@ -1,17 +1,17 @@
 #pragma once
-#include "Model.h"
-#include "ViewProjection.h"
-#include "WorldTransform.h"
-#include "cassert"
-#include "memory"
-#include "Xinput.h"
 #include "Input.h"
 #include "Matrix4x4Function.h"
+#include "Model.h"
 #include "Vector3Function.h"
-#include "myFunction.h"
-#include <optional>
+#include "ViewProjection.h"
+#include "WorldTransform.h"
+#include "Xinput.h"
+#include "cassert"
 #include "hammer.h"
+#include "memory"
+#include "myFunction.h"
 #include "playerBullet.h"
+#include <optional>
 
 // 親クラス
 #include "BaseCharacter.h"
@@ -22,11 +22,11 @@ class Enemy;
 
 class Player : public BaseCharacter {
 
-public: 
+public:
 	/// <summary>
 	/// 定数
 	///</summary>
-	
+
 	// 攻撃の定数
 	struct ConstAttack {
 		// 振りかぶりの時間
@@ -44,7 +44,7 @@ public:
 		// 攻撃振りの移動速さ
 		float attackSpeed;
 	};
-	
+
 	// コンボの数
 	static const int kComboNum = 3;
 	// コンボ定数表
@@ -127,6 +127,12 @@ public:
 	bool IsMoveInput();
 
 	/// <summary>
+	/// ダメージを受ける
+	/// </summary>
+	/// <param name="damage"></param>
+	void Damage(float damage);
+
+	/// <summary>
 	/// Getters
 	/// </summary>
 	const WorldTransform& GetWorldTransformHead() const { return worldTransformHead_; }
@@ -138,6 +144,11 @@ public:
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 	// gat behavior
 	const int GetBehavior() const { return static_cast<int>(behavior_); }
+	// get serial number
+	const uint32_t GetSerialNumber() const { return serialNumber_; }
+	// get hp
+	const float GetHP() const { return hp_; }
+	const bool GetEnableWeapon() const { return enableWeapon_; }
 	// ----------------------浮遊アニメーション用---------------------
 	float GetFloatingParam() const { return floatingParam_; }
 	float GetPeriod() const { return period; }
@@ -149,7 +160,7 @@ public:
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
 	void SetLockOn(const LockOn* lockOn) { lockOn_ = lockOn; }
 	void SetEnemy(const Enemy* enemy) { enemy_ = enemy; }
-
+	void SetHP(float hp) { hp_ = hp; }
 
 private: // メンバ変数
 	struct WorkAttack {
@@ -176,9 +187,15 @@ private: // メンバ変数
 	// Enemy
 	const Enemy* enemy_ = nullptr;
 
+	// シリアルナンバー
+	uint32_t serialNumber_ = 0;
+
 	/// <summary>
 	/// プレイヤー用
 	/// </summary>
+
+	//hp
+	float hp_ = 100;
 
 	// ワールド変換データ
 	WorldTransform worldTransformHead_;
@@ -199,8 +216,11 @@ private: // メンバ変数
 	float targetAngle_ = 0.0f;
 	float t_ = 0.0f;
 
-	float collisionRadius_ = 0.5f;
+	// 衝突記録
+	//CollisionRecord collisionRecord_;
 
+	// 衝突半径
+	float collisionRadius_ = 1.0f;
 
 	// ヒットストップ用
 	bool isHitStop_ = false;

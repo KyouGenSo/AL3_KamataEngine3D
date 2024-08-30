@@ -27,6 +27,13 @@ Vector3 Player::GetCenter() const {
 	return worldPos;
 }
 
+void Player::Damage(float damage) {
+	// ダメージ処理
+	if (hp_ > 0) {
+		hp_ -= damage;
+	}
+}
+
 void Player::Initialize(const std::vector<Model*> models) {
 	input_ = Input::GetInstance();
 
@@ -78,7 +85,7 @@ void Player::Update() {
 		hammer_->SetRadius(0.0f);
 	} else {
 		hammer_->SetRadius(1.0f);
-		}
+	}
 
 	// 行動遷移
 	if (behaviorRequest_) {
@@ -151,15 +158,23 @@ void Player::Update() {
 	// 武器の更新
 	hammer_->Update();
 
+	if (enableWeapon_) {
+		hammer_->SetEnable(true);
+	} else {
+		hammer_->SetEnable(false);
+	}
+
 	if (hammer_->IsHit()) {
 		isHitStop_ = true;
 		hitStopTime_ = 8;
 	}
 
+	// ダッシュのCD
 	if (workDash_.dashCD > 0) {
 		workDash_.dashCD--;
 	}
 
+	// ヒットストップの更新
 	if (isHitStop_) {
 		hitStopTime_--;
 		if (hitStopTime_ <= 0) {
@@ -240,7 +255,10 @@ void Player::ImGuiDraw() {
 
 		ImGui::EndTabBar();
 	}
-	ImGui::Checkbox("EnableWeapon", &enableWeapon_);
+	// hp
+	ImGui::Text("HP: %f", hp_);
+
+	//ImGui::Checkbox("EnableWeapon", &enableWeapon_);
 
 	ImGui::End();
 
@@ -407,7 +425,13 @@ void Player::UpdateFloatAnimation() {
 	worldTransformBody_.translation_.y = std::sin(floatingParam_) * amplitude;
 
 	// 腕を揺らす
-	worldTransformL_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
+	if (!lockOn_->isTargetExist()) {
+		worldTransformL_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
+		worldTransformL_arm_.rotation_.y = Lerp(worldTransformL_arm_.rotation_.y, 0.0f, 0.1f);
+	} else {
+		worldTransformL_arm_.rotation_.x = Lerp(worldTransformL_arm_.rotation_.x, 1.6f, 0.1f);
+		worldTransformL_arm_.rotation_.y = Lerp(worldTransformL_arm_.rotation_.y, 2.0f, 0.1f);
+	}
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParam_) * amplitude;
 }
 
@@ -431,11 +455,25 @@ void Player::OnCollision([[maybe_unused]] Collider* other) {
 
 	// 衝突相手が敵である場合
 	if (typeID == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
-		behaviorRequest_ = Behavior::kJump;
+		//// 衝突相手を敵クラスにダウンキャスト
+		// Enemy* enemy = static_cast<Enemy*>(other);
+		//// 衝突相手のシリアルナンバーを取得
+		// uint32_t serialNum = enemy->GetSerialNumber();
+
+		//// すでに衝突している敵である場合は処理を終了
+		// if (collisionRecord_.CheckRecord(serialNum)) {
+		//	return;
+		// }
+
+		//// 衝突した敵のシリアルナンバーを記録
+		// collisionRecord_.AddRecord(serialNum);
+
+		//// プレイヤーにダメージを与える
+		// Damage(5);
 	}
 }
 
-void Player::Shot() { 
+void Player::Shot() {
 	assert(enemy_);
 
 	float speed = 0.5f;
@@ -444,6 +482,7 @@ void Player::Shot() {
 
 	// プレイヤーの位置
 	Vector3 playerPos = GetCenter();
+
 	// 敵の位置
 	Vector3 enemyPos = enemy_->GetCenter();
 	// プレイヤーから敵へのベクトル
@@ -736,13 +775,14 @@ void Player::BehaviorAttackUpdate() {
 
 // ダッシュ状態
 void Player::BehaviorDashInitialize() {
+	enableWeapon_ = false;
 	workDash_.dashParam = 0;
 	worldTransform_.rotation_.y = targetAngle_;
 }
 void Player::BehaviorDashUpdate() {
 	// 今向いてる方向に移動する
-	float speed = 1.8f;
-	const uint32_t kDashTime = 10;
+	float speed = 1.3f;
+	const uint32_t kDashTime = 8;
 
 	if (lockOn_->isTargetExist()) {
 		// 今移動してる方向に移動する
@@ -773,6 +813,8 @@ void Player::BehaviorDashUpdate() {
 
 // ジャンプ状態
 void Player::BehaviorJumpInitialize() {
+	enableWeapon_ = false;
+
 	worldTransformBody_.translation_.y = 0.0f;
 	worldTransformL_arm_.rotation_.x = 0.0f;
 	worldTransformR_arm_.rotation_.x = 0.0f;

@@ -11,6 +11,7 @@
 #include "myFunction.h"
 #include <cmath>
 #include <optional>
+#include "enemyBlock.h"
 
 // 親クラス
 #include "BaseCharacter.h"
@@ -76,6 +77,25 @@ public: // メンバ関数
 	void ImGuiDraw();
 
 	/// <summary>
+	/// blockを生成
+	/// </summary>
+	void CreateBlock(const Vector3& position, const Vector3& scale, const Vector3& offset);
+
+	void PosRange();
+
+	/// <summary>
+	/// 衝突記録をクリア
+	/// </summary>
+	void ClearCollisionRecord() { collisionRecord_.Clear(); }
+
+	void Damage(float damage) { hp_ -= damage; }
+
+	void HitStop(uint32_t time) {
+		isHitStop_ = true;
+		hitStopTime_ = time;
+	}
+
+	/// <summary>
 	/// Behaviors
 	/// </summary>
 	void BehaviorRootInitialize(); // 通常状態の初期化
@@ -110,6 +130,8 @@ public: // メンバ関数
 	/// </summary>
 	Vector3 GetCenter() const override;
 	uint32_t GetSerialNumber() const { return serialNumber_; }
+	// get block list
+	const std::list<EnemyBlock*>& GetBlocks() const { return blocks_; }
 
 	/// <summary>
 	/// Setters
@@ -120,6 +142,10 @@ private: // メンバ変数
 	// player参照
 	const Player* player_ = nullptr;
 
+	// block list
+	std::list<EnemyBlock*> blocks_;
+
+	// ボディのワールドトランスフォーム
 	WorldTransform worldTransformBody_;
 
 	// シリアルナンバー
@@ -127,14 +153,18 @@ private: // メンバ変数
 
 	static uint32_t nextSerialNumber_;
 
-	Vector3 offset_ = {0.0f, 3.9f, 0.0f};
+	Vector3 offset_ = {0.0f, 3.5f, 0.0f};
 
 	// ヒットストップ用
 	bool isHitStop_ = false;
-	uint32_t hitStopTime_ = 7;
+	uint32_t hitStopTime_ = 0;
+
+	bool isDamegeOn_ = false;
 
 	// hp
 	float hp_ = 100.0f;
+
+	CollisionRecord collisionRecord_;
 
 	// ----------------------行動遷移用---------------------
 	enum class Behavior {
@@ -152,20 +182,91 @@ private: // メンバ変数
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
+	struct WorkFarAttack1 {
+		float speed;
+		float sppedMin;
+		float sppedDec;
+		float rotationSpeed;
+		float rotationSpeedMax;
+		float rotationSpeedMin;
+		float rotationSpeedInc;
+		float rotationSpeedDec;
+		float maxDis;
+		float distanceCount;
+		bool isAttack;
+	};
+
+	WorkFarAttack1 workFarAttack1_;
+
+	struct WorkFarAttack2 {
+		Vector3 velocity;
+		Vector3 toPlayer;
+		float speed;
+		float rotationSpeed;
+		float rotationSpeedMax;
+		float rotationSpeedInc;
+		float scaleIncSpeed;
+		float scaleMax;
+		float attackTime;
+		bool isAttack;
+		bool isShot;
+	};
+
+	WorkFarAttack2 workFarAttack2_;
+
+	struct WorkFarAttack3 {
+		float rotationSpeed;
+		float rotationSpeedMax;
+		float rotationSpeedMin;
+		float rotationSpeedInc;
+		float scaleIncSpeed;
+		float scaleMax;
+		float prepareTime;
+		float attackTime;
+		bool isBegin;
+	};
+
+	WorkFarAttack3 workFarAttack3_;
+
+	struct WorkNearAttack1 {
+		float rotationSpeed;
+		float rotationCount;
+		float attackTime;
+		float prepareTime;
+		bool isAttack;
+	};
+
+	WorkNearAttack1 workNearAttack1_;
+
+	struct WorkNearAttack3 {
+		float attckSpeed;
+		float awaySpeed;
+		float rotationSpeed;
+		float rotationSpeedMax;
+		float rotationSpeedInc;
+		float awayDistanceCount;
+		float attackDistanceCount;
+		float attackTime;
+		bool isAttack;
+	};
+
+	WorkNearAttack3 workNearAttack3_;
+
 	float rand_;    // 乱数
 	int randIndex_; // 乱数カウント
 
 	Vector3 toPlayerV_;
+	Vector3 toPlayerVOnce_;
 	float toPlayerDis_;
 
-	uint32_t behaviorCD_ = 0;
+	float behaviorCD_ = 60 * 3;
 
 	// ----------------------行動遷移用---------------------
 
 	// ----------------------浮遊アニメーション用---------------------
 	float floatingParam_ = 0.0f;
 	// 周期
-	float period = 60.0f; // 60フレームで1周期
+	float period = 120.0f; // 60フレームで1周期
 	// 振幅
-	float amplitude = 0.08f;
+	float amplitude = 0.04f;
 };

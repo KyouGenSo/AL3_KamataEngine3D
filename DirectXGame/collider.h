@@ -1,8 +1,8 @@
 #pragma once
-#include "Vector3.h"
-#include "WorldTransform.h"
-#include "ViewProjection.h"
 #include "Model.h"
+#include "Vector3.h"
+#include "ViewProjection.h"
+#include "WorldTransform.h"
 
 class Collider {
 private:
@@ -17,12 +17,12 @@ public:
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	 virtual ~Collider() = default;
+	virtual ~Collider() = default;
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	 void Initialize();
+	void Initialize();
 
 	/// <summary>
 	/// ワールトトランスフォームの更新

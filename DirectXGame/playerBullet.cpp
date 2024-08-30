@@ -1,12 +1,18 @@
-#include"playerBullet.h"
+#include "playerBullet.h"
 #include "enemy.h"
+
+// global serial number
+uint32_t PlayerBullet::nextSerialNumber_ = 0;
 
 PlayerBullet::PlayerBullet() {}
 
-PlayerBullet::~PlayerBullet() {}
+PlayerBullet::~PlayerBullet() {
+	serialNumber_ = nextSerialNumber_;
+	nextSerialNumber_++;
+}
 
 Vector3 PlayerBullet::GetCenter() const {
-	Vector3 offset = {0.0f, 0.0f, 0.0f};
+	Vector3 offset = {-0.8f, 0.0f, 1.5f};
 	Vector3 worldPos = TransForm(worldTransform_.matWorld_, offset);
 
 	return worldPos;
@@ -19,7 +25,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 
 	worldTransform_.Initialize();
 
-	//worldTransform_.scale_ = Vector3(0.5f, 0.5f, 3.0f);
+
 
 	worldTransform_.rotation_.y = std::atan2(velocity.x, velocity.z);
 
@@ -28,11 +34,25 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	Vector3 velocityZ = TransForm(thetaYRotationMatrix, velocity);
 	worldTransform_.rotation_.x = std::atan2(-velocityZ.y, velocityZ.z);
 
-	worldTransform_.translation_ = position;
+	// offset
+	Vector3 offset = {-0.8f, 0.0f, 1.5f};
+
+	Matrix4x4 yRotMat = MakeRotateMatrixY(worldTransform_.rotation_.y);
+	Matrix4x4 xRotMat = MakeRotateMatrixX(worldTransform_.rotation_.x);
+
+	offset = TransForm(yRotMat, offset);
+	offset = TransForm(xRotMat, offset);
+
+	worldTransform_.translation_ = offset + position;
+
+	worldTransform_.scale_ = Vector3(0.f, 0.f, 0.f);
 
 	worldTransform_.UpdateMatrix();
 
 	velocity_ = velocity;
+
+	// 衝突判定の種別IDを設定
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerBullet));
 }
 
 void PlayerBullet::Update() {
@@ -46,21 +66,23 @@ void PlayerBullet::Update() {
 
 	velocity_ = Slerp(velocity_.normalize(), toEnemy.normalize(), t_) * speed;
 
-	worldTransform_.translation_ += velocity_;
+	if (worldTransform_.scale_.x >= 1.0f) {
+		worldTransform_.translation_ += velocity_;
 
-	Matrix4x4 yRotMat = MakeRotateMatrixY(atan2f(velocity_.x, velocity_.z));
-	Vector3 velocityZ = TransForm(yRotMat, velocity_);
-	worldTransform_.rotation_.x = atan2f(-velocityZ.y, velocityZ.z);
-	worldTransform_.rotation_.y = atan2f(velocityZ.x, velocityZ.z);
+		Matrix4x4 yRotMat = MakeRotateMatrixY(atan2f(velocity_.x, velocity_.z));
+		Vector3 velocityZ = TransForm(yRotMat, velocity_);
+		worldTransform_.rotation_.x = atan2f(-velocityZ.y, velocityZ.z);
+		worldTransform_.rotation_.y = atan2f(velocityZ.x, velocityZ.z);
+	} else {
+		worldTransform_.scale_ += Vector3(0.1f, 0.1f, 0.1f);
+	}
 
 	worldTransform_.UpdateMatrix();
 }
 
-void PlayerBullet::Draw(const ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection);
-}
+void PlayerBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection); }
 
-void PlayerBullet::OnCollision([[maybe_unused]] Collider* other) { 
+void PlayerBullet::OnCollision([[maybe_unused]] Collider* other) {
 
 	// 衝突相手の種別IDを取得
 	uint32_t typeID = other->GetTypeID();
@@ -79,7 +101,9 @@ void PlayerBullet::OnCollision([[maybe_unused]] Collider* other) {
 		// 衝突した敵のシリアルナンバーを記録
 		collisionRecord_.AddRecord(serialNum);
 
+		// 敵にダメージを与える
+		enemy->Damage(0.1f);
+
 		isDead_ = true;
 	}
-	
 }

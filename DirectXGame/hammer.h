@@ -42,6 +42,8 @@ public:
 	const Vector3& GetRotation() const { return hammerWorldTransform_.rotation_; }
 	const Vector3& GetTranslation() const { return hammerWorldTransform_.translation_; }
 	const WorldTransform& GetWorldTransform() const { return hammerWorldTransform_; }
+	const uint32_t GetSerialNumber() const { return serialNumber_; }
+	const bool IsEnable() const { return enable_; }
 
 	/// <summary>
 	/// Setter
@@ -49,10 +51,14 @@ public:
 	void SetRotation(const Vector3& rotation) { hammerWorldTransform_.rotation_ = rotation; }
 	void SetTranslation(const Vector3& translation) { hammerWorldTransform_.translation_ = translation; }
 	void SetParent(const WorldTransform& parent) { hammerWorldTransform_.parent_ = &parent; }
+	void SetEnable(bool enable) { enable_ = enable; }
 
 private:
 	Model* model_ = nullptr;
 	Model* effectModel_ = nullptr;
+
+	// シリアルナンバー
+	uint32_t serialNumber_ = 5;
 
 	WorldTransform hammerWorldTransform_;
 	WorldTransform effectWorldTransform_;
@@ -60,4 +66,5 @@ private:
 	CollisionRecord collisionRecord_;
 
 	bool isHit_ = false;
+	bool enable_ = false;
 };

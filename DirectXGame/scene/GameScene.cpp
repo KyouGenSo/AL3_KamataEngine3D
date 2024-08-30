@@ -55,8 +55,8 @@ void GameScene::Initialize() {
 
 	// 敵のモデル
 	enemyBodyModel_.reset(Model::CreateFromOBJ("boss", true));
-	enemyHitEffectModel_.reset(Model::CreateSphere());
-	enemyModels_ = {enemyBodyModel_.get(), enemyHitEffectModel_.get()};
+	enemyBlockModel_.reset(Model::CreateFromOBJ("boss_block", true));
+	enemyModels_ = {enemyBodyModel_.get(), enemyBlockModel_.get()};
 
 	// Skydomeのモデル
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome", true));
@@ -241,9 +241,15 @@ void GameScene::CheckAllCollisions() {
 	collisionManager_->AddCollider(player_.get());
 	collisionManager_->AddCollider(enemy_.get());
 	collisionManager_->AddCollider(player_->GetHammer());
+
 	std::list<PlayerBullet*> bullets = player_->GetBullets();
 	for (PlayerBullet* bullet : bullets) {
 		collisionManager_->AddCollider(bullet);
+	}
+
+	std::list<EnemyBlock*> blocks_ = enemy_->GetBlocks();
+	for (EnemyBlock* block : blocks_) {
+		collisionManager_->AddCollider(block);
 	}
 
 	collisionManager_->CheckAllCollisions();

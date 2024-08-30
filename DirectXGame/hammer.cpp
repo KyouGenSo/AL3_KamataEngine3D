@@ -37,7 +37,7 @@ void Hammer::Update() {
 	hammerWorldTransform_.UpdateMatrix();
 	effectWorldTransform_.UpdateMatrix();
 
-	ImGuiDraw();
+	//ImGuiDraw();
 }
 
 void Hammer::Draw(const ViewProjection& viewProjection) {
@@ -63,7 +63,7 @@ void Hammer::OnCollision([[maybe_unused]] Collider* other) {
 	uint32_t typeID = other->GetTypeID();
 
 	// 衝突相手が敵である場合
-	if (typeID == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
+	if (typeID == static_cast<uint32_t>(CollisionTypeId::kEnemy) && enable_) {
 		// 衝突相手を敵クラスにダウンキャスト
 		Enemy* enemy = static_cast<Enemy*>(other);
 		uint32_t serialNum = enemy->GetSerialNumber();
@@ -79,6 +79,12 @@ void Hammer::OnCollision([[maybe_unused]] Collider* other) {
 		// 敵の位置にeffectを表示
 		effectWorldTransform_.translation_ = enemy->GetCenter();
 		isHit_ = true;
+
+		// 衝突した敵にダメージを与える
+		enemy->Damage(5.0f);
+
+		// 敵をヒットストップさせる
+		enemy->HitStop(10);
 	}
 }
 

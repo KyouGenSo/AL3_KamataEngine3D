@@ -71,7 +71,7 @@ void FollowCamera::Update() {
 	}
 
 	// ImGui描画
-	ImGuiDraw();
+	//ImGuiDraw();
 }
 
 void FollowCamera::Reset() { 

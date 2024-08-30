@@ -31,10 +31,16 @@ public:
 	void OnCollision([[maybe_unused]] Collider* other) override;
 
 	/// <summary>
+	/// 衝突記録をクリア
+	/// </summary>
+	void ClearCollisionRecord() { collisionRecord_.Clear(); }
+
+	/// <summary>
 	/// getter
 	/// </summary>
 	Vector3 GetWorldPosition() { return worldTransform_.translation_; }
 	Vector3 GetCenter() const override;
+	const uint32_t GetSerialNumber() const { return serialNumber_; }
 
 	/// <summary>
 	/// setter
@@ -44,7 +50,6 @@ public:
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
-	uint32_t textureHandle_ = 0;
 
 	Vector3 velocity_;
 
@@ -53,6 +58,10 @@ private:
 	static const int32_t kLifeTime = 60 * 1;
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
+
+	// シリアルナンバー
+	uint32_t serialNumber_ = 0;
+	static uint32_t nextSerialNumber_;
 
 	CollisionRecord collisionRecord_;
 
