@@ -305,7 +305,7 @@ void Enemy::OnCollision([[maybe_unused]] Collider* other) {
 
 		// プレイヤーにダメージを与える
 		if (isDamegeOn_) {
-			player->Damage(10);
+			player->Damage(20);
 		} else {
 			ClearCollisionRecord();
 		}
