@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.h"
+#include "Audio.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "collider.h"
@@ -54,6 +55,11 @@ public:
 	void SetEnable(bool enable) { enable_ = enable; }
 
 private:
+	Audio* audio_ = nullptr;
+
+	// SE
+	uint32_t seHit_ = 0;
+
 	Model* model_ = nullptr;
 	Model* effectModel_ = nullptr;
 

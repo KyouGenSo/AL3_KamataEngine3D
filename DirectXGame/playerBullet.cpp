@@ -19,6 +19,11 @@ Vector3 PlayerBullet::GetCenter() const {
 }
 
 void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
+	audio_ = Audio::GetInstance();
+
+	// SEの読み込み
+	seHit_ = audio_->LoadWave("playerBulletHit.wav");
+
 	Collider::Initialize();
 
 	model_ = model;
@@ -102,7 +107,10 @@ void PlayerBullet::OnCollision([[maybe_unused]] Collider* other) {
 		collisionRecord_.AddRecord(serialNum);
 
 		// 敵にダメージを与える
-		enemy->Damage(0.1f);
+		enemy->Damage(0.05f);
+
+		// SEを再生
+		audio_->PlayWave(seHit_);
 
 		isDead_ = true;
 	}

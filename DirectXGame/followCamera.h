@@ -22,10 +22,15 @@ public: // メンバ関数
 
 	void Reset();
 
+	void ResetOffset();
+
 	void ImGuiDraw();
 
 	// offsetの計算関数
 	Vector3 CalculateOffset() const;
+
+	// 画面揺れ
+	void ShakeScreen(float power);
 
 	/// <summary>
 	/// Setters
@@ -50,6 +55,8 @@ private: // メンバ変数
 	Vector3 interTargetPos_;
 
 	Vector3 offset_ = {0.0f, 3.0f, -13.0f};
+
+	Vector3 offsetOrigin_ = {0.0f, 3.0f, -13.0f};
 
 	float t_ = 0.18f;
 

@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "ImGuiManager.h"
 #include "Player.h"
+#include "followCamera.h"
 #include "hammer.h"
 
 // global serial number
@@ -50,6 +51,10 @@ void Enemy::CreateBlock(const Vector3& position, const Vector3& scale, const Vec
 }
 
 void Enemy::Initialize(const std::vector<Model*> models) {
+	audio_ = Audio::GetInstance();
+
+	// SEの読み込み
+	seHitPlayer_ = audio_->LoadWave("playerDamaged.wav");
 
 	Collider::SetRadius(5.f);
 
@@ -306,6 +311,8 @@ void Enemy::OnCollision([[maybe_unused]] Collider* other) {
 		// プレイヤーにダメージを与える
 		if (isDamegeOn_) {
 			player->Damage(20);
+			followCamera_->ShakeScreen(0.5f);
+			audio_->PlayWave(seHitPlayer_);
 		} else {
 			ClearCollisionRecord();
 		}
@@ -324,6 +331,8 @@ void Enemy::BehaviorRootInitialize() {
 	// behaviorCD_ = 60 * 3;
 
 	worldTransform_.rotation_.y = 0;
+
+	followCamera_->ResetOffset();
 
 	blocks_.clear();
 }
@@ -350,27 +359,26 @@ void Enemy::BehaviorRootUpdate() {
 				 behaviorRequest_ = Behavior::kNearAttack1;
 				break;
 			case 2:
-				behaviorRequest_ = Behavior::kNearAttack2;
+				 behaviorRequest_ = Behavior::kNearAttack2;
 				break;
 			case 3:
-				 behaviorRequest_ = Behavior::kNearAttack3;
+				behaviorRequest_ = Behavior::kNearAttack3;
 
 				break;
 			}
 		}
 
-		 //playerとの距離が遠い場合
+		// playerとの距離が遠い場合
 		else {
 			switch (randIndex_) {
 			case 0:
 				 behaviorRequest_ = Behavior::kNear;
-
 				break;
 			case 1:
-				 behaviorRequest_ = Behavior::kFarAttack1;
+				behaviorRequest_ = Behavior::kFarAttack1;
 				break;
 			case 2:
-				behaviorRequest_ = Behavior::kFarAttack2;
+				 behaviorRequest_ = Behavior::kFarAttack2;
 				break;
 			case 3:
 				 behaviorRequest_ = Behavior::kFarAttack3;
@@ -419,7 +427,7 @@ void Enemy::BehaviorAwayUpdate() {
 		worldTransform_.translation_.z -= toPlayerV_.normalize().z * speed;
 
 	} else {
-		behaviorCD_ = 60 * 3;
+		behaviorCD_ = 60 * 0.5;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
@@ -430,6 +438,8 @@ void Enemy::BehaviorFarAttack1Initialize() {
 	// 行動遷移の初期化処理
 	rand_ = Rand(0.0f, 4.0f);
 	randIndex_ = int(std::floor(rand_));
+
+	ClearCollisionRecord();
 
 	isDamegeOn_ = true;
 
@@ -479,7 +489,7 @@ void Enemy::BehaviorFarAttack1Update() {
 	if (workFarAttack1_.distanceCount >= workFarAttack1_.maxDis) {
 		isDamegeOn_ = false;
 		workFarAttack1_.isAttack = false;
-		behaviorCD_ = 60 * 2.5f;
+		behaviorCD_ = 60 * 1.5f;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
@@ -542,7 +552,7 @@ void Enemy::BehaviorFarAttack2Initialize() {
 void Enemy::BehaviorFarAttack2Update() {
 
 	if (--workFarAttack2_.attackTime <= 0) {
-		behaviorCD_ = 60 * 2.0;
+		behaviorCD_ = 60 * 1.5f;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
@@ -550,6 +560,10 @@ void Enemy::BehaviorFarAttack2Update() {
 	worldTransform_.rotation_.y = std::atan2(toPlayerV_.x, toPlayerV_.z);
 
 	for (auto& block : blocks_) {
+
+		if (block->IsHit()) {
+			followCamera_->ShakeScreen(0.5f);
+		}
 
 		block->SetRotationZ(block->GetRotation().z + workFarAttack2_.rotationSpeed);
 		block->SetRotationY(block->GetRotation().y + workFarAttack2_.rotationSpeed);
@@ -615,7 +629,7 @@ void Enemy::BehaviorFarAttack3Initialize() {
 	workFarAttack3_.scaleMax = 1.0f;
 
 	workFarAttack3_.prepareTime = 60 * 2;
-	workFarAttack3_.attackTime = 60 * 20;
+	workFarAttack3_.attackTime = 60 * 15;
 
 	workFarAttack3_.isBegin = false;
 
@@ -624,7 +638,7 @@ void Enemy::BehaviorFarAttack3Initialize() {
 
 		block->SetDamage(10.0f);
 
-		block->SetColliVanish(false); // 衝突時に消えないように設定
+		block->SetColliVanish(true); // 衝突時に消えないように設定
 
 		block->SetDeathTimer(60.0f * 25.0f);
 	}
@@ -650,7 +664,7 @@ void Enemy::BehaviorFarAttack3Update() {
 			if (block->GetScale().x > 0.0f) {
 				block->SetScale(block->GetScale() - Vector3(workFarAttack3_.scaleIncSpeed, workFarAttack3_.scaleIncSpeed, workFarAttack3_.scaleIncSpeed));
 			} else if (block->GetScale().x <= 0.0f) {
-				behaviorCD_ = 60 * 3.0f;
+				behaviorCD_ = 60 * 1.5f;
 				behaviorRequest_ = Behavior::kRoot;
 			}
 		}
@@ -717,11 +731,6 @@ void Enemy::BehaviorNearAttack1Update() {
 
 	for (auto& block : blocks_) {
 
-		// if (workNearAttack1_.attackTime <= 0) {
-		//	behaviorCD_ = 60 * 2.0;
-		//	behaviorRequest_ = Behavior::kRoot;
-		// }
-
 		if (block->GetScale().x < 2.5f) {
 			block->SetScaleX(block->GetScale().x + 0.1f);
 		} else if (block->GetScale().y < 2.5f) {
@@ -737,7 +746,7 @@ void Enemy::BehaviorNearAttack1Update() {
 				worldTransform_.rotation_.y += workNearAttack1_.rotationSpeed;
 				workNearAttack1_.rotationCount += workNearAttack1_.rotationSpeed;
 			} else {
-				behaviorCD_ = 60 * 2.0;
+				behaviorCD_ = 60 * 1.5f;
 				behaviorRequest_ = Behavior::kRoot;
 			}
 		} else {
@@ -753,6 +762,10 @@ void Enemy::BehaviorNearAttack1Update() {
 		Vector3 velocity = GetCenter() + offset;
 		Matrix4x4 yRotMatBlock = MakeRotateMatrixY(std::atan2(velocity.y, velocity.z));
 		block->SetRotationY(std::atan2(velocity.x, velocity.z));
+
+		if (block->IsHit()) {
+			followCamera_->ShakeScreen(0.5f);
+		}
 	}
 
 	worldTransform_.UpdateMatrix();
@@ -824,12 +837,16 @@ void Enemy::BehaviorNearAttack2Update() {
 		}
 
 		if (block->GetCenter().y < 0.0f) {
-			behaviorCD_ = 60 * 2.0;
+			behaviorCD_ = 60 * 1.5f;
 			behaviorRequest_ = Behavior::kRoot;
 		}
 
 		// 常にplayerに向かう
 		worldTransform_.rotation_.y = std::atan2(toPlayerV_.x, toPlayerV_.z);
+
+		if (block->IsHit()) {
+			followCamera_->ShakeScreen(0.5f);
+		}
 	}
 
 	worldTransform_.UpdateMatrix();
@@ -839,6 +856,8 @@ void Enemy::BehaviorNearAttack3Initialize() {
 	// 行動遷移の初期化処理
 	rand_ = Rand(0.0f, 4.0f);
 	randIndex_ = int(std::floor(rand_));
+
+	ClearCollisionRecord();
 
 	isDamegeOn_ = true;
 
@@ -885,6 +904,8 @@ void Enemy::BehaviorNearAttack3Update() {
 
 		if (worldTransform_.translation_.y > 0.0f) {
 			worldTransform_.translation_.y -= workNearAttack3_.attckSpeed * 0.3f;
+		} else {
+			followCamera_->ShakeScreen(0.5f);
 		}
 
 		workNearAttack3_.attackDistanceCount += workNearAttack3_.attckSpeed;
@@ -896,9 +917,10 @@ void Enemy::BehaviorNearAttack3Update() {
 
 	if (workNearAttack3_.attackDistanceCount >= 200.0f) {
 		isDamegeOn_ = false;
-		behaviorCD_ = 60 * 2.0;
+		behaviorCD_ = 60 * 1.5f;
 		worldTransform_.rotation_.x = 0.0f;
 		worldTransform_.translation_.y = 0.0f;
+		followCamera_->ResetOffset();
 		behaviorRequest_ = Behavior::kRoot;
 	}
 }

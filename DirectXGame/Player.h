@@ -1,5 +1,6 @@
 #pragma once
 #include "Input.h"
+#include "Audio.h"
 #include "Matrix4x4Function.h"
 #include "Model.h"
 #include "Vector3Function.h"

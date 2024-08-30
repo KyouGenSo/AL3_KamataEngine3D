@@ -3,6 +3,10 @@
 #include "enemy.h"
 
 void Hammer::Initialize(Model* model, Model* effectModel) {
+	audio_ = Audio::GetInstance();
+
+	// SEの読み込み
+	seHit_ = audio_->LoadWave("hammerHit.wav");
 
 	model_ = model;
 
@@ -49,6 +53,7 @@ void Hammer::Draw(const ViewProjection& viewProjection) {
 }
 
 void Hammer::ImGuiDraw() {
+#ifdef _DEBUG
 	ImGui::Begin("Hammer");
 
 	ImGui::DragFloat3("Position", &hammerWorldTransform_.translation_.x, 0.1f);
@@ -56,6 +61,7 @@ void Hammer::ImGuiDraw() {
 	ImGui::DragFloat3("Scale", &hammerWorldTransform_.scale_.x, 0.1f);
 
 	ImGui::End();
+#endif _DEBUG
 }
 
 void Hammer::OnCollision([[maybe_unused]] Collider* other) {
@@ -85,6 +91,9 @@ void Hammer::OnCollision([[maybe_unused]] Collider* other) {
 
 		// 敵をヒットストップさせる
 		enemy->HitStop(10);
+
+		// SEを再生
+		audio_->PlayWave(seHit_);
 	}
 }
 

@@ -70,6 +70,7 @@ void FollowCamera::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
+
 	// ImGui描画
 	//ImGuiDraw();
 }
@@ -82,10 +83,16 @@ void FollowCamera::Reset() {
 
 	destinationAngleY_ = viewProjection_.rotation_.y;
 
+	offset_ = {0.0f, 3.0f, -13.0f};
+
 	Vector3 offset = CalculateOffset();
 
 	viewProjection_.translation_ = interTargetPos_ + offset;
+
+	
 }
+
+void FollowCamera::ResetOffset() { offset_ = offsetOrigin_; }
 
 Vector3 FollowCamera::CalculateOffset() const {
 	Vector3 offset = offset_;
@@ -98,12 +105,21 @@ Vector3 FollowCamera::CalculateOffset() const {
 	return offset;
 }
 
+void FollowCamera::ShakeScreen(float power) { 
+	float randomX = Rand(-power, power);
+	float randomY = Rand(-power, power);
+
+	offset_.x += randomX;
+	offset_.y += randomY;
+}
+
 void FollowCamera::SetTarget(const WorldTransform* target) { 
 	target_ = target;
 	Reset();
 }
 
 void FollowCamera::ImGuiDraw() {
+#ifdef _DEBUG
 	ImGui::Begin("Camera");
 
 	ImGui::DragFloat3("Position", &viewProjection_.translation_.x, 0.1f);
@@ -111,4 +127,5 @@ void FollowCamera::ImGuiDraw() {
 
 
 	ImGui::End();
+#endif _DEBUG
 }

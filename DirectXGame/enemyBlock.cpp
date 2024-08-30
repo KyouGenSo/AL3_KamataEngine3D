@@ -1,6 +1,6 @@
 #include "enemyBlock.h"
 #include "Player.h"
-
+#include "followCamera.h"
 
 EnemyBlock::EnemyBlock() {}
 
@@ -9,6 +9,11 @@ EnemyBlock::~EnemyBlock() {}
 void EnemyBlock::Initialize(Model* model, const Vector3& position, const Vector3& scale, const Vector3& offset) {
 	assert(model);
 	model_ = model;
+
+	audio_ = Audio::GetInstance();
+
+	// SEの読み込み
+	seHandle_ = audio_->LoadWave("playerDamaged.wav");
 
 	Collider::Initialize();
 
@@ -56,9 +61,13 @@ void EnemyBlock::OnCollision([[maybe_unused]] Collider* other) {
 		// 衝突した敵のシリアルナンバーを記録
 		collisionRecord_.AddRecord(serialNum);
 
+		isHit_ = true;
+
 		// プレイヤーにダメージを与える
-		if (!isHited_)
-		player->Damage(damage_);
+		if (!isHited_) {
+			player->Damage(damage_);
+			audio_->PlayWave(seHandle_);
+		}
 
 		if (hitOnce_)
 		isHited_ = true;

@@ -1,4 +1,5 @@
 #pragma once
+#include "Audio.h"
 #include "Collider.h"
 #include "Matrix4x4Function.h"
 #include "Model.h"
@@ -9,6 +10,8 @@
 #include "collisionTypeIdDef.h"
 #include "myFunction.h"
 #include <Vector3Function.h>
+
+class FollowCamera;
 
 class EnemyBlock : public Collider {
 public:
@@ -41,6 +44,10 @@ public:
 	Vector3 GetCenter() const override;
 	// get offset
 	const Vector3& GetOffset() const { return offset_; }
+	// get isHit
+	bool IsHit() const { return isHit_; }
+	// get isColliVanish
+	bool IsColliVanish() const { return isColliVanish_; }
 
 	bool IsDead() const { return isDead_; }
 	float GetDeathTimer() const { return deathTimer_; }
@@ -70,8 +77,15 @@ public:
 	void SetIsHited(bool isHited) { isHited_ = isHited; }
 	// set hit once
 	void SetHitOnce(bool hitOnce) { hitOnce_ = hitOnce; }
+	// set follow camera
+	void SetFollowCamera(FollowCamera* followCamera) { followCamera_ = followCamera; }
 
 private:
+	Audio* audio_ = nullptr;
+
+	// SE
+	uint32_t seHandle_ = 0;
+
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 
@@ -86,6 +100,10 @@ private:
 
 	bool isHited_ = false;
 	bool hitOnce_ = false;
+	bool isHit_ = false;
 
 	CollisionRecord collisionRecord_;
+
+	// follow camera
+	FollowCamera* followCamera_ = nullptr;
 };

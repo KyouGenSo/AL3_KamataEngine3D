@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.h"
+#include "Audio.h"
 #include "WorldTransform.h"
 #include "Matrix4x4Function.h"
 #include <Vector3Function.h>
@@ -48,6 +49,11 @@ public:
 	void SetEnemy(const Enemy* enemy) { enemy_ = enemy; }
 
 private:
+	Audio* audio_ = nullptr;
+
+	// SE
+	uint32_t seHit_ = 0u;
+
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 

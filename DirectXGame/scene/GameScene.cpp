@@ -17,6 +17,10 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	// BGMの読み込み
+	bgmSH_ = audio_->LoadWave("bgm.wav");
+	bgmVH_ = audio_->PlayWave(bgmSH_, true, 0.25f);
+
 #ifdef _DEBUG
 	// DebugCameraの初期化
 	debugCamera_.reset(new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight));
@@ -104,6 +108,9 @@ void GameScene::Initialize() {
 
 	// 敵にプレイヤーをセット
 	enemy_->SetPlayer(player_.get());
+
+	// 敵に追従カメラをセット
+	enemy_->SetFollowCamera(followCamera_.get());
 
 	// プレイヤーに敵をセット
 	player_->SetEnemy(enemy_.get());

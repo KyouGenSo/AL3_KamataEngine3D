@@ -2,6 +2,7 @@
 #pragma once
 #include "Matrix4x4Function.h"
 #include "Model.h"
+#include "Audio.h"
 #include "Vector3Function.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
@@ -17,6 +18,8 @@
 #include "BaseCharacter.h"
 
 class Player;
+
+class FollowCamera;
 
 class Enemy : public BaseCharacter {
 
@@ -137,10 +140,19 @@ public: // メンバ関数
 	/// Setters
 	/// </summary>
 	void SetPlayer(const Player* player) { player_ = player; }
+	void SetFollowCamera(FollowCamera* followCamera) { followCamera_ = followCamera; }
 
 private: // メンバ変数
+	// Audio
+	Audio* audio_ = nullptr;
+	// SE
+	uint32_t seHitPlayer_ = 0;
+
 	// player参照
 	const Player* player_ = nullptr;
+
+	// FollowCamera参照
+	FollowCamera* followCamera_ = nullptr;
 
 	// block list
 	std::list<EnemyBlock*> blocks_;

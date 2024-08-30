@@ -67,6 +67,10 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	// audio
+	uint32_t bgmSH_ = 0;
+	uint32_t bgmVH_ = 0;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
