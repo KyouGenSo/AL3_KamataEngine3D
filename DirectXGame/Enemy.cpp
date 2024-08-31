@@ -584,7 +584,7 @@ void Enemy::BehaviorFarAttack2Initialize() {
 	for (auto& block : blocks_) {
 		block->SetRadius(1.0f);
 
-		block->SetDeathTimer(60.0f * 3.5f);
+		block->SetDeathTimer(60.0f * 4.0f);
 
 		block->SetDamage(10.0f);
 
@@ -778,11 +778,11 @@ void Enemy::BehaviorNearAttack1Update() {
 	for (auto& block : blocks_) {
 
 		if (block->GetScale().x < 2.5f) {
-			block->SetScaleX(block->GetScale().x + 0.05f);
+			block->SetScaleX(block->GetScale().x + 0.07f);
 		} else if (block->GetScale().y < 2.5f) {
-			block->SetScaleY(block->GetScale().y + 0.05f);
+			block->SetScaleY(block->GetScale().y + 0.07f);
 		} else if (block->GetScale().z < 2.5f) {
-			block->SetScaleZ(block->GetScale().z + 0.05f);
+			block->SetScaleZ(block->GetScale().z + 0.07f);
 		} else {
 			workNearAttack1_.isAttack = true;
 		}
