@@ -134,6 +134,11 @@ public:
 	void Damage(float damage);
 
 	/// <summary>
+	/// リセット
+	/// </summary>
+	void ReSet();
+
+	/// <summary>
 	/// Getters
 	/// </summary>
 	const WorldTransform& GetWorldTransformHead() const { return worldTransformHead_; }

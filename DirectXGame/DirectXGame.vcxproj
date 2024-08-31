@@ -116,6 +116,8 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="enemyBlock.cpp" />
     <ClCompile Include="followCamera.cpp" />
+    <ClCompile Include="GameClearScene.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="hammer.cpp" />
     <ClCompile Include="lockOn.cpp" />
@@ -126,6 +128,7 @@
     <ClCompile Include="playerBullet.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Skydome.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="Vector3Function.cpp" />
     <ClCompile Include="WorldTrasformEx.cpp" />
   </ItemGroup>
@@ -161,6 +164,8 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="enemyBlock.h" />
     <ClInclude Include="followCamera.h" />
+    <ClInclude Include="GameClearScene.h" />
+    <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="ground.h" />
     <ClInclude Include="hammer.h" />
     <ClInclude Include="input\Input.h" />
@@ -175,6 +180,7 @@
     <ClInclude Include="playerBullet.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Skydome.h" />
+    <ClInclude Include="TitleScene.h" />
     <ClInclude Include="Vector3Function.h" />
   </ItemGroup>
   <ItemGroup>

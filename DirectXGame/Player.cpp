@@ -20,6 +20,27 @@ Player::~Player() {
 	models_.shrink_to_fit();
 }
 
+void Player::ReSet() {
+	// ワールド変換データの初期化
+	worldTransform_.Initialize();
+	worldTransformHead_.Initialize();
+	worldTransformBody_.Initialize();
+	worldTransformL_arm_.Initialize();
+	worldTransformR_arm_.Initialize();
+
+	// モデルの初期位置を設定
+	worldTransform_.translation_ = {0.0f, 0.0f, -80.0f};
+	worldTransformHead_.translation_ = {0.0f, 1.5f, 0.0f};
+	worldTransformL_arm_.translation_ = {-0.55f, 1.3f, 0.0f};
+	worldTransformR_arm_.translation_ = {0.55f, 1.3f, 0.0f};
+
+	InitializeFloatAnimation();
+
+	behaviorRequest_ = Behavior::kRoot;
+
+	hp_ = 100.0f;
+}
+
 Vector3 Player::GetCenter() const {
 	Vector3 offset = {0.0f, 1.5f, 0.0f};
 	Vector3 worldPos = TransForm(worldTransform_.matWorld_, offset);
@@ -31,6 +52,9 @@ void Player::Damage(float damage) {
 	// ダメージ処理
 	if (hp_ > 0) {
 		hp_ -= damage;
+	}
+	if (hp_ <= 0) {
+		hp_ = 0;
 	}
 }
 
@@ -80,6 +104,10 @@ void Player::Update() {
 		}
 		return false;
 	});
+
+	if (hp_ <= 0) {
+		hp_ = 0;
+	}
 
 	if (!enableWeapon_) {
 		hammer_->SetRadius(0.0f);
@@ -258,7 +286,7 @@ void Player::ImGuiDraw() {
 	// hp
 	ImGui::Text("HP: %f", hp_);
 
-	//ImGui::Checkbox("EnableWeapon", &enableWeapon_);
+	// ImGui::Checkbox("EnableWeapon", &enableWeapon_);
 
 	ImGui::End();
 

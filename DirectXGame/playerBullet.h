@@ -61,7 +61,7 @@ private:
 
 	float t_ = 0.1f;
 
-	static const int32_t kLifeTime = 60 * 1;
+	static const int32_t kLifeTime = 60 * 5;
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
 

@@ -91,12 +91,14 @@ public: // メンバ関数
 	/// </summary>
 	void ClearCollisionRecord() { collisionRecord_.Clear(); }
 
-	void Damage(float damage) { hp_ -= damage; }
+	void Damage(float damage);
 
 	void HitStop(uint32_t time) {
 		isHitStop_ = true;
 		hitStopTime_ = time;
 	}
+
+	void ReSet();
 
 	/// <summary>
 	/// Behaviors
@@ -135,12 +137,15 @@ public: // メンバ関数
 	uint32_t GetSerialNumber() const { return serialNumber_; }
 	// get block list
 	const std::list<EnemyBlock*>& GetBlocks() const { return blocks_; }
+	// get hp
+	float GetHp() const { return hp_; }
 
 	/// <summary>
 	/// Setters
 	/// </summary>
 	void SetPlayer(const Player* player) { player_ = player; }
 	void SetFollowCamera(FollowCamera* followCamera) { followCamera_ = followCamera; }
+	void SetHP(float hp) { hp_ = hp; }
 
 private: // メンバ変数
 	// Audio
@@ -206,6 +211,8 @@ private: // メンバ変数
 		float maxDis;
 		float distanceCount;
 		bool isAttack;
+		bool isHit;
+		float shakeTime;
 	};
 
 	WorkFarAttack1 workFarAttack1_;

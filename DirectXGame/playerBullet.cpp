@@ -107,7 +107,7 @@ void PlayerBullet::OnCollision([[maybe_unused]] Collider* other) {
 		collisionRecord_.AddRecord(serialNum);
 
 		// 敵にダメージを与える
-		enemy->Damage(0.05f);
+		enemy->Damage(0.2f);
 
 		// SEを再生
 		audio_->PlayWave(seHit_);

@@ -14,6 +14,28 @@ Enemy::~Enemy() {
 	nextSerialNumber_++;
 }
 
+void Enemy::ReSet() {
+	hp_ = 100.0f;
+	isHitStop_ = false;
+	hitStopTime_ = 0;
+	behavior_ = Behavior::kRoot;
+	behaviorRequest_ = std::nullopt;
+	behaviorCD_ = 0;
+	isDamegeOn_ = false;
+	worldTransformBody_.translation_ = offset_;
+
+	BehaviorNearInitialize();
+	BehaviorAwayInitialize();
+	BehaviorFarAttack1Initialize();
+	BehaviorFarAttack2Initialize();
+	BehaviorFarAttack3Initialize();
+	BehaviorNearAttack1Initialize();
+	BehaviorNearAttack2Initialize();
+	BehaviorNearAttack3Initialize();
+	BehaviorRootInitialize();
+
+}
+
 Vector3 Enemy::GetCenter() const {
 	Vector3 offset = offset_;
 	Vector3 worldPos = TransForm(worldTransform_.matWorld_, offset);
@@ -41,6 +63,15 @@ void Enemy::PosRange() {
 		worldTransform_.translation_.z -= 1.0f;
 	} else if (worldTransform_.translation_.z < -range.z) {
 		worldTransform_.translation_.z += 1.0f;
+	}
+}
+
+void Enemy::Damage(float damage) {
+	if (hp_ > 0.0f) {
+		hp_ -= damage;
+	}
+	if (hp_ <= 0.0f) {
+		hp_ = 0.0f;
 	}
 }
 
@@ -85,6 +116,10 @@ void Enemy::Update() {
 		}
 		return false;
 	});
+
+	if (hp_ <= 0) {
+		hp_ = 0;
+	}
 
 	if (hitStopTime_ > 0) {
 		hitStopTime_--;
@@ -265,7 +300,7 @@ void Enemy::UpdateFloatAnimation() {
 
 void Enemy::ShakeEffect() {
 	// ランダムな値を生成
-	float random = Rand(-0.2f, 0.2f);
+	float random = Rand(-0.3f, 0.3f);
 
 	worldTransformBody_.translation_.x += random;
 	worldTransformBody_.translation_.z += random;
@@ -310,8 +345,9 @@ void Enemy::OnCollision([[maybe_unused]] Collider* other) {
 
 		// プレイヤーにダメージを与える
 		if (isDamegeOn_) {
-			player->Damage(20);
+			player->Damage(30);
 			followCamera_->ShakeScreen(0.5f);
+			workFarAttack1_.isHit = true;
 			audio_->PlayWave(seHitPlayer_);
 		} else {
 			ClearCollisionRecord();
@@ -353,13 +389,13 @@ void Enemy::BehaviorRootUpdate() {
 		if (toPlayerDis_ < 20.0f) {
 			switch (randIndex_) {
 			case 0:
-				 behaviorRequest_ = Behavior::kAway;
+				behaviorRequest_ = Behavior::kAway;
 				break;
 			case 1:
-				 behaviorRequest_ = Behavior::kNearAttack1;
+				behaviorRequest_ = Behavior::kNearAttack1;
 				break;
 			case 2:
-				 behaviorRequest_ = Behavior::kNearAttack2;
+				behaviorRequest_ = Behavior::kNearAttack2;
 				break;
 			case 3:
 				behaviorRequest_ = Behavior::kNearAttack3;
@@ -378,10 +414,10 @@ void Enemy::BehaviorRootUpdate() {
 				behaviorRequest_ = Behavior::kFarAttack1;
 				break;
 			case 2:
-				 behaviorRequest_ = Behavior::kFarAttack2;
+				behaviorRequest_ = Behavior::kFarAttack2;
 				break;
 			case 3:
-				 behaviorRequest_ = Behavior::kFarAttack3;
+				behaviorRequest_ = Behavior::kFarAttack3;
 				break;
 			}
 		}
@@ -452,13 +488,16 @@ void Enemy::BehaviorFarAttack1Initialize() {
 	workFarAttack1_.rotationSpeed = 0.01f;
 	workFarAttack1_.rotationSpeedMax = 0.25f;
 	workFarAttack1_.rotationSpeedMin = 0.08f;
-	workFarAttack1_.rotationSpeedInc = 0.001f;
+	workFarAttack1_.rotationSpeedInc = 0.0015f;
 	workFarAttack1_.rotationSpeedDec = 0.01f;
 
 	workFarAttack1_.maxDis = 150.0f;
 	workFarAttack1_.distanceCount = 0.0f;
 
 	workFarAttack1_.isAttack = false;
+	workFarAttack1_.isHit = false;
+
+	workFarAttack1_.shakeTime = 15.0f;
 }
 void Enemy::BehaviorFarAttack1Update() {
 	// 回転しながらplayerに向かって進む
@@ -491,6 +530,13 @@ void Enemy::BehaviorFarAttack1Update() {
 		workFarAttack1_.isAttack = false;
 		behaviorCD_ = 60 * 1.5f;
 		behaviorRequest_ = Behavior::kRoot;
+	}
+
+	if (workFarAttack1_.isHit && workFarAttack1_.shakeTime > 0) {
+		workFarAttack1_.shakeTime--;
+		followCamera_->ShakeScreen(0.5f);
+	} else {
+		followCamera_->ResetOffset();
 	}
 
 	worldTransform_.UpdateMatrix();
@@ -538,7 +584,7 @@ void Enemy::BehaviorFarAttack2Initialize() {
 	for (auto& block : blocks_) {
 		block->SetRadius(1.0f);
 
-		block->SetDeathTimer(60.0f * 4.5f);
+		block->SetDeathTimer(60.0f * 3.5f);
 
 		block->SetDamage(10.0f);
 
@@ -636,7 +682,7 @@ void Enemy::BehaviorFarAttack3Initialize() {
 	for (auto& block : blocks_) {
 		block->SetRadius(3.5f);
 
-		block->SetDamage(10.0f);
+		block->SetDamage(20.0f);
 
 		block->SetColliVanish(true); // 衝突時に消えないように設定
 
@@ -699,7 +745,7 @@ void Enemy::BehaviorNearAttack1Initialize() {
 	rand_ = Rand(0.0f, 4.0f);
 	randIndex_ = int(std::floor(rand_));
 
-	workNearAttack1_.rotationSpeed = 0.2f;
+	workNearAttack1_.rotationSpeed = 0.18f;
 	workNearAttack1_.rotationCount = 0.0f;
 	workNearAttack1_.isAttack = false;
 
@@ -732,11 +778,11 @@ void Enemy::BehaviorNearAttack1Update() {
 	for (auto& block : blocks_) {
 
 		if (block->GetScale().x < 2.5f) {
-			block->SetScaleX(block->GetScale().x + 0.1f);
+			block->SetScaleX(block->GetScale().x + 0.05f);
 		} else if (block->GetScale().y < 2.5f) {
-			block->SetScaleY(block->GetScale().y + 0.1f);
+			block->SetScaleY(block->GetScale().y + 0.05f);
 		} else if (block->GetScale().z < 2.5f) {
-			block->SetScaleZ(block->GetScale().z + 0.1f);
+			block->SetScaleZ(block->GetScale().z + 0.05f);
 		} else {
 			workNearAttack1_.isAttack = true;
 		}
@@ -794,7 +840,7 @@ void Enemy::BehaviorNearAttack2Initialize() {
 	for (auto& block : blocks_) {
 		block->SetRadius(4.0f);
 
-		block->SetDamage(20.0f);
+		block->SetDamage(30.0f);
 
 		block->SetHitOnce(true);
 
@@ -864,7 +910,7 @@ void Enemy::BehaviorNearAttack3Initialize() {
 	toPlayerVOnce_ = toPlayerV_;
 
 	workNearAttack3_.awaySpeed = 0.5f;
-	workNearAttack3_.attckSpeed = 4.5f;
+	workNearAttack3_.attckSpeed = 5.0f;
 	workNearAttack3_.awayDistanceCount = 0.0f;
 	workNearAttack3_.attackDistanceCount = 0.0f;
 
@@ -903,7 +949,7 @@ void Enemy::BehaviorNearAttack3Update() {
 		worldTransform_.translation_.z += toPlayerVOnce_.normalize().z * workNearAttack3_.attckSpeed;
 
 		if (worldTransform_.translation_.y > 0.0f) {
-			worldTransform_.translation_.y -= workNearAttack3_.attckSpeed * 0.3f;
+			worldTransform_.translation_.y -= workNearAttack3_.attckSpeed * 0.4f;
 		} else {
 			followCamera_->ShakeScreen(0.5f);
 		}
