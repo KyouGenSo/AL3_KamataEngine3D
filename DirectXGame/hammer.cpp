@@ -15,7 +15,7 @@ void Hammer::Initialize(Model* model, Model* effectModel) {
 
 	Collider::Initialize();
 
-	SetRadius(3.0f);
+	SetRadius(3.5f);
 
 	hammerWorldTransform_.Initialize();
 	effectWorldTransform_.Initialize();

@@ -112,6 +112,8 @@ void Enemy::Initialize(const std::vector<Model*> models) {
 	attackRecord_.nearAttack1 = false;
 	attackRecord_.nearAttack2 = false;
 	attackRecord_.nearAttack3 = false;
+	attackRecord_.isNeared = false;
+	attackRecord_.isAwayed = false;
 }
 
 void Enemy::Update() {
@@ -478,6 +480,11 @@ void Enemy::BehaviorRootUpdate() {
 					behaviorRequest_ = Behavior::kFarAttack3;
 					break;
 				}
+				if (!attackRecord_.isNeared) {
+					attackRecord_.isNeared = true;
+					behaviorRequest_ = Behavior::kNear;
+					break;
+				}
 				behaviorRequest_ = Behavior::kFarAttack1;
 				break;
 			case 2:
@@ -496,6 +503,11 @@ void Enemy::BehaviorRootUpdate() {
 					behaviorRequest_ = Behavior::kFarAttack3;
 					break;
 				}
+				if (!attackRecord_.isNeared) {
+					attackRecord_.isNeared = true;
+					behaviorRequest_ = Behavior::kNear;
+					break;
+				}
 				behaviorRequest_ = Behavior::kFarAttack2;
 				break;
 			case 3:
@@ -512,6 +524,11 @@ void Enemy::BehaviorRootUpdate() {
 				if (!attackRecord_.farAttack3) {
 					attackRecord_.farAttack3 = true;
 					behaviorRequest_ = Behavior::kFarAttack3;
+					break;
+				}
+				if (!attackRecord_.isNeared) {
+					attackRecord_.isNeared = true;
+					behaviorRequest_ = Behavior::kNear;
 					break;
 				}
 				behaviorRequest_ = Behavior::kFarAttack3;

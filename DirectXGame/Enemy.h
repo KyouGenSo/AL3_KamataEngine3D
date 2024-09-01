@@ -206,6 +206,8 @@ private: // メンバ変数
 		bool nearAttack1;
 		bool nearAttack2;
 		bool nearAttack3;
+		bool isNeared;
+		bool isAwayed;
 	};
 	AttackRecord attackRecord_;
 

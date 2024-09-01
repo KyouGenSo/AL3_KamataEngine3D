@@ -25,7 +25,7 @@ void FollowCamera::Update() {
 		destinationAngleY_ = angle;
 
 		// offset
-		offset_.z = Lerp(offset_.z, -7.0f, 0.08f);
+		offset_.z = Lerp(offset_.z, -7.0f, 0.1f);
 	}
 	else {
 		// ゲームパッドによる回転
@@ -88,11 +88,13 @@ void FollowCamera::Reset() {
 	Vector3 offset = CalculateOffset();
 
 	viewProjection_.translation_ = interTargetPos_ + offset;
-
 	
 }
 
-void FollowCamera::ResetOffset() { offset_ = offsetOrigin_; }
+void FollowCamera::ResetOffset() { 
+	offset_.x = offsetOrigin_.x;
+	offset_.y = offsetOrigin_.y;
+}
 
 Vector3 FollowCamera::CalculateOffset() const {
 	Vector3 offset = offset_;
