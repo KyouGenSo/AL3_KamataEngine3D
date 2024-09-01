@@ -25,7 +25,7 @@ void FollowCamera::Update() {
 		destinationAngleY_ = angle;
 
 		// offset
-		offset_.z = Lerp(offset_.z, -8.0f, 0.08f);
+		offset_.z = Lerp(offset_.z, -7.0f, 0.08f);
 	}
 	else {
 		// ゲームパッドによる回転

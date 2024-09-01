@@ -556,19 +556,19 @@ void Player::BehaviorRootUpdate() {
 
 	attackRecovryTime_ -= 1.0f;
 
-	if (input_->GetJoystickState(0, joyState_)) {
-		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
+	if (input_->GetJoystickState(0, joyState_) && input_->GetJoystickStatePrevious(0, preJoyState_)) {
+		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_X && !(preJoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
 			if (attackRecovryTime_ <= 0.0f && !lockOn_->isTargetExist()) {
 				behaviorRequest_ = Behavior::kAttack;
 			}
 		}
 
-		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B && !(preJoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 			if (workDash_.dashCD <= 0.0f)
 				behaviorRequest_ = Behavior::kDash;
 		}
 
-		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A && !(preJoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
 			behaviorRequest_ = Behavior::kJump;
 		}
 	}

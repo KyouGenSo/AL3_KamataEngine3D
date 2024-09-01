@@ -1,18 +1,18 @@
 #pragma once
 #pragma once
+#include "Audio.h"
 #include "Matrix4x4Function.h"
 #include "Model.h"
-#include "Audio.h"
 #include "Vector3Function.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "cassert"
 #include "collisionTypeIdDef.h"
+#include "enemyBlock.h"
 #include "memory"
 #include "myFunction.h"
 #include <cmath>
 #include <optional>
-#include "enemyBlock.h"
 
 // 親クラス
 #include "BaseCharacter.h"
@@ -199,6 +199,16 @@ private: // メンバ変数
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
+	struct AttackRecord {
+		bool farAttack1;
+		bool farAttack2;
+		bool farAttack3;
+		bool nearAttack1;
+		bool nearAttack2;
+		bool nearAttack3;
+	};
+	AttackRecord attackRecord_;
+
 	struct WorkFarAttack1 {
 		float speed;
 		float sppedMin;
@@ -214,7 +224,6 @@ private: // メンバ変数
 		bool isHit;
 		float shakeTime;
 	};
-
 	WorkFarAttack1 workFarAttack1_;
 
 	struct WorkFarAttack2 {
@@ -230,7 +239,6 @@ private: // メンバ変数
 		bool isAttack;
 		bool isShot;
 	};
-
 	WorkFarAttack2 workFarAttack2_;
 
 	struct WorkFarAttack3 {
@@ -243,8 +251,8 @@ private: // メンバ変数
 		float prepareTime;
 		float attackTime;
 		bool isBegin;
+		bool isFar;
 	};
-
 	WorkFarAttack3 workFarAttack3_;
 
 	struct WorkNearAttack1 {
@@ -254,7 +262,6 @@ private: // メンバ変数
 		float prepareTime;
 		bool isAttack;
 	};
-
 	WorkNearAttack1 workNearAttack1_;
 
 	struct WorkNearAttack3 {
@@ -268,7 +275,6 @@ private: // メンバ変数
 		float attackTime;
 		bool isAttack;
 	};
-
 	WorkNearAttack3 workNearAttack3_;
 
 	float rand_;    // 乱数

@@ -104,6 +104,14 @@ void Enemy::Initialize(const std::vector<Model*> models) {
 
 	rand_ = Rand(0.0f, 3.0f);
 	randIndex_ = int(std::floor(rand_));
+
+	// AttackRecordの初期化
+	attackRecord_.farAttack1 = false;
+	attackRecord_.farAttack2 = false;
+	attackRecord_.farAttack3 = false;
+	attackRecord_.nearAttack1 = false;
+	attackRecord_.nearAttack2 = false;
+	attackRecord_.nearAttack3 = false;
 }
 
 void Enemy::Update() {
@@ -379,7 +387,7 @@ void Enemy::BehaviorRootUpdate() {
 
 	if (toPlayerDis_ > 100.0f) {
 		behaviorRequest_ = Behavior::kNear;
-	} else if (toPlayerDis_ <= 6.5f) {
+	} else if (toPlayerDis_ <= 5.5f) {
 		behaviorRequest_ = Behavior::kAway;
 	}
 
@@ -392,14 +400,58 @@ void Enemy::BehaviorRootUpdate() {
 				behaviorRequest_ = Behavior::kAway;
 				break;
 			case 1:
+				if (!attackRecord_.nearAttack1) {
+					attackRecord_.nearAttack1 = true;
+					behaviorRequest_ = Behavior::kNearAttack1;
+					break;
+				}
+				if (!attackRecord_.nearAttack2) {
+					attackRecord_.nearAttack2 = true;
+					behaviorRequest_ = Behavior::kNearAttack2;
+					break;
+				}
+				if (!attackRecord_.nearAttack3) {
+					attackRecord_.nearAttack3 = true;
+					behaviorRequest_ = Behavior::kNearAttack3;
+					break;
+				}
 				behaviorRequest_ = Behavior::kNearAttack1;
 				break;
 			case 2:
+				if (!attackRecord_.nearAttack1) {
+					attackRecord_.nearAttack1 = true;
+					behaviorRequest_ = Behavior::kNearAttack1;
+					break;
+				}
+				if (!attackRecord_.nearAttack2) {
+					attackRecord_.nearAttack2 = true;
+					behaviorRequest_ = Behavior::kNearAttack2;
+					break;
+				}
+				if (!attackRecord_.nearAttack3) {
+					attackRecord_.nearAttack3 = true;
+					behaviorRequest_ = Behavior::kNearAttack3;
+					break;
+				}
 				behaviorRequest_ = Behavior::kNearAttack2;
 				break;
 			case 3:
+				if (!attackRecord_.nearAttack1) {
+					attackRecord_.nearAttack1 = true;
+					behaviorRequest_ = Behavior::kNearAttack1;
+					break;
+				}
+				if (!attackRecord_.nearAttack2) {
+					attackRecord_.nearAttack2 = true;
+					behaviorRequest_ = Behavior::kNearAttack2;
+					break;
+				}
+				if (!attackRecord_.nearAttack3) {
+					attackRecord_.nearAttack3 = true;
+					behaviorRequest_ = Behavior::kNearAttack3;
+					break;
+				}
 				behaviorRequest_ = Behavior::kNearAttack3;
-
 				break;
 			}
 		}
@@ -411,12 +463,57 @@ void Enemy::BehaviorRootUpdate() {
 				 behaviorRequest_ = Behavior::kNear;
 				break;
 			case 1:
+				if (!attackRecord_.farAttack1) {
+					attackRecord_.farAttack1 = true;
+					behaviorRequest_ = Behavior::kFarAttack1;
+					break;
+				}
+				if (!attackRecord_.farAttack2) {
+					attackRecord_.farAttack2 = true;
+					behaviorRequest_ = Behavior::kFarAttack2;
+					break;
+				}
+				if (!attackRecord_.farAttack3) {
+					attackRecord_.farAttack3 = true;
+					behaviorRequest_ = Behavior::kFarAttack3;
+					break;
+				}
 				behaviorRequest_ = Behavior::kFarAttack1;
 				break;
 			case 2:
+				if (!attackRecord_.farAttack1) {
+					attackRecord_.farAttack1 = true;
+					behaviorRequest_ = Behavior::kFarAttack1;
+					break;
+				}
+				if (!attackRecord_.farAttack2) {
+					attackRecord_.farAttack2 = true;
+					behaviorRequest_ = Behavior::kFarAttack2;
+					break;
+				}
+				if (!attackRecord_.farAttack3) {
+					attackRecord_.farAttack3 = true;
+					behaviorRequest_ = Behavior::kFarAttack3;
+					break;
+				}
 				behaviorRequest_ = Behavior::kFarAttack2;
 				break;
 			case 3:
+				if (!attackRecord_.farAttack1) {
+					attackRecord_.farAttack1 = true;
+					behaviorRequest_ = Behavior::kFarAttack1;
+					break;
+				}
+				if (!attackRecord_.farAttack2) {
+					attackRecord_.farAttack2 = true;
+					behaviorRequest_ = Behavior::kFarAttack2;
+					break;
+				}
+				if (!attackRecord_.farAttack3) {
+					attackRecord_.farAttack3 = true;
+					behaviorRequest_ = Behavior::kFarAttack3;
+					break;
+				}
 				behaviorRequest_ = Behavior::kFarAttack3;
 				break;
 			}
@@ -528,7 +625,7 @@ void Enemy::BehaviorFarAttack1Update() {
 	if (workFarAttack1_.distanceCount >= workFarAttack1_.maxDis) {
 		isDamegeOn_ = false;
 		workFarAttack1_.isAttack = false;
-		behaviorCD_ = 60 * 1.5f;
+		behaviorCD_ = 60 * 1.f;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
@@ -567,7 +664,7 @@ void Enemy::BehaviorFarAttack2Initialize() {
 		CreateBlock(position, scale, offset);
 	}
 
-	workFarAttack2_.speed = 0.65f;
+	workFarAttack2_.speed = 0.6f;
 
 	workFarAttack2_.rotationSpeed = 0.001f;
 	workFarAttack2_.rotationSpeedMax = 0.4f;
@@ -598,7 +695,7 @@ void Enemy::BehaviorFarAttack2Initialize() {
 void Enemy::BehaviorFarAttack2Update() {
 
 	if (--workFarAttack2_.attackTime <= 0) {
-		behaviorCD_ = 60 * 1.5f;
+		behaviorCD_ = 60 * 1.f;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
@@ -667,7 +764,7 @@ void Enemy::BehaviorFarAttack3Initialize() {
 	}
 
 	workFarAttack3_.rotationSpeed = 0.000001f;
-	workFarAttack3_.rotationSpeedMax = 0.0009f;
+	workFarAttack3_.rotationSpeedMax = 0.0012f;
 	workFarAttack3_.rotationSpeedMin = 0.000001f;
 	workFarAttack3_.rotationSpeedInc = 0.00000005f;
 
@@ -675,9 +772,10 @@ void Enemy::BehaviorFarAttack3Initialize() {
 	workFarAttack3_.scaleMax = 1.0f;
 
 	workFarAttack3_.prepareTime = 60 * 2;
-	workFarAttack3_.attackTime = 60 * 15;
+	workFarAttack3_.attackTime = 60 * 13;
 
 	workFarAttack3_.isBegin = false;
+	workFarAttack3_.isFar = false;
 
 	for (auto& block : blocks_) {
 		block->SetRadius(3.5f);
@@ -690,9 +788,24 @@ void Enemy::BehaviorFarAttack3Initialize() {
 	}
 }
 void Enemy::BehaviorFarAttack3Update() {
+	float speed = 1.0f;
 
 	workFarAttack3_.attackTime--;
 	workFarAttack3_.prepareTime--;
+
+	// playerの逆方向に進む
+	if (toPlayerDis_ < 90.0f && !workFarAttack3_.isFar &&
+		worldTransform_.translation_.x > -500.0f && 
+		worldTransform_.translation_.x < 500.0f && 
+		worldTransform_.translation_.z > -500.0f &&
+	    worldTransform_.translation_.z < 500.0f) {
+
+		worldTransform_.translation_.x -= toPlayerV_.normalize().x * speed;
+		worldTransform_.translation_.z -= toPlayerV_.normalize().z * speed;
+
+	} else {
+		workFarAttack3_.isFar = true;
+	}
 
 	for (auto& block : blocks_) {
 
@@ -710,14 +823,12 @@ void Enemy::BehaviorFarAttack3Update() {
 			if (block->GetScale().x > 0.0f) {
 				block->SetScale(block->GetScale() - Vector3(workFarAttack3_.scaleIncSpeed, workFarAttack3_.scaleIncSpeed, workFarAttack3_.scaleIncSpeed));
 			} else if (block->GetScale().x <= 0.0f) {
-				behaviorCD_ = 60 * 1.5f;
+				behaviorCD_ = 60 * 1.f;
 				behaviorRequest_ = Behavior::kRoot;
 			}
-		}
+		}else {
 
-		else {
-
-			if (block->GetScale().x < workFarAttack3_.scaleMax) {
+			if (block->GetScale().x < workFarAttack3_.scaleMax && workFarAttack3_.isFar){ 
 				block->SetScale(block->GetScale() + Vector3(workFarAttack3_.scaleIncSpeed, workFarAttack3_.scaleIncSpeed, workFarAttack3_.scaleIncSpeed));
 			} else {
 				if (workFarAttack3_.prepareTime <= 0) {
@@ -738,7 +849,6 @@ void Enemy::BehaviorFarAttack3Update() {
 		}
 	}
 }
-
 // ----------------------------------------------------Near1
 void Enemy::BehaviorNearAttack1Initialize() {
 	// 行動遷移の初期化処理
@@ -792,7 +902,7 @@ void Enemy::BehaviorNearAttack1Update() {
 				worldTransform_.rotation_.y += workNearAttack1_.rotationSpeed;
 				workNearAttack1_.rotationCount += workNearAttack1_.rotationSpeed;
 			} else {
-				behaviorCD_ = 60 * 1.5f;
+				behaviorCD_ = 60 * 1.f;
 				behaviorRequest_ = Behavior::kRoot;
 			}
 		} else {
@@ -822,15 +932,15 @@ void Enemy::BehaviorNearAttack2Initialize() {
 	rand_ = Rand(0.0f, 4.0f);
 	randIndex_ = int(std::floor(rand_));
 
-	workNearAttack1_.rotationSpeed = 0.65f;
+	workNearAttack1_.rotationSpeed = 0.55f;
 	workNearAttack1_.rotationCount = 0.0f;
 	workNearAttack1_.isAttack = false;
 
 	workNearAttack1_.attackTime = 60 * 5;
 
-	workNearAttack1_.prepareTime = 60 * 3;
+	workNearAttack1_.prepareTime = 60 * 1.5;
 
-	Vector3 offset = {0.0f, 7.5f, 0.0f};
+	Vector3 offset = {0.0f, 6.5f, 0.0f};
 
 	Vector3 position = player_->GetCenter() + offset;
 	Vector3 scale = {0.0f, 0.0f, 0.0f};
@@ -875,7 +985,7 @@ void Enemy::BehaviorNearAttack2Update() {
 			// Playerの座標に追従
 			block->SetPosition(player_->GetCenter() + block->GetOffset());
 
-			if (workNearAttack1_.prepareTime <= 60 * 0.8) {
+			if (workNearAttack1_.prepareTime <= 60 * 0.5) {
 				float random = Rand(-0.5f, 0.5f);
 				block->SetPositionX(block->GetTranslation().x + random);
 				block->SetPositionZ(block->GetTranslation().z + random);
@@ -883,7 +993,7 @@ void Enemy::BehaviorNearAttack2Update() {
 		}
 
 		if (block->GetCenter().y < 0.0f) {
-			behaviorCD_ = 60 * 1.5f;
+			behaviorCD_ = 60 * 1.f;
 			behaviorRequest_ = Behavior::kRoot;
 		}
 
@@ -963,7 +1073,7 @@ void Enemy::BehaviorNearAttack3Update() {
 
 	if (workNearAttack3_.attackDistanceCount >= 200.0f) {
 		isDamegeOn_ = false;
-		behaviorCD_ = 60 * 1.5f;
+		behaviorCD_ = 60 * 1.f;
 		worldTransform_.rotation_.x = 0.0f;
 		worldTransform_.translation_.y = 0.0f;
 		followCamera_->ResetOffset();
