@@ -128,7 +128,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (!isTitleInit) {
 				titleScene->Initialize();
 				audio->StopWave(bgmGameVH_);
-				bgmTitleVH_ = audio->PlayWave(bgmTitleSH_, true, 0.5f);
+				bgmTitleVH_ = audio->PlayWave(bgmTitleSH_, true, 0.2f);
 				isGameInit = false;
 				isTitleInit = true;
 			}
@@ -137,7 +137,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameScene = new GameScene();
 				gameScene->Initialize();
 				audio->StopWave(bgmTitleVH_);
-				bgmGameVH_ = audio->PlayWave(bgmGameSH_, true, 0.5f);
+				bgmGameVH_ = audio->PlayWave(bgmGameSH_, true, 0.2f);
 				isTitleInit = false;
 				isGameInit = true;
 			}
