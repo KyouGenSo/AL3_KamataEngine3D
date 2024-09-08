@@ -340,5 +340,15 @@ void player::ReticleMultiLockOn(ViewProjection& viewProjection, std::list<Enemy*
 	}
 }
 
+void player::MouseMove() {
+	POINT cursorPos;
+	GetCursorPos(&cursorPos);
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &cursorPos); 
+
+	Vector2 cursorPos2D = {float(cursorPos.x), float(cursorPos.y)};
+
+	sprite2DReticle_->SetPosition(cursorPos2D);
+}
 
 void player::OnCollision() {}

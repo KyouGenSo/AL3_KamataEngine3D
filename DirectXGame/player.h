@@ -40,6 +40,9 @@ public: // メンバ関数
 	// 旋回
 	void Rotate();
 
+	// マウスで視点移動
+	void MouseMove();
+
 	// 攻撃
 	void SingleAttack(std::list<Enemy*> enemies);
 	void MultiAttack(std::list<Enemy*> enemies);
