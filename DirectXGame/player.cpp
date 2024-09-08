@@ -141,7 +141,10 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	worldTransform_.UpdateMatrix();
 
 	// 3Dレティクルの更新
-	Update3DReticle(viewProjection, enemies);
+	//Update3DReticle(viewProjection, enemies);
+
+	// マウスで視点移動
+	MouseMove(viewProjection);
 
 	// レティクルのマルチロックオン
 	ReticleMultiLockOn(viewProjection, enemies);
@@ -340,15 +343,38 @@ void player::ReticleMultiLockOn(ViewProjection& viewProjection, std::list<Enemy*
 	}
 }
 
-void player::MouseMove() {
-	POINT cursorPos;
-	GetCursorPos(&cursorPos);
-	HWND hwnd = WinApp::GetInstance()->GetHwnd();
-	ScreenToClient(hwnd, &cursorPos); 
+void player::MouseMove(ViewProjection& viewProjection) {
+	// マウス座標（スクリーン座標）を取得
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	HWND hWnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hWnd, &mousePos);
 
-	Vector2 cursorPos2D = {float(cursorPos.x), float(cursorPos.y)};
+	sprite2DReticle_->SetPosition(Vector2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)));
 
-	sprite2DReticle_->SetPosition(cursorPos2D);
+	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	Matrix4x4 matVPV = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+	Matrix4x4 inverseMatVPV = Inverse(matVPV);
+
+	// 2Dスクリーン座標からワールド座標への変換
+	Vector3 posNear = {sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0};
+	Vector3 posFar = {sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 1};
+
+	posNear = TransForm(inverseMatVPV, posNear);
+	posFar = TransForm(inverseMatVPV, posFar);
+
+	Vector3 mouseDir = Subtract(posFar, posNear);
+	mouseDir = Normalize(mouseDir);
+
+	const float kReticleDistance = 80.0f;
+
+	worldTransform3DReticle_.translation_ = Add(posNear, Multiply(mouseDir, kReticleDistance));
+	worldTransform3DReticle_.UpdateMatrix();
+
+	worldTransform_.rotation_.x = static_cast<float>(atan2(worldTransform3DReticle_.translation_.y, 80.0f));
+	worldTransform_.rotation_.y = static_cast<float>(atan2(worldTransform3DReticle_.translation_.x, 80.0f));
+	worldTransform_.UpdateMatrix();
 }
+
 
 void player::OnCollision() {}
