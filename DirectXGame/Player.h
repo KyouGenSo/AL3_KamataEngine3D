@@ -41,7 +41,7 @@ public: // メンバ関数
 	void Rotate();
 
 	// マウスで視点移動
-	void MouseMove();
+	void MouseMove(ViewProjection& viewProjection);
 
 	// 攻撃
 	void SingleAttack(std::list<Enemy*> enemies);
