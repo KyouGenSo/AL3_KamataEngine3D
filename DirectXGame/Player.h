@@ -41,7 +41,7 @@ public: // メンバ関数
 	void Rotate();
 
 	// マウスで視点移動
-	void MouseMove();
+	void MouseMove(ViewProjection& viewProjection);
 
 	// 攻撃
 	void SingleAttack(std::list<Enemy*> enemies);
@@ -106,9 +106,6 @@ private: // メンバ変数
 
 	// キーボード入力
 	Input* input_ = nullptr;
-
-	// マウス入力
-	POINT prevMousePos_ = {0, 0};
 
 	// 半径
 	float radius_ = 1.0f;

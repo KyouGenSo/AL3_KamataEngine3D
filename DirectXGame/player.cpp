@@ -144,7 +144,7 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	//Update3DReticle(viewProjection, enemies);
 
 	// マウスで視点移動
-	MouseMove(viewProjection);
+	MouseMove();
 
 	// レティクルのマルチロックオン
 	ReticleMultiLockOn(viewProjection, enemies);
@@ -252,31 +252,31 @@ void player::MultiAttack(std::list<Enemy*> enemies) {
 	}
 }
 
-void player::Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
-
-	// 3Dレティクルのワールド座標変換
-	const float kReticleDistance = 20.0f;
-	Vector3 offset = {0.0f, 0.0f, 1.0f};
-
-	offset = TransFormNormal(offset, worldTransform_.matWorld_);
-	offset = Multiply(Normalize(offset), kReticleDistance);
-	worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
-	worldTransform3DReticle_.UpdateMatrix();
-
-	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
-	Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
-
-	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
-	Vector3 reticlePos = GetWorldPosition3DReticle();
-	reticlePos = TransForm(matViewProjectionViewPort, reticlePos);
-
-	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
-
-	// sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
-
-	// レティクルのシングルロックオン
-	// ReticleSingleLockOn(viewProjection, enemies);
-}
+//void player::Update3DReticle(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
+//
+//	// 3Dレティクルのワールド座標変換
+//	const float kReticleDistance = 20.0f;
+//	Vector3 offset = {0.0f, 0.0f, 1.0f};
+//
+//	offset = TransFormNormal(offset, worldTransform_.matWorld_);
+//	offset = Multiply(Normalize(offset), kReticleDistance);
+//	worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
+//	worldTransform3DReticle_.UpdateMatrix();
+//
+//	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+//	Matrix4x4 matViewProjectionViewPort = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
+//
+//	// 3Dレティクルのワールド座標から2Dスクリーン座標への変換
+//	Vector3 reticlePos = GetWorldPosition3DReticle();
+//	reticlePos = TransForm(matViewProjectionViewPort, reticlePos);
+//
+//	sprite2DReticle_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+//
+//	// sprite2DReticleLockOn_->SetPosition(Vector2(reticlePos.x, reticlePos.y));
+//
+//	// レティクルのシングルロックオン
+//	// ReticleSingleLockOn(viewProjection, enemies);
+//}
 
 void player::ReticleSingleLockOn(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	float lockOnRange = 30.0f;
@@ -343,37 +343,27 @@ void player::ReticleMultiLockOn(ViewProjection& viewProjection, std::list<Enemy*
 	}
 }
 
-void player::MouseMove(ViewProjection& viewProjection) {
+void player::MouseMove() {
 	// マウス座標（スクリーン座標）を取得
 	POINT mousePos;
+
+	float deltaTime = 1.0f / 60.0f;
+	
 	GetCursorPos(&mousePos);
-	HWND hWnd = WinApp::GetInstance()->GetHwnd();
-	ScreenToClient(hWnd, &mousePos);
 
-	sprite2DReticle_->SetPosition(Vector2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)));
+	float mouseSensitive = 0.8f;
 
-	Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
-	Matrix4x4 matVPV = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewPort);
-	Matrix4x4 inverseMatVPV = Inverse(matVPV);
+	sprite2DReticle_->SetPosition(Vector2(640.0f, 360.0f));
 
-	// 2Dスクリーン座標からワールド座標への変換
-	Vector3 posNear = {sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0};
-	Vector3 posFar = {sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 1};
+	float dx = static_cast<float>(mousePos.x - prevMousePos_.x);
+	float dy = static_cast<float>(mousePos.y - prevMousePos_.y);
 
-	posNear = TransForm(inverseMatVPV, posNear);
-	posFar = TransForm(inverseMatVPV, posFar);
+	worldTransform_.rotation_.y += dx * mouseSensitive * deltaTime;
+	worldTransform_.rotation_.x += dy * mouseSensitive * deltaTime;
 
-	Vector3 mouseDir = Subtract(posFar, posNear);
-	mouseDir = Normalize(mouseDir);
-
-	const float kReticleDistance = 80.0f;
-
-	worldTransform3DReticle_.translation_ = Add(posNear, Multiply(mouseDir, kReticleDistance));
-	worldTransform3DReticle_.UpdateMatrix();
-
-	worldTransform_.rotation_.x = static_cast<float>(atan2(worldTransform3DReticle_.translation_.y, 80.0f));
-	worldTransform_.rotation_.y = static_cast<float>(atan2(worldTransform3DReticle_.translation_.x, 80.0f));
 	worldTransform_.UpdateMatrix();
+
+	GetCursorPos(&prevMousePos_);
 }
 
 
