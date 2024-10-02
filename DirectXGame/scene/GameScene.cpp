@@ -92,11 +92,13 @@ void GameScene::Update() {
 	} else {
 		viewProjection_.matView = railCamera_->GetViewMatrix();
 		viewProjection_.matProjection = railCamera_->GetProjectionMatrix();
-
+#ifdef DEBUG
 		ImGui::Begin("viewproj");
 		ImGui::DragFloat3("translation", &viewProjection_.translation_.x, -100.0f, 100.0f);
 		ImGui::DragFloat3("rotation", &viewProjection_.rotation_.x, -3.14f, 3.14f);
 		ImGui::End();
+#endif // DEBUG
+
 		viewProjection_.TransferMatrix();
 	}
 
@@ -327,4 +329,3 @@ void GameScene::UpdateEnemyPopCommands() {
 		}
 	}
 }
-

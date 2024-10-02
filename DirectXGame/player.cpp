@@ -147,15 +147,18 @@ void player::Update(ViewProjection& viewProjection, std::list<Enemy*> enemies) {
 	ReticleMultiLockOn(viewProjection, enemies);
 
 	// マルチロックオンの更新
-	//UpdateMultiLockOn(viewProjection, enemies);
+	// UpdateMultiLockOn(viewProjection, enemies);
 
-
+#ifdef DEBUG
 	// ImGui
 	ImGui::Begin("Player Pos");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, -1.0f, 1.0f);
 	ImGui::Text("x: %f, y: %f, z: %f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]);
 	ImGui::Text("enemyLockOnCount_ : %d", enemyLockOnCount_);
 	ImGui::End();
+#endif // DEBUG
+
+
 }
 
 void player::Draw3D(ViewProjection& viewProjection) {
@@ -169,11 +172,7 @@ void player::Draw3D(ViewProjection& viewProjection) {
 	}
 }
 
-void player::DrawUI() {
-
-	sprite2DReticle_->Draw();
-
-}
+void player::DrawUI() { sprite2DReticle_->Draw(); }
 
 void player::Rotate() {
 	const float kRotateSpeed = 0.02f;
@@ -336,9 +335,7 @@ void player::ReticleMultiLockOn(ViewProjection& viewProjection, std::list<Enemy*
 		if (dis < lockOnRange && enemy->GetIsLocked() == false) {
 			enemy->SetLockOn(true);
 		}
-
 	}
 }
-
 
 void player::OnCollision() {}
